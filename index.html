@@ -1,0 +1,605 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Sora:wght@600;700&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --navy:#1A1A2E;--blue:#1F3A5F;--teal:#2E7D7D;--light:#F5F7FA;
+    --white:#fff;--border:#CCCCCC;--red:#8B1A1A;--green:#1e6b3a;
+    --orange:#b85c00;
+  }
+  body{font-family:'Inter',sans-serif;background:var(--light);color:var(--navy);padding:0 0 40px}
+
+  .test-header{background:var(--navy);padding:20px 28px;display:flex;justify-content:space-between;align-items:center}
+  .test-header .brand{color:#fff;font-family:'Sora',sans-serif;font-size:20px;font-weight:700}
+  .test-header .brand span{display:block;font-family:'Inter',sans-serif;font-size:11px;font-weight:400;color:#aab;letter-spacing:.08em;text-transform:uppercase;margin-top:2px}
+  .test-header .badge{background:var(--blue);color:#fff;font-size:11px;font-weight:600;padding:6px 14px;border-radius:4px;letter-spacing:.05em}
+
+  .section-label{background:var(--blue);color:#fff;font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:8px 28px}
+
+  .section-intro{padding:16px 28px 0;font-size:12px;color:#666;font-style:italic;border-top:3px solid var(--teal)}
+
+  .question-block{padding:18px 28px 0}
+  .q-num{font-size:11px;font-weight:600;color:var(--teal);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px}
+  .q-text{font-size:14px;color:var(--navy);font-weight:500;margin-bottom:12px;line-height:1.5}
+  .q-text .blank{display:inline-block;border-bottom:2px solid var(--blue);min-width:80px;text-align:center}
+
+  .options{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .opt{display:flex;align-items:center;gap:10px;padding:10px 14px;border:1.5px solid var(--border);border-radius:6px;cursor:pointer;background:#fff;transition:all .15s;font-size:13px;color:var(--navy);text-align:left}
+  .opt:hover{border-color:var(--teal);background:#f0f8f8}
+  .opt.selected{border-color:var(--blue);background:#eaf1f8}
+  .opt.correct{border-color:var(--green);background:#eaf6ef;color:var(--green)}
+  .opt.wrong{border-color:var(--red);background:#fdf0ef;color:var(--red)}
+  .opt-letter{width:22px;height:22px;border-radius:4px;background:var(--light);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:12px;flex-shrink:0;color:var(--blue)}
+  .opt.selected .opt-letter{background:var(--blue);color:#fff;border-color:var(--blue)}
+  .opt.correct .opt-letter{background:var(--green);color:#fff;border-color:var(--green)}
+  .opt.wrong .opt-letter{background:var(--red);color:#fff;border-color:var(--red)}
+
+  .divider{height:1px;background:var(--border);margin:18px 28px 0}
+
+  .listening-box{margin:16px 28px 0;background:#fff;border:1.5px solid var(--border);border-radius:8px;padding:16px}
+  .listen-label{font-size:11px;font-weight:600;color:var(--teal);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px}
+  .audio-player{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--light);border-radius:6px;border:1px solid var(--border);margin-bottom:4px}
+  .play-btn{width:36px;height:36px;border-radius:50%;background:var(--blue);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .play-btn svg{width:14px;height:14px;fill:#fff;margin-left:2px}
+  .audio-label{font-size:12px;color:#555}
+  .audio-note{font-size:11px;color:#888;font-style:italic;margin-top:6px}
+
+  .reading-box{margin:16px 28px 0;background:#fff;border:1.5px solid var(--border);border-radius:8px;padding:18px}
+  .reading-title{font-size:12px;font-weight:600;color:var(--blue);letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px}
+  .reading-text{font-size:13px;color:var(--navy);line-height:1.8;border-left:3px solid var(--teal);padding-left:14px}
+  .reading-text p{margin-bottom:8px}
+
+  .writing-box{margin:16px 28px 0;background:#fff;border:1.5px solid var(--border);border-radius:8px;padding:18px}
+  .writing-prompt{font-size:13px;color:var(--navy);line-height:1.6;margin-bottom:12px}
+  .writing-topic{background:var(--light);border:1.5px solid var(--teal);border-radius:6px;padding:12px 16px;font-size:14px;font-weight:600;color:var(--teal);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+  .writing-hints{font-size:12px;color:#666;margin-bottom:10px}
+  .writing-hints li{margin-left:16px;margin-bottom:3px}
+  textarea{width:100%;border:1.5px solid var(--border);border-radius:6px;padding:12px;font-family:'Inter',sans-serif;font-size:13px;color:var(--navy);resize:vertical;min-height:120px;outline:none;transition:border .15s}
+  textarea:focus{border-color:var(--teal)}
+
+  .submit-area{padding:28px 28px 0;display:flex;flex-direction:column;align-items:center;gap:12px}
+  .submit-btn{background:var(--navy);color:#fff;font-family:'Inter',sans-serif;font-size:14px;font-weight:600;padding:13px 40px;border:none;border-radius:6px;cursor:pointer;letter-spacing:.04em;transition:background .15s}
+  .submit-btn:hover{background:var(--blue)}
+  .submit-btn:disabled{background:#999;cursor:not-allowed}
+
+  .result-box{display:none;margin:0 28px;background:#fff;border-radius:8px;border:2px solid var(--navy);padding:24px;text-align:center}
+  .result-box.show{display:block}
+  .result-score{font-family:'Sora',sans-serif;font-size:42px;font-weight:700;color:var(--navy)}
+  .result-label{font-size:14px;color:#555;margin-top:4px}
+  .result-grade{font-size:20px;font-weight:700;margin-top:12px;padding:8px 24px;border-radius:6px;display:inline-block}
+  .grade-a{background:#eaf6ef;color:var(--green)}
+  .grade-b{background:#eaf1f8;color:var(--blue)}
+  .grade-c{background:#fff7e6;color:var(--orange)}
+  .grade-d{background:#fdf0ef;color:var(--red)}
+  .result-detail{font-size:12px;color:#777;margin-top:8px}
+  .result-breakdown{margin-top:16px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .rb-item{background:var(--light);border-radius:6px;padding:10px;font-size:12px}
+  .rb-val{font-size:18px;font-weight:700;color:var(--navy);display:block}
+  .rb-lbl{color:#777;margin-top:2px}
+
+  .progress-bar{height:4px;background:var(--border);border-radius:2px;margin:0 28px;margin-top:12px}
+  .progress-fill{height:100%;background:var(--teal);border-radius:2px;transition:width .3s;width:0}
+
+  .answered-count{text-align:right;padding:6px 28px;font-size:11px;color:#888}
+</style>
+
+<div class="test-header">
+  <div class="brand">Upfront Idiomas <span>English Course — Test · Classes 01–07</span></div>
+  <div class="badge">TEST · CLASSES 01–07</div>
+</div>
+
+<div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+<div class="answered-count" id="answered-count">0 / 30 answered</div>
+
+<div id="test-form">
+
+<div class="section-label">Part 1 — Grammar & Multiple Choice</div>
+<div class="section-intro">Choose the correct answer. / Escolha a resposta correta.</div>
+
+<div class="question-block">
+  <div class="q-num">Question 01</div>
+  <div class="q-text">I _____ to work by car every day.</div>
+  <div class="options" data-q="1" data-ans="B">
+    <div class="opt" data-v="A"><span class="opt-letter">A</span> goes</div>
+    <div class="opt" data-v="B"><span class="opt-letter">B</span> go</div>
+    <div class="opt" data-v="C"><span class="opt-letter">C</span> going</div>
+    <div class="opt" data-v="D"><span class="opt-letter">D</span> am go</div>
+  </div>
+</div>
+<div class="divider"></div>
+
+<div class="question-block">
+  <div class="q-num">Question 02</div>
+  <div class="q-text">She _____ at 6am every morning.</div>
+  <div class="options" data-q="2" data-ans="C">
+    <div class="opt" data-v="A"><span class="opt-letter">A</span> start</div>
+    <div class="opt" data-v="B"><span class="opt-letter">B</span> to start</div>
+    <div class="opt" data-v="C"><span class="opt-letter">C</span> starts</div>
+    <div class="opt" data-v="D"><span class="opt-letter">D</span> starting</div>
+  </div>
+</div>
+<div class="divider"></div>
+
+<div class="question-block">
+  <div class="q-num">Question 03</div>
+  <div class="q-text">We go to the movies _____ foot on Sundays.</div>
+  <div class="options" data-q="3" data-ans="D">
+    <div class="opt" data-v="A"><span class="opt-letter">A</span> by</div>
+    <div class="opt" data-v="B"><span class="opt-letter">B</span> in</div>
+    <div class="opt" data-v="C"><span class="opt-letter">C</span> with</div>
+    <div class="opt" data-v="D"><span class="opt-letter">D</span> on</div>
+  </div>
+</div>
+<div class="divider"></div>
+
+<div class="question-block">
+  <div class="q-num">Question 04</div>
+  <div class="q-text">I have breakfast _____ 8am.</div>
+  <div class="options" data-q="4" data-ans="A">
+    <div class="opt" data-v="A"><span class="opt-letter">A</span> at</div>
+    <div class="opt" data-v="B"><span class="opt-letter">B</span> in</div>
+    <div class="opt" data-v="C"><span class="opt-letter">C</span> on</div>
+    <div class="opt" data-v="D"><span class="opt-letter">D</span> until</div>
+  </div>
+</div>
+<div class="divider"></div>
+
+<div class="question-block">
+  <div class="q-num">Question 05</div>
+  <div class="q-text">He _____ come to the meeting today.</div>
+  <div class="options" data-q="5" data-ans="C">
+    <div class="opt" data-v="A"><span class="opt-letter">A</span> don't</div>
+    <div class="opt" data-v="B"><span class="opt-letter">B</span> not</div>
+    <div class="opt" data-v="C"><span class="opt-letter">C</span> doesn't</div>
+    <div class="opt" data-v="D"><span class="opt-letter">D</span> no</div>
+  </div>
+</div>
+<div class="divider"></div>
+
+<div class="question-block">
+  <div class="q-num">Question 06</div>
+  <div class="q-text">I work _____ the countryside.</div>
+  <div class="options" data-q="6" data-ans="B">
+    <div class="opt" data-v="A"><span class="opt-letter">A</span> on</div>
+    <div class="opt" data-v="B"><span class="opt-letter">B</span> in</div>
+    <div class="opt" data-v="C"><span class="opt-letter">C</span> at</div>
+    <div class="opt" data-v="D"><span class="opt-letter">D</span> by</div>
+  </div>
+</div>
+<div class="divider"></div>
+
+<div class="question-block">
+  <div class="q-num">Question 07</div>
+  <div class="q-text">She _____ has many colleagues at work.</div>
+  <div class="options" data-q="7" data-ans="B">
+    <div class="opt" data-v="A"><span class="opt-letter">A</span> yet</div>
+    <div class="opt" data-v="B"><span class="opt-letter">B</span> still</div>
+    <div class="opt" data-v="C"><span class="opt-letter">C</span> already</div>
+    <div class="opt" data-v="D"><span class="opt-letter">D</span> never</div>
+  </div>
+</div>
+<div class="divider"></div>
+
+<div class="question-block">
+  <div class="q-num">Question 08</div>
+  <div class="q-text">Do you prefer to go _____ plane or by car?</div>
+  <div class="options" data-q="8" data-ans="C">
+    <div class="opt" data-v="A"><span class="opt-letter">A</span> on</div>
+    <div class="opt" data-v="B"><span class="opt-letter">B</span> in</div>
+    <div class="opt" data-v="C"><span class="opt-letter">C</span> by</div>
+    <div class="opt" data-v="D"><span class="opt-letter">D</span> with</div>
+  </div>
+</div>
+<div class="divider"></div>
+
+<div class="question-block">
+  <div class="q-num">Question 09</div>
+  <div class="q-text">I _____ understand English — I studied a lot!</div>
+  <div class="options" data-q="9" data-ans="D">
+    <div class="opt" data-v="A"><span class="opt-letter">A</span> still</div>
+    <div class="opt" data-v="B"><span class="opt-letter">B</span> yet</div>
+    <div class="opt" data-v="C"><span class="opt-letter">C</span> never</div>
+    <div class="opt" data-v="D"><span class="opt-letter">D</span> already</div>
+  </div>
+</div>
+<div class="divider"></div>
+
+<div class="question-block">
+  <div class="q-num">Question 10</div>
+  <div class="q-text">He has _____ books — his shelf is full!</div>
+  <div class="options" data-q="10" data-ans="A">
+    <div class="opt" data-v="A"><span class="opt-letter">A</span> many</div>
+    <div class="opt" data-v="B"><span class="opt-letter">B</span> much</div>
+    <div class="opt" data-v="C"><span class="opt-letter">C</span> a lot</div>
+    <div class="opt" data-v="D"><span class="opt-letter">D</span> very</div>
+  </div>
+</div>
+<div class="divider"></div>
+
+<div class="question-block">
+  <div class="q-num">Question 11</div>
+  <div class="q-text">She doesn't know _____ about the meeting.</div>
+  <div class="options" data-q="11" data-ans="B">
+    <div class="opt" data-v="A"><span class="opt-letter">A</span> something</div>
+    <div class="opt" data-v="B"><span class="opt-letter">B</span> anything</div>
+    <div class="opt" data-v="C"><span class="opt-letter">C</span> everything</div>
+    <div class="opt" data-v="D"><span class="opt-letter">D</span> nothing</div>
+  </div>
+</div>
+<div class="divider"></div>
+
+<div class="question-block">
+  <div class="q-num">Question 12</div>
+  <div class="q-text">We work _____ 5pm every day.</div>
+  <div class="options" data-q="12" data-ans="D">
+    <div class="opt" data-v="A"><span class="opt-letter">A</span> at</div>
+    <div class="opt" data-v="B"><span class="opt-letter">B</span> to</div>
+    <div class="opt" data-v="C"><span class="opt-letter">C</span> by</div>
+    <div class="opt" data-v="D"><span class="opt-letter">D</span> until</div>
+  </div>
+</div>
+<div class="divider"></div>
+
+<div class="question-block">
+  <div class="q-num">Question 13</div>
+  <div class="q-text">I study English _____ sleeping every night.</div>
+  <div class="options" data-q="13" data-ans="A">
+    <div class="opt" data-v="A"><span class="opt-letter">A</span> before</div>
+    <div class="opt" data-v="B"><span class="opt-letter">B</span> after</div>
+    <div class="opt" data-v="C"><span class="opt-letter">C</span> until</div>
+    <div class="opt" data-v="D"><span class="opt-letter">D</span> during</div>
+  </div>
+</div>
+<div class="divider"></div>
+
+<div class="question-block">
+  <div class="q-num">Question 14</div>
+  <div class="q-text">_____ she come from São Paulo?</div>
+  <div class="options" data-q="14" data-ans="C">
+    <div class="opt" data-v="A"><span class="opt-letter">A</span> Do</div>
+    <div class="opt" data-v="B"><span class="opt-letter">B</span> Is</div>
+    <div class="opt" data-v="C"><span class="opt-letter">C</span> Does</div>
+    <div class="opt" data-v="D"><span class="opt-letter">D</span> Has</div>
+  </div>
+</div>
+<div class="divider"></div>
+
+<div class="question-block">
+  <div class="q-num">Question 15</div>
+  <div class="q-text">I have _____ for you — it's a surprise!</div>
+  <div class="options" data-q="15" data-ans="B">
+    <div class="opt" data-v="A"><span class="opt-letter">A</span> anything</div>
+    <div class="opt" data-v="B"><span class="opt-letter">B</span> something</div>
+    <div class="opt" data-v="C"><span class="opt-letter">C</span> nothing</div>
+    <div class="opt" data-v="D"><span class="opt-letter">D</span> everything</div>
+  </div>
+</div>
+
+<div class="section-label" style="margin-top:24px">Part 2 — Listening Comprehension</div>
+<div class="section-intro">Listen to the audio and answer the questions. / Ouça o áudio e responda.</div>
+
+<div class="listening-box">
+  <div class="listen-label">Audio — Daily Routine</div>
+  <div class="audio-player">
+    <button class="play-btn" id="playBtn" onclick="togglePlay()">
+      <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+    </button>
+    <div>
+      <div class="audio-label" style="font-weight:500">Daily Routine — Maria's Day</div>
+      <div class="audio-label" style="color:#999;font-size:11px">Insert audio file here · MP3 / WAV</div>
+    </div>
+  </div>
+  <div class="audio-note">Tip: You can listen multiple times before answering.</div>
+</div>
+
+<div class="question-block" style="margin-top:16px">
+  <div class="q-num">Question 16</div>
+  <div class="q-text">What time does Maria wake up?</div>
+  <div class="options" data-q="16" data-ans="B">
+    <div class="opt" data-v="A"><span class="opt-letter">A</span> At 6am</div>
+    <div class="opt" data-v="B"><span class="opt-letter">B</span> At 7am</div>
+    <div class="opt" data-v="C"><span class="opt-letter">C</span> At 8am</div>
+    <div class="opt" data-v="D"><span class="opt-letter">D</span> At 9am</div>
+  </div>
+</div>
+<div class="divider"></div>
+
+<div class="question-block">
+  <div class="q-num">Question 17</div>
+  <div class="q-text">How does Maria go to work?</div>
+  <div class="options" data-q="17" data-ans="A">
+    <div class="opt" data-v="A"><span class="opt-letter">A</span> By car</div>
+    <div class="opt" data-v="B"><span class="opt-letter">B</span> On foot</div>
+    <div class="opt" data-v="C"><span class="opt-letter">C</span> By plane</div>
+    <div class="opt" data-v="D"><span class="opt-letter">D</span> By bus</div>
+  </div>
+</div>
+<div class="divider"></div>
+
+<div class="question-block">
+  <div class="q-num">Question 18</div>
+  <div class="q-text">What does Maria usually eat for lunch?</div>
+  <div class="options" data-q="18" data-ans="C">
+    <div class="opt" data-v="A"><span class="opt-letter">A</span> Soup and bread</div>
+    <div class="opt" data-v="B"><span class="opt-letter">B</span> Fries and eggs</div>
+    <div class="opt" data-v="C"><span class="opt-letter">C</span> Rice, beans and salad</div>
+    <div class="opt" data-v="D"><span class="opt-letter">D</span> Just a dessert</div>
+  </div>
+</div>
+<div class="divider"></div>
+
+<div class="question-block">
+  <div class="q-num">Question 19</div>
+  <div class="q-text">What time does Maria's colleague start to work?</div>
+  <div class="options" data-q="19" data-ans="D">
+    <div class="opt" data-v="A"><span class="opt-letter">A</span> At 7am</div>
+    <div class="opt" data-v="B"><span class="opt-letter">B</span> At 8am</div>
+    <div class="opt" data-v="C"><span class="opt-letter">C</span> At 9am</div>
+    <div class="opt" data-v="D"><span class="opt-letter">D</span> At 8:30am</div>
+  </div>
+</div>
+<div class="divider"></div>
+
+<div class="question-block">
+  <div class="q-num">Question 20</div>
+  <div class="q-text">Does Maria still work on weekends?</div>
+  <div class="options" data-q="20" data-ans="A">
+    <div class="opt" data-v="A"><span class="opt-letter">A</span> Yes, she does</div>
+    <div class="opt" data-v="B"><span class="opt-letter">B</span> No, she doesn't</div>
+    <div class="opt" data-v="C"><span class="opt-letter">C</span> Only on Saturdays</div>
+    <div class="opt" data-v="D"><span class="opt-letter">D</span> Only on Sundays</div>
+  </div>
+</div>
+
+<div class="section-label" style="margin-top:24px">Part 3 — Reading Comprehension</div>
+<div class="section-intro">Read the dialog and answer the questions. / Leia o diálogo e responda.</div>
+
+<div class="reading-box">
+  <div class="reading-title">Dialog — A Busy Week</div>
+  <div class="reading-text">
+    <p><b>Ana:</b> Hi Carlos! What time do you usually start to work?</p>
+    <p><b>Carlos:</b> I start at 8am. I go by car because I live far from the office. Does your colleague still work in the countryside?</p>
+    <p><b>Ana:</b> Yes, she does. She comes from Curitiba but she doesn't have a car yet. She usually goes on foot or by bus.</p>
+    <p><b>Carlos:</b> I have a meeting at 2pm and a celebration after. I don't have time to have lunch with my boss today.</p>
+    <p><b>Ana:</b> Do you want to eat something now? I have a lot of food — rice, beans, salad and even dessert!</p>
+    <p><b>Carlos:</b> Yes please! I already understand that you always have something good to eat!</p>
+  </div>
+</div>
+
+<div class="question-block" style="margin-top:16px">
+  <div class="q-num">Question 21</div>
+  <div class="q-text">What time does Carlos start to work?</div>
+  <div class="options" data-q="21" data-ans="A">
+    <div class="opt" data-v="A"><span class="opt-letter">A</span> At 8am</div>
+    <div class="opt" data-v="B"><span class="opt-letter">B</span> At 7am</div>
+    <div class="opt" data-v="C"><span class="opt-letter">C</span> At 2pm</div>
+    <div class="opt" data-v="D"><span class="opt-letter">D</span> At 9am</div>
+  </div>
+</div>
+<div class="divider"></div>
+
+<div class="question-block">
+  <div class="q-num">Question 22</div>
+  <div class="q-text">Why does Carlos go by car?</div>
+  <div class="options" data-q="22" data-ans="B">
+    <div class="opt" data-v="A"><span class="opt-letter">A</span> He doesn't like walking</div>
+    <div class="opt" data-v="B"><span class="opt-letter">B</span> He lives far from the office</div>
+    <div class="opt" data-v="C"><span class="opt-letter">C</span> He has a new car</div>
+    <div class="opt" data-v="D"><span class="opt-letter">D</span> He works in the countryside</div>
+  </div>
+</div>
+<div class="divider"></div>
+
+<div class="question-block">
+  <div class="q-num">Question 23</div>
+  <div class="q-text">How does Ana's colleague usually get to work?</div>
+  <div class="options" data-q="23" data-ans="D">
+    <div class="opt" data-v="A"><span class="opt-letter">A</span> By car</div>
+    <div class="opt" data-v="B"><span class="opt-letter">B</span> By plane</div>
+    <div class="opt" data-v="C"><span class="opt-letter">C</span> By car or on foot</div>
+    <div class="opt" data-v="D"><span class="opt-letter">D</span> On foot or by bus</div>
+  </div>
+</div>
+<div class="divider"></div>
+
+<div class="question-block">
+  <div class="q-num">Question 24</div>
+  <div class="q-text">What does Carlos have at 2pm?</div>
+  <div class="options" data-q="24" data-ans="C">
+    <div class="opt" data-v="A"><span class="opt-letter">A</span> A break</div>
+    <div class="opt" data-v="B"><span class="opt-letter">B</span> Lunch with his boss</div>
+    <div class="opt" data-v="C"><span class="opt-letter">C</span> A meeting</div>
+    <div class="opt" data-v="D"><span class="opt-letter">D</span> A class</div>
+  </div>
+</div>
+<div class="divider"></div>
+
+<div class="question-block">
+  <div class="q-num">Question 25</div>
+  <div class="q-text">What food does Ana offer?</div>
+  <div class="options" data-q="25" data-ans="A">
+    <div class="opt" data-v="A"><span class="opt-letter">A</span> Rice, beans, salad and dessert</div>
+    <div class="opt" data-v="B"><span class="opt-letter">B</span> Soup and eggs</div>
+    <div class="opt" data-v="C"><span class="opt-letter">C</span> Fries and salad</div>
+    <div class="opt" data-v="D"><span class="opt-letter">D</span> Rice and beans only</div>
+  </div>
+</div>
+
+<div class="section-label" style="margin-top:24px">Part 4 — Writing</div>
+<div class="section-intro">Write a short paragraph about the topic below. Use what you have learned! / Escreva um parágrafo curto usando o que aprendeu!</div>
+
+<div class="writing-box">
+  <div class="writing-topic">
+    <i class="ti ti-pencil" aria-hidden="true"></i>
+    Topic: My Daily Routine
+  </div>
+  <div class="writing-prompt">Write 5–8 sentences about your daily routine. Include: what time you wake up, how you go to work/school, what you usually eat, and what you do after work.</div>
+  <div class="writing-hints">Use:
+    <ul>
+      <li>AT + time (I wake up at...)</li>
+      <li>BY car / ON foot / BY plane</li>
+      <li>UNTIL (I work until...)</li>
+      <li>BEFORE / AFTER + -ing</li>
+      <li>USUALLY / ALREADY / STILL</li>
+    </ul>
+  </div>
+  <textarea id="writing-answer" placeholder="Write your paragraph here...&#10;&#10;Example: I usually wake up at 7am. I go to work by car because I live far from the office..."></textarea>
+</div>
+
+<div class="question-block" style="margin-top:16px">
+  <div class="q-num">Question 26</div>
+  <div class="q-text">Which sentence uses BEFORE correctly?</div>
+  <div class="options" data-q="26" data-ans="B">
+    <div class="opt" data-v="A"><span class="opt-letter">A</span> I eat before I sleep work</div>
+    <div class="opt" data-v="B"><span class="opt-letter">B</span> I study before sleeping</div>
+    <div class="opt" data-v="C"><span class="opt-letter">C</span> She works before to go home</div>
+    <div class="opt" data-v="D"><span class="opt-letter">D</span> He eats before eat</div>
+  </div>
+</div>
+<div class="divider"></div>
+
+<div class="question-block">
+  <div class="q-num">Question 27</div>
+  <div class="q-text">I have lunch _____ working every day.</div>
+  <div class="options" data-q="27" data-ans="C">
+    <div class="opt" data-v="A"><span class="opt-letter">A</span> before</div>
+    <div class="opt" data-v="B"><span class="opt-letter">B</span> until</div>
+    <div class="opt" data-v="C"><span class="opt-letter">C</span> after</div>
+    <div class="opt" data-v="D"><span class="opt-letter">D</span> at</div>
+  </div>
+</div>
+<div class="divider"></div>
+
+<div class="question-block">
+  <div class="q-num">Question 28</div>
+  <div class="q-text">He has _____ money to buy a ticket.</div>
+  <div class="options" data-q="28" data-ans="A">
+    <div class="opt" data-v="A"><span class="opt-letter">A</span> much</div>
+    <div class="opt" data-v="B"><span class="opt-letter">B</span> many</div>
+    <div class="opt" data-v="C"><span class="opt-letter">C</span> a lot many</div>
+    <div class="opt" data-v="D"><span class="opt-letter">D</span> very much of</div>
+  </div>
+</div>
+<div class="divider"></div>
+
+<div class="question-block">
+  <div class="q-num">Question 29</div>
+  <div class="q-text">She _____ speak English yet — she needs more classes.</div>
+  <div class="options" data-q="29" data-ans="B">
+    <div class="opt" data-v="A"><span class="opt-letter">A</span> doesn't still</div>
+    <div class="opt" data-v="B"><span class="opt-letter">B</span> doesn't know how to</div>
+    <div class="opt" data-v="C"><span class="opt-letter">C</span> not know</div>
+    <div class="opt" data-v="D"><span class="opt-letter">D</span> don't knows</div>
+  </div>
+</div>
+<div class="divider"></div>
+
+<div class="question-block">
+  <div class="q-num">Question 30</div>
+  <div class="q-text">He has _____ in Curitiba — he just moved here.</div>
+  <div class="options" data-q="30" data-ans="D">
+    <div class="opt" data-v="A"><span class="opt-letter">A</span> something</div>
+    <div class="opt" data-v="B"><span class="opt-letter">B</span> anything</div>
+    <div class="opt" data-v="C"><span class="opt-letter">C</span> everything</div>
+    <div class="opt" data-v="D"><span class="opt-letter">D</span> nothing</div>
+  </div>
+</div>
+
+<div class="submit-area">
+  <button class="submit-btn" id="submitBtn" onclick="submitTest()">Submit Test &amp; See Results</button>
+  <div style="font-size:11px;color:#999">Make sure you answer all questions before submitting.</div>
+</div>
+
+<div class="result-box" id="resultBox">
+  <div style="font-size:12px;font-weight:600;color:#888;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px">Test Result</div>
+  <div class="result-score" id="resultScore">0/30</div>
+  <div class="result-label" id="resultLabel">Questions correct</div>
+  <div class="result-grade" id="resultGrade"></div>
+  <div class="result-detail" id="resultDetail"></div>
+  <div class="result-breakdown" id="resultBreakdown"></div>
+</div>
+
+</div>
+
+<script>
+const answers = {};
+const totalMC = 30;
+let submitted = false;
+
+document.querySelectorAll('.options').forEach(group => {
+  group.querySelectorAll('.opt').forEach(opt => {
+    opt.addEventListener('click', () => {
+      if(submitted) return;
+      const q = group.dataset.q;
+      group.querySelectorAll('.opt').forEach(o => o.classList.remove('selected'));
+      opt.classList.add('selected');
+      answers[q] = opt.dataset.v;
+      updateProgress();
+    });
+  });
+});
+
+function updateProgress(){
+  const done = Object.keys(answers).length;
+  document.getElementById('answered-count').textContent = done + ' / ' + totalMC + ' answered';
+  document.getElementById('progress').style.width = (done/totalMC*100)+'%';
+}
+
+function togglePlay(){
+  const btn = document.getElementById('playBtn');
+  btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+  setTimeout(()=>{
+    btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+  },2000);
+}
+
+function submitTest(){
+  submitted = true;
+  let correct = 0;
+  const parts = {p1:0,p2:0,p3:0,p4:0};
+  
+  document.querySelectorAll('.options').forEach(group => {
+    const q = parseInt(group.dataset.q);
+    const ans = group.dataset.ans;
+    const selected = answers[String(q)];
+    group.querySelectorAll('.opt').forEach(opt => {
+      opt.style.cursor = 'default';
+      if(opt.dataset.v === ans){
+        opt.classList.add('correct');
+        opt.classList.remove('selected');
+      } else if(opt.classList.contains('selected')){
+        opt.classList.add('wrong');
+        opt.classList.remove('selected');
+      }
+    });
+    if(selected === ans){
+      correct++;
+      if(q<=15) parts.p1++;
+      else if(q<=20) parts.p2++;
+      else if(q<=25) parts.p3++;
+      else parts.p4++;
+    }
+  });
+
+  const pct = Math.round(correct/totalMC*100);
+  let grade, gc;
+  if(pct>=90){grade='A — Excellent!';gc='grade-a'}
+  else if(pct>=75){grade='B — Good job!';gc='grade-b'}
+  else if(pct>=60){grade='C — Keep practicing';gc='grade-c'}
+  else{grade='D — Review the content';gc='grade-d'}
+
+  const rb = document.getElementById('resultBox');
+  document.getElementById('resultScore').textContent = correct+'/'+totalMC;
+  document.getElementById('resultLabel').textContent = 'Questions correct ('+pct+'%)';
+  document.getElementById('resultGrade').textContent = grade;
+  document.getElementById('resultGrade').className = 'result-grade '+gc;
+  document.getElementById('resultBreakdown').innerHTML =
+    '<div class="rb-item"><span class="rb-val">'+parts.p1+'/15</span><div class="rb-lbl">Grammar</div></div>'+
+    '<div class="rb-item"><span class="rb-val">'+parts.p2+'/5</span><div class="rb-lbl">Listening</div></div>'+
+    '<div class="rb-item"><span class="rb-val">'+parts.p3+'/5</span><div class="rb-lbl">Reading</div></div>';
+
+  rb.classList.add('show');
+  rb.scrollIntoView({behavior:'smooth',block:'center'});
+  document.getElementById('submitBtn').disabled = true;
+}
+</script>
