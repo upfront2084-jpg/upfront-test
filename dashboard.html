@@ -596,9 +596,9 @@ function renderTeacherPanel(t){
   const al=active.filter(s=>checkAlert(t.name,s).lv==='alert').length;
   const wn=active.filter(s=>checkAlert(t.name,s).lv==='warn').length;
   const link=t.id?`<a href="https://docs.google.com/spreadsheets/d/${t.id}" target="_blank" style="padding:5px 12px;border-radius:var(--r1);border:1px solid var(--g3);background:var(--gd);color:var(--g);font:600 11px var(--f);text-decoration:none">↗ Planilha</a>`:'';
-  const chips=al>0?`<div class="ach a"><div class="ach-dot"></div>🔴 ${al} aluno${al>1?'s':'} com alerta — entrar em contato</div>`:
-              wn>0?`<div class="ach w"><div class="ach-dot"></div>🟡 ${wn} atenção — monitorar</div>`:
-              `<div class="ach ok"><div class="ach-dot"></div>✓ Todos em dia</div>`;
+  const chips=al>0?`<div class='ach a'><div class='ach-dot'></div>🔴 ${al} aluno${al>1?'s':''} com alerta — entrar em contato</div>`:
+              wn>0?`<div class='ach w'><div class='ach-dot'></div>🟡 ${wn} atenção — monitorar</div>`:
+              `<div class='ach ok'><div class='ach-dot'></div>✓ Todos em dia</div>`;
 
   const rows=active.map(s=>{
     const a=checkAlert(t.name,s);
