@@ -431,8 +431,23 @@ let TEACHERS=[
   {n:'Anthony (Joe)',cod:'VIP-240b',plan:'VIP',st:'Ativo',hist:[{c:'NC',d:'02/06',m:6},{c:'NC',d:'09/06',m:6},{c:'OK',d:'16/06',m:6}]},
 ]},
 {name:'Juliana',id:'1EW5niOgx5VAZSqlb46v-UlzRl3ewTjsmIhD5xknA0eE',students:[
-  {n:'Ricardo',cod:'VIP-254',plan:'VIP',st:'Ativo',hist:[{c:'OK',d:'02/06',m:6},{c:'OK',d:'09/06',m:6}]},
-  {n:'Aline J.',cod:'VIP-255',plan:'VIP',st:'Ativo',hist:[{c:'R',d:'04/06',m:6},{c:'OK',d:'09/06',m:6},{c:'OK',d:'16/06',m:6}]},
+  {n:'Ricardo',cod:'VIP-254',plan:'VIP',st:'Ativo',hist:[
+    {c:'OK',d:'02/04',m:4},{c:'OK',d:'07/04',m:4},{c:'OK',d:'09/04',m:4},{c:'OK',d:'14/04',m:4},
+    {c:'CP',d:'16/04',m:4},{c:'F',d:'21/04',m:4},{c:'OK',d:'23/04',m:4},{c:'OK',d:'28/04',m:4},
+    {c:'OK',d:'30/04',m:4},
+    {c:'OK',d:'05/05',m:5},{c:'OK',d:'12/05',m:5},{c:'OK',d:'19/05',m:5},{c:'OK',d:'26/05',m:5},
+    {c:'OK',d:'02/06',m:6},{c:'OK',d:'09/06',m:6},{c:'CA',d:'16/06',m:6},
+  ]},
+  {n:'Aline',cod:'VIP-255',plan:'VIP',st:'Ativo',hist:[
+    {c:'OK',d:'31/03',m:3},
+    {c:'OK',d:'02/04',m:4},{c:'CA',d:'07/04',m:4},{c:'OK',d:'09/04',m:4},{c:'OK',d:'14/04',m:4},
+    {c:'CP',d:'16/04',m:4},{c:'F',d:'21/04',m:4},{c:'OK',d:'23/04',m:4},{c:'OK',d:'28/04',m:4},
+    {c:'OK',d:'30/04',m:4},
+    {c:'OK',d:'05/05',m:5},{c:'OK',d:'07/05',m:5},{c:'OK',d:'12/05',m:5},{c:'OK',d:'14/05',m:5},
+    {c:'OK',d:'19/05',m:5},{c:'OK',d:'21/05',m:5},{c:'OK',d:'26/05',m:5},{c:'OK',d:'28/05',m:5},
+    {c:'CA',d:'02/06',m:6},{c:'R',d:'04/06',m:6},
+  ]},
+  {n:'Vini/Nadia',cod:'GRU-270',plan:'Grupo',st:'Ativo',hist:[]},
 ]},
 {name:'Alesson',id:'1oqVLjEERQk9VVvK7G7pz4OlQHfE3NmqOCQf0M9ZUVMI',students:[
   {n:'Deborah',cod:'VIP-179',plan:'VIP',st:'Ativo',hist:[{c:'OK',d:'02/06',m:6},{c:'F',d:'04/06',m:6},{c:'OK',d:'09/06',m:6}]},
@@ -803,51 +818,110 @@ async function doSync(){
     if(!r.ok)throw new Error('HTTP '+r.status);
     const d=await r.json();
     if(!d.teachers)throw new Error('Formato inesperado — verifique o código do Apps Script');
+
     const validCodes=['OK','AB','NC','CA','CP','F','R','VC','CF','HC'];
-    let updCount=0;
+    let updCount=0, newCount=0, pausedCount=0;
+
     TEACHERS.forEach(t=>{
       const tData=d.teachers[t.name];
       if(!tData||tData.error){console.warn(t.name,tData?.error);return;}
-      t.students.forEach(s=>{
-        // Match aba pelo nome do aluno ou código — formato "Nome VIP-XXX"
-        const sNameClean=s.n.split('/')[0].trim().toLowerCase().replace(/[^a-z0-9]/g,'');
-        const sCodClean=s.cod.toLowerCase().replace(/[^a-z0-9]/g,'');
-        let sheetRows=null;
-        Object.keys(tData).forEach(shName=>{
-          const shClean=shName.toLowerCase().replace(/[^a-z0-9]/g,'');
-          if(shClean.includes(sNameClean)||shClean.includes(sCodClean)){
-            sheetRows=tData[shName];
-          }
-        });
-        if(!sheetRows)return;
-        // Ler linhas: col C (index 2) = código, col E (index 4) = data dd/MM
+
+      // Get all tab names from this teacher's spreadsheet
+      const allTabs=Object.keys(tData).filter(n=>{
+        const nl=n.toLowerCase();
+        return !['stats','stats 2026','list of students','reposições'].includes(nl) && 
+               (nl.includes('vip') || nl.includes('gru') || nl.includes('kids') || nl.includes('pri'));
+      });
+
+      allTabs.forEach(tabName=>{
+        const sheetRows=tData[tabName];
+        if(!sheetRows||!Array.isArray(sheetRows))return;
+
+        // Extract student name and code from tab name (format: "Nome VIP-XXX")
+        const tabClean=tabName.trim();
+        // Detect if paused from tab name
+        const isPaused=tabClean.toLowerCase().includes('(paused)')||tabClean.toLowerCase().includes('pausado');
+        const cleanTabName=tabClean.replace(/\s*\(paused\)\s*/i,'').replace(/\s*pausado\s*/i,'').trim();
+
+        // Extract code from tab name
+        const codeMatch=cleanTabName.match(/([A-Z]{2,4})\s*[-–]\s*(\d+)/i);
+        const code=codeMatch?`${codeMatch[1].toUpperCase()}-${codeMatch[2]}`:'';
+
+        // Student name is everything before the code in the tab name
+        const studentName=codeMatch?cleanTabName.replace(/\s*[A-Z]{2,4}\s*[-–]\s*\d+\s*/i,'').trim():cleanTabName;
+
+        // Read class history from sheet rows
         const newHist=[];
         sheetRows.forEach(row=>{
+          if(!Array.isArray(row)||row.length<5)return;
           const cod=(row[2]||'').toString().trim().toUpperCase();
           const date=(row[4]||'').toString().trim();
           if(!validCodes.includes(cod)||!date)return;
-          // Parse dd/MM
           const parts=date.split('/');
           if(parts.length<2)return;
           const month=parseInt(parts[1]);
           if(month<1||month>12)return;
           newHist.push({c:cod,d:date,m:month});
         });
-        if(newHist.length>0){
-          s.hist=newHist.slice(-30);
-          updCount++;
+
+        // Try to find existing student in TEACHERS
+        const existing=t.students.find(s=>{
+          const sc=s.cod.replace(/[^a-z0-9]/gi,'').toLowerCase();
+          const tc=code.replace(/[^a-z0-9]/gi,'').toLowerCase();
+          if(sc&&tc&&sc===tc)return true;
+          const sn=s.n.split('/')[0].trim().toLowerCase().replace(/[^a-z]/g,'');
+          const tn=studentName.split('/')[0].trim().toLowerCase().replace(/[^a-z]/g,'');
+          return sn&&tn&&sn.length>2&&tn.length>2&&(sn.includes(tn)||tn.includes(sn));
+        });
+
+        if(existing){
+          // Update existing student
+          if(newHist.length>0){existing.hist=newHist.slice(-30);updCount++;}
+          // Update paused status
+          if(isPaused&&existing.st==='Ativo'){existing.st='Pausado';pausedCount++;}
+          else if(!isPaused&&existing.st==='Pausado'&&newHist.some(h=>['ok','r'].includes(norm(h.c)))){existing.st='Ativo';}
+        } else if(studentName&&studentName.length>1&&newHist.length>=0){
+          // NEW student found in spreadsheet — add to dashboard
+          const plan=code.startsWith('GRU')?'Grupo':code.startsWith('KIDS')?'KIDS':'VIP';
+          t.students.push({
+            n:studentName,
+            cod:code||tabName,
+            plan,
+            st:isPaused?'Pausado':'Ativo',
+            hist:newHist.slice(-30)
+          });
+          newCount++;
         }
       });
     });
+
+    // Reset dismissed alerts on sync
+    dismissedAlerts={};localStorage.setItem('uf_dismissed','{}');
+
+    // Rebuild tabs and panels to reflect any new students
+    document.getElementById('teacher-panels').innerHTML='';
+    TEACHERS.forEach(t=>{
+      if(!document.getElementById('tab-'+t.name)){
+        const btn=document.createElement('button');
+        btn.className='tab';btn.id='tab-'+t.name;
+        btn.innerHTML=t.name+'<span class="tcnt ok" id="tcnt-'+t.name+'">0</span>';
+        btn.onclick=()=>goPanel(t.name,btn);
+        document.getElementById('tabs').appendChild(btn);
+      }
+      const div=document.createElement('div');div.className='panel';div.id='panel-'+t.name;
+      document.getElementById('teacher-panels').appendChild(div);
+    });
+    TEACHERS.forEach(t=>renderTeacherPanel(t));
+    renderAll();
+
     const now=new Date();
     const ts=`${String(now.getDate()).padStart(2,'0')}/${String(now.getMonth()+1).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
     btn.className='sync-btn';document.getElementById('sync-txt').textContent='Sincronizado';
-    res.innerHTML=`<span style="color:var(--g)">✓ ${ts} · ${updCount} aluno${updCount!==1?'s':''} atualizado${updCount!==1?'s':''}</span>`;
-    // Reset dismissed alerts so re-sync shows fresh state
-    dismissedAlerts={};
-    localStorage.setItem('uf_dismissed','{}');
-    renderAll();
-    toast('✓ '+updCount+' alunos atualizados das planilhas');
+    let msg=`✓ ${ts} · ${updCount} aluno${updCount!==1?'s':''} atualizado${updCount!==1?'s':''}`;
+    if(newCount>0)msg+=` · ${newCount} novo${newCount!==1?'s':''}`;
+    if(pausedCount>0)msg+=` · ${pausedCount} pausado${pausedCount!==1?'s':''}`;
+    res.innerHTML=`<span style="color:var(--g)">${msg}</span>`;
+    toast('✓ Sincronizado'+( newCount>0?` · ${newCount} novo${newCount>1?'s':''} aluno${newCount>1?'s':''} adicionado${newCount>1?'s':''}`:''));
     setTimeout(()=>{document.getElementById('sync-txt').textContent='Sincronizar';},8000);
   }catch(e){
     btn.className='sync-btn er';document.getElementById('sync-txt').textContent='Erro';
@@ -857,9 +931,7 @@ async function doSync(){
   }
 }
 
-// ═══════════════════════════════════════════════════
-// UTILS
-// ═══════════════════════════════════════════════════
+
 function openModal(id){document.getElementById('mov-'+id).classList.add('on');}
 function closeModal(id){document.getElementById('mov-'+id).classList.remove('on');}
 function toast(msg,tp='s'){
