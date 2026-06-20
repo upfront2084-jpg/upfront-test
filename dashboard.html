@@ -260,11 +260,15 @@ tbody tr.rwn td{background:rgba(255,190,0,.03)}
       </div>
       <div style="background:var(--rd);border:1px solid var(--r2);border-radius:8px;padding:12px;margin-bottom:10px">
         <div style="font:700 11px var(--fm);color:var(--r);margin-bottom:5px">🔴 ALERTA — ENTRAR EM CONTATO</div>
-        <div style="font-size:11px;color:var(--t1);line-height:1.7">• <strong>2 CP ou NC consecutivos</strong> nas aulas mais recentes<br>• <strong>2+ CP/NC no mesmo mês</strong> em qualquer mês de 2026</div>
+        <div style="font-size:11px;color:var(--t1);line-height:1.7">• <strong>2 CP/NC sem reposição consecutivos</strong> nas ocorrências mais recentes<br>• <strong>2+ CP/NC sem reposição no mesmo mês</strong> em qualquer mês de 2026</div>
+      </div>
+      <div style="background:rgba(77,148,255,.06);border:1px solid #093366;border-radius:8px;padding:12px;margin-bottom:10px">
+        <div style="font:700 11px var(--fm);color:var(--b);margin-bottom:5px">🔵 REPOSIÇÃO (R) — ANULA O ALERTA</div>
+        <div style="font-size:11px;color:var(--t1);line-height:1.7">Se um CP ou NC for seguido de um <strong>R (reposição)</strong>, a ocorrência é considerada resolvida e <strong>não gera alerta</strong>. A aula reposta conta como aula dada.</div>
       </div>
       <div style="background:var(--yd);border:1px solid #664d00;border-radius:8px;padding:12px">
         <div style="font:700 11px var(--fm);color:var(--y);margin-bottom:5px">🟡 ATENÇÃO — MONITORAR</div>
-        <div style="font-size:11px;color:var(--t1)">1 CP/NC isolado recente — observar na próxima aula.</div>
+        <div style="font-size:11px;color:var(--t1)">1 CP/NC sem reposição recente — observar na próxima aula.</div>
       </div>
     </div>
   </div>
@@ -450,7 +454,11 @@ let TEACHERS=[
   {n:'Vini/Nadia',cod:'GRU-270',plan:'Grupo',st:'Ativo',hist:[]},
 ]},
 {name:'Alesson',id:'1oqVLjEERQk9VVvK7G7pz4OlQHfE3NmqOCQf0M9ZUVMI',students:[
-  {n:'Deborah',cod:'VIP-179',plan:'VIP',st:'Ativo',hist:[{c:'OK',d:'02/06',m:6},{c:'F',d:'04/06',m:6},{c:'OK',d:'09/06',m:6}]},
+  {n:'Deborah',cod:'VIP-179',plan:'VIP',st:'Ativo',hist:[
+    {c:'OK',d:'02/06',m:6},{c:'F',d:'04/06',m:6},{c:'OK',d:'09/06',m:6},
+    {c:'CA',d:'11/06',m:6},{c:'CP',d:'16/06',m:6},{c:'',d:'18/06',m:6},
+    {c:'',d:'23/06',m:6},{c:'',d:'25/06',m:6},{c:'',d:'30/06',m:6},
+  ]},
 ]},
 ];
 
@@ -471,23 +479,50 @@ function norm(c){
 }
 function isTrig(c){const n=norm(c);return n==='nc'||n==='cp';}
 
+// Retorna lista de ocorrências CP/NC/CA "sem reposição" —
+// um R logo após (próximo item com código) anula o trigger anterior.
+function getUnresolvedTriggers(hist){
+  const done=hist.filter(h=>h.c&&h.c.trim()!=='');
+  const unresolved=[];
+  for(let i=0;i<done.length;i++){
+    const h=done[i];
+    if(isTrig(h.c)){
+      // Verifica se o próximo código é R (reposição)
+      const next=done[i+1];
+      const resolved=next&&norm(next.c)==='r';
+      if(!resolved)unresolved.push(h);
+    }
+  }
+  return unresolved;
+}
+
 function checkAlert(t,s){
   const key=t+'__'+s.n;
   if(dismissedAlerts[key])return{lv:'none',reason:'dispensado'};
   const done=s.hist.filter(h=>h.c&&h.c.trim()!=='');
   if(!done.length)return{lv:'none',reason:''};
-  const last2=done.slice(-2);
-  const consec=last2.length===2&&isTrig(last2[0].c)&&isTrig(last2[1].c);
+
+  // Apenas triggers sem reposição contam para alerta
+  const unres=getUnresolvedTriggers(s.hist);
+  if(!unres.length)return{lv:'none',reason:''};
+
+  // 2 consecutivos (sem reposição) nas últimas ocorrências não-resolvidas
+  const lastTwo=unres.slice(-2);
+  const consec=lastTwo.length===2;
+
+  // 2+ no mesmo mês (sem reposição)
   const byM={};
-  done.forEach(h=>{if(isTrig(h.c)){if(!byM[h.m])byM[h.m]=[];byM[h.m].push(h);}});
+  unres.forEach(h=>{if(!byM[h.m])byM[h.m]=[];byM[h.m].push(h);});
   const monthAlert=Object.values(byM).some(a=>a.length>=2);
+
   if(consec||monthAlert){
     const rs=[];
-    if(consec)rs.push('2 consecutivos');
+    if(consec)rs.push('2 não-respostos consecutivos');
     if(monthAlert){const ms=Object.entries(byM).filter(([,a])=>a.length>=2).map(([m])=>MN[+m]||m);rs.push('2+ em '+ms.join(', '));}
     return{lv:'alert',reason:rs.join(' · ')};
   }
-  if(isTrig(done[done.length-1].c))return{lv:'warn',reason:'1 CP/NC recente'};
+  // 1 trigger sem reposição recente = atenção
+  if(unres.length>0)return{lv:'warn',reason:'1 CP/NC sem reposição'};
   return{lv:'none',reason:''};
 }
 
@@ -625,6 +660,8 @@ function renderTeacherPanel(t){
       ?`<button class="dismiss-btn" onclick="dismissAlert('${t.name}','${s.n.replace(/'/g,"\\'")}',event)" title="Ignorar este alerta temporariamente">✕ Ignorar</button>`:'';
     const okc=s.hist.filter(h=>['ok','r'].includes(norm(h.c))).length;
     const nc=s.hist.filter(h=>isTrig(h.c)).length;
+    const rep=s.hist.filter(h=>norm(h.c)==='r').length;
+    const unresC=getUnresolvedTriggers(s.hist).length;
     const pills=s.hist.map(h=>{
       const n=norm(h.c);
       const lbl=n==='em'?'·':((h.c||'').toUpperCase().slice(0,2)||'·');
@@ -636,7 +673,12 @@ function renderTeacherPanel(t){
       <td>${tag}</td>
       <td><span style="font-size:10px;color:var(--t3)">${a.reason&&a.reason!=='dispensado'?a.reason:'—'}</span></td>
       <td>${dismissBtn}</td>
-      <td><div style="display:flex;align-items:center;gap:5px"><span style="font:700 12px var(--fm);color:var(--g)">${okc}</span><span style="font:10px var(--fm);color:var(--t4)">ok</span><span style="font:700 12px var(--fm);color:var(--r)">${nc}</span><span style="font:10px var(--fm);color:var(--t4)">nc</span></div></td>
+      <td><div style="display:flex;align-items:center;gap:5px">
+        <span style="font:700 12px var(--fm);color:var(--g)">${okc}</span><span style="font:10px var(--fm);color:var(--t4)">ok</span>
+        <span style="font:700 12px var(--fm);color:var(--r)">${nc}</span><span style="font:10px var(--fm);color:var(--t4)">cp/nc</span>
+        ${rep>0?`<span style="font:700 12px var(--fm);color:var(--b)">${rep}</span><span style="font:10px var(--fm);color:var(--t4)">rep</span>`:''}
+        ${unresC>0?`<span style="font:700 10px var(--fm);color:var(--r);background:rgba(255,77,109,.1);padding:1px 5px;border-radius:3px;border:1px solid var(--r2)">${unresC}✗</span>`:''}
+      </div></td>
       <td><div class="hrow">${pills}</div></td>
       <td onclick="event.stopPropagation()"><button class="del-btn" onclick="confirmDeleteStudent('${t.name}','${s.n.replace(/'/g,"\\'")}',event)" title="Remover aluno">✕</button></td>
     </tr>`;
@@ -704,18 +746,31 @@ function openStudDetail(tName,sName){
     :a.lv==='warn'
     ?`<div style="background:var(--yd);border:1px solid #664d00;border-radius:8px;padding:12px;margin-bottom:12px"><div style="font:700 11px var(--fm);color:var(--y);margin-bottom:4px">🟡 ATENÇÃO — Monitorar</div><div style="font-size:11px">${a.reason}</div></div>`
     :`<div style="background:var(--gd);border:1px solid var(--g3);border-radius:8px;padding:10px;margin-bottom:12px;font:700 11px var(--fm);color:var(--g)">✓ Aluno em dia</div>`;
-  const histRows=s.hist.filter(h=>h.c).map(h=>`<tr>
+  const histRows=s.hist.filter(h=>h.c).map((h,i,arr)=>{
+    const nc=norm(h.c);
+    const isTriggered=isTrig(h.c);
+    const nextCode=arr[i+1]?norm(arr[i+1].c):null;
+    const wasResolved=isTriggered&&nextCode==='r';
+    const statusTxt=nc==='r'?'✓ Reposição (aula dada)':
+      wasResolved?'↩ CP/NC — reposto':
+      isTriggered?'⚠ Precisa repor':
+      nc==='ok'?'✓ OK':'—';
+    const statusColor=nc==='r'?'var(--b)':wasResolved?'var(--y)':isTriggered?'var(--r)':nc==='ok'?'var(--g)':'var(--t3)';
+    return`<tr>
     <td class="mo">${h.d||'—'}</td>
     <td class="mo">${MN[h.m]||'?'}</td>
-    <td><span class="hp ${norm(h.c)}" style="width:auto;padding:2px 8px;border-radius:5px">${(h.c||'—').toUpperCase()}</span></td>
-    <td><span style="font-size:11px;color:${isTrig(h.c)?'var(--r)':norm(h.c)==='ok'||norm(h.c)==='r'?'var(--g)':'var(--t3)'}">${isTrig(h.c)?'⚠ Precisa repor':norm(h.c)==='ok'||norm(h.c)==='r'?'✓ OK':'—'}</span></td>
-  </tr>`).join('');
+    <td><span class="hp ${nc}" style="width:auto;padding:2px 8px;border-radius:5px">${(h.c||'—').toUpperCase()}</span></td>
+    <td><span style="font-size:11px;color:${statusColor}">${statusTxt}</span></td>
+  </tr>`;}).join('');
+  const repCount=s.hist.filter(h=>norm(h.c)==='r').length;
+  const unresolved=getUnresolvedTriggers(s.hist).length;
   document.getElementById('sm-t').textContent=`${s.n} · ${s.cod}`;
   document.getElementById('sm-b').innerHTML=`
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px">
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px">
       <div style="background:var(--ink3);border-radius:8px;padding:10px;text-align:center"><div style="font:700 20px var(--fm);color:var(--g)">${s.hist.filter(h=>['ok','r'].includes(norm(h.c))).length}</div><div style="font:10px var(--fm);color:var(--t3);text-transform:uppercase">Aulas OK</div></div>
       <div style="background:var(--ink3);border-radius:8px;padding:10px;text-align:center"><div style="font:700 20px var(--fm);color:var(--r)">${s.hist.filter(h=>isTrig(h.c)).length}</div><div style="font:10px var(--fm);color:var(--t3);text-transform:uppercase">CP/NC</div></div>
-      <div style="background:var(--ink3);border-radius:8px;padding:10px;text-align:center"><div style="font:700 20px var(--fm);color:var(--y)">${s.hist.filter(h=>norm(h.c)==='ca').length}</div><div style="font:10px var(--fm);color:var(--t3);text-transform:uppercase">Cancel.</div></div>
+      <div style="background:var(--ink3);border-radius:8px;padding:10px;text-align:center"><div style="font:700 20px var(--fm);color:var(--b)">${repCount}</div><div style="font:10px var(--fm);color:var(--t3);text-transform:uppercase">Repostos</div></div>
+      <div style="background:${unresolved>0?'rgba(255,77,109,.08)':'var(--ink3)'};border:1px solid ${unresolved>0?'var(--r2)':'transparent'};border-radius:8px;padding:10px;text-align:center"><div style="font:700 20px var(--fm);color:${unresolved>0?'var(--r)':'var(--t3)'}">${unresolved}</div><div style="font:10px var(--fm);color:var(--t3);text-transform:uppercase">Pendente Rep.</div></div>
     </div>
     ${alertBox}
     <div style="font:700 11px var(--fm);color:var(--t2);text-transform:uppercase;margin-bottom:7px">Histórico de Aulas</div>
