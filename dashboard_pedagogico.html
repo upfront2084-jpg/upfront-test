@@ -49,6 +49,25 @@ body{background:var(--ink);color:var(--t1);font-family:var(--f);line-height:1.5;
 .icon-btn{padding:5px 12px;border-radius:var(--r1);border:1px solid var(--line2);background:var(--ink3);color:var(--t2);font:500 11px var(--f);cursor:pointer;transition:all .12s}
 .icon-btn:hover{background:var(--ink4);color:var(--t1)}
 
+/* PAUSADOS */
+.paused-section{background:var(--ink2);border:1px solid var(--line);border-radius:var(--r2);margin-bottom:11px;overflow:hidden}
+.paused-section-h{padding:14px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}
+.paused-section-av{width:32px;height:32px;border-radius:8px;background:var(--ink4);display:flex;align-items:center;justify-content:center;font:700 11px var(--f);color:var(--t2);flex-shrink:0}
+.paused-section-name{font:700 13px var(--f);color:var(--t1)}
+.paused-section-cnt{font:400 10px var(--fm);color:var(--t3)}
+.paused-card{display:flex;align-items:center;gap:12px;padding:11px 18px;border-bottom:1px solid var(--line);transition:background .1s;cursor:pointer}
+.paused-card:hover{background:var(--ink3)}
+.paused-card:last-child{border-bottom:none}
+.paused-av{width:34px;height:34px;border-radius:8px;background:var(--ink4);border:1px solid var(--line2);display:flex;align-items:center;justify-content:center;font:700 11px var(--f);color:var(--t3);flex-shrink:0}
+.paused-info{flex:1}
+.paused-name{font:600 12px var(--f);color:var(--t2)}
+.paused-cod{font:400 9px var(--fm);color:var(--t3)}
+.paused-teacher{font:500 10px var(--f);color:var(--t3)}
+.paused-hist{display:flex;gap:3px;flex-wrap:wrap}
+.reativar-btn{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:99px;border:1px solid var(--g3);background:var(--gd);color:var(--g2);font:600 9px var(--fm);cursor:pointer;transition:all .12s;white-space:nowrap}
+.reativar-btn:hover{background:rgba(0,229,160,.12);color:var(--g)}
+.paused-empty{text-align:center;padding:40px;color:var(--t3);font:11px var(--fm)}
+
 /* PERIOD FILTER */
 .pf-bar{display:flex;align-items:center;gap:6px;padding:10px 22px;background:var(--ink2);border-bottom:1px solid var(--line)}
 .pf-lbl{font:600 9px var(--fm);color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-right:2px}
@@ -264,11 +283,17 @@ tbody tr.rwn td{background:rgba(255,190,0,.03)}
   <button class="tab on" id="tab-all" onclick="goPanel('all',this)">
     Todos <span class="tcnt ok" id="cnt-all">0</span>
   </button>
+  <button class="tab" id="tab-pausados" onclick="goPanel('pausados',this)">
+    ⏸ Pausados <span class="tcnt" id="cnt-pausados" style="background:rgba(110,135,176,.15);color:var(--t2)">0</span>
+  </button>
 </div>
 
 <div class="content">
   <div class="panel on" id="panel-all">
     <div class="tgrid" id="all-grid"></div>
+  </div>
+  <div class="panel" id="panel-pausados">
+    <div id="pausados-content"></div>
   </div>
   <div id="teacher-panels"></div>
 </div>
@@ -423,11 +448,16 @@ async function loadData() {
       name: tName,
       id: SHEET_IDS[tName] || '',
       students: students.map(function(s) {
+        // Detecta pausado: nome da aba contém "(paused)" — já vem no campo name com "(paused)" removido
+        // Mas o Apps Script pode não informar — usamos heurística: aluno sem aulas recentes (mês 6+) = pausado
+        const isPaused = (s.name||'').toLowerCase().includes('paused') ||
+                         (s.code||'').toLowerCase().includes('paused');
+        const cleanName = (s.name||s.code||'?').replace(/\s*\(paused\)\s*/gi,'').trim();
         return {
-          n: s.name || s.code || '?',
+          n: cleanName || s.code || '?',
           cod: s.code || '',
           plan: (s.code||'').startsWith('GRU') ? 'Grupo' : (s.code||'').startsWith('KID') ? 'KIDS' : 'VIP',
-          st: 'Ativo',
+          st: isPaused ? 'Pausado' : 'Ativo',
           hist: (s.classes||[]).filter(function(c){ return c.status && c.status.trim(); }).map(function(c){
             return { c: c.status.toUpperCase(), d: c.date||'', m: c.month||0 };
           })
@@ -528,6 +558,8 @@ function renderAll() {
   renderAllCards();
   updateTabCounts();
   TEACHERS.forEach(function(t){ renderTeacherPanel(t); });
+  renderPausados();
+  updatePausadosCount();
 }
 
 function renderKPI(total, alerts, warns) {
@@ -550,6 +582,130 @@ function renderBanner(n) {
     document.getElementById('ab-desc').textContent = '2+ CP/NC consecutivos ou no mesmo mês';
     document.getElementById('ab-c').textContent = n;
   } else b.classList.add('hidden');
+}
+
+function updatePausadosCount() {
+  const total = TEACHERS.reduce(function(a,t){
+    return a + t.students.filter(function(s){ return s.st==='Pausado'; }).length;
+  }, 0);
+  const el = document.getElementById('cnt-pausados');
+  if (el) el.textContent = total;
+}
+
+function reativarAluno(tName, sName) {
+  const t = TEACHERS.find(function(x){ return x.name===tName; });
+  if (!t) return;
+  const s = t.students.find(function(x){ return x.n===sName; });
+  if (!s) return;
+  s.st = 'Ativo';
+  renderAll();
+  toast('✓ '+sName+' reativado');
+}
+
+function renderPausados() {
+  const wrap = document.getElementById('pausados-content');
+  if (!wrap) return;
+
+  // Agrupa pausados por professor
+  const byTeacher = [];
+  TEACHERS.forEach(function(t) {
+    const paused = t.students.filter(function(s){ return s.st==='Pausado'; });
+    if (paused.length > 0) byTeacher.push({ teacher: t, students: paused });
+  });
+
+  if (!byTeacher.length) {
+    wrap.innerHTML = '<div class="paused-empty">⏸ Nenhum aluno pausado no momento</div>';
+    return;
+  }
+
+  // Banner informativo
+  const total = byTeacher.reduce(function(a,g){ return a+g.students.length; }, 0);
+  wrap.innerHTML =
+    '<div style="background:rgba(110,135,176,.06);border:1px solid var(--line2);border-radius:var(--r2);padding:13px 18px;margin-bottom:14px;display:flex;align-items:center;gap:10px">'+
+      '<span style="font-size:20px">⏸</span>'+
+      '<div>'+
+        '<div style="font:700 13px var(--f);color:var(--t1)">'+total+' aluno'+(total!==1?'s':'')+' pausado'+(total!==1?'s':'')+' — Futuros Contatos</div>'+
+        '<div style="font:400 10px var(--fm);color:var(--t3);margin-top:2px">Alunos que pausaram as aulas. Clique em Reativar para mover de volta ao painel do professor.</div>'+
+      '</div>'+
+    '</div>'+
+    byTeacher.map(function(g) {
+      const t = g.teacher;
+      const rows = g.students.map(function(s) {
+        const lastClass = s.hist.length ? s.hist[s.hist.length-1] : null;
+        const lastInfo = lastClass
+          ? '<span style="font:400 10px var(--fm);color:var(--t3)">Última aula: '+
+            (lastClass.d||MN[lastClass.m]||'—')+' ('+MN[lastClass.m]||'?'+')</span>'
+          : '<span style="font:400 10px var(--fm);color:var(--t4)">Sem histórico</span>';
+        const pills = s.hist.slice(-12).map(function(h) {
+          const n = norm(h.c); const lbl = n==='em'?'·':((h.c||'').toUpperCase().slice(0,2)||'·');
+          return '<div class="hp '+n+'" title="'+(h.d||'—')+' — '+(h.c||'')+'">'+lbl+'</div>';
+        }).join('');
+        const initials = s.n.split(' ').map(function(w){ return w[0]||''; }).slice(0,2).join('').toUpperCase();
+        return '<div class="paused-card" onclick="openStudDetailPaused(''+t.name+'',''+s.n.replace(/'/g,"\'")+'')">'+
+          '<div class="paused-av">'+initials+'</div>'+
+          '<div class="paused-info">'+
+            '<div class="paused-name">'+s.n+'</div>'+
+            '<div class="paused-cod">'+s.cod+' · '+s.plan+'</div>'+
+          '</div>'+
+          '<div style="flex:1">'+
+            '<div class="paused-hist">'+pills+'</div>'+
+            '<div style="margin-top:4px">'+lastInfo+'</div>'+
+          '</div>'+
+          '<div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end">'+
+            '<button class="reativar-btn" onclick="event.stopPropagation();reativarAluno(''+t.name+'',''+s.n.replace(/'/g,"\'")+'')">▶ Reativar</button>'+
+            '<button class="del-btn" onclick="event.stopPropagation();confirmDeleteStudent(''+t.name+'',''+s.n.replace(/'/g,"\'")+'',event)" title="Remover aluno">✕</button>'+
+          '</div>'+
+        '</div>';
+      }).join('');
+
+      return '<div class="paused-section">'+
+        '<div class="paused-section-h">'+
+          '<div class="paused-section-av">'+t.name.slice(0,2).toUpperCase()+'</div>'+
+          '<div>'+
+            '<div class="paused-section-name">'+t.name+'</div>'+
+            '<div class="paused-section-cnt">'+g.students.length+' aluno'+(g.students.length!==1?'s':'')+' pausado'+(g.students.length!==1?'s':'')+'</div>'+
+          '</div>'+
+          (t.id?'<a href="https://docs.google.com/spreadsheets/d/'+t.id+'" target="_blank" style="margin-left:auto;font:600 10px var(--fm);color:var(--g2);text-decoration:none;padding:4px 10px;border-radius:6px;border:1px solid var(--g3);background:var(--gd)">↗ Planilha</a>':'')+
+        '</div>'+
+        rows+
+      '</div>';
+    }).join('');
+}
+
+function openStudDetailPaused(tName, sName) {
+  // Reutiliza o modal existente mas com opção de reativar
+  const t = TEACHERS.find(function(x){ return x.name===tName; });
+  if (!t) return;
+  const s = t.students.find(function(x){ return x.n===sName; });
+  if (!s) return;
+  const histRows = s.hist.filter(function(h){ return h.c; }).map(function(h,i,arr) {
+    const nc = norm(h.c);
+    return '<tr><td class="mo">'+(h.d||'—')+'</td><td class="mo">'+(MN[h.m]||'?')+'</td>'+
+      '<td><span class="hp '+nc+'" style="width:auto;padding:2px 8px;border-radius:5px">'+((h.c||'—').toUpperCase())+'</span></td>'+
+      '<td><span style="font-size:11px;color:var(--t3)">—</span></td></tr>';
+  }).join('');
+  const okc = s.hist.filter(function(h){ return ['ok','r'].includes(norm(h.c)); }).length;
+  const nc  = s.hist.filter(function(h){ return isTrig(h.c); }).length;
+  document.getElementById('sm-t').textContent = s.n + ' · ' + s.cod + ' · ⏸ Pausado';
+  document.getElementById('sm-b').innerHTML =
+    '<div style="background:rgba(110,135,176,.08);border:1px solid var(--line2);border-radius:8px;padding:12px;margin-bottom:12px">'+
+      '<div style="font:700 11px var(--fm);color:var(--t2);margin-bottom:4px">⏸ ALUNO PAUSADO — Futuro Contato</div>'+
+      '<div style="font-size:11px;color:var(--t3)">Professor: '+tName+' · Plano: '+s.plan+'</div>'+
+    '</div>'+
+    '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px">'+
+      '<div style="background:var(--ink3);border-radius:8px;padding:10px;text-align:center"><div style="font:700 20px var(--fm);color:var(--g)">'+okc+'</div><div style="font:10px var(--fm);color:var(--t3);text-transform:uppercase">Aulas OK</div></div>'+
+      '<div style="background:var(--ink3);border-radius:8px;padding:10px;text-align:center"><div style="font:700 20px var(--fm);color:var(--r)">'+nc+'</div><div style="font:10px var(--fm);color:var(--t3);text-transform:uppercase">CP/NC</div></div>'+
+      '<div style="background:var(--ink3);border-radius:8px;padding:10px;text-align:center"><div style="font:700 20px var(--fm);color:var(--t2)">'+s.hist.length+'</div><div style="font:10px var(--fm);color:var(--t3);text-transform:uppercase">Total Aulas</div></div>'+
+    '</div>'+
+    '<div style="font:700 11px var(--fm);color:var(--t2);text-transform:uppercase;margin-bottom:7px">Histórico Completo</div>'+
+    '<div style="overflow-x:auto"><table><thead><tr><th>Data</th><th>Mês</th><th>Código</th><th>Obs.</th></tr></thead>'+
+    '<tbody>'+(histRows||'<tr><td colspan="4" class="empty">Sem histórico</td></tr>')+'</tbody></table></div>'+
+    '<div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">'+
+      '<button onclick="reativarAluno(''+tName+'',''+sName.replace(/'/g,"\'")+'');closeModal('stud')" class="btn btn-p">▶ Reativar Aluno</button>'+
+      '<button onclick="closeModal('stud')" class="btn btn-g">Fechar</button>'+
+      (t.id?'<a href="https://docs.google.com/spreadsheets/d/'+t.id+'" target="_blank" class="btn" style="background:var(--gd);color:var(--g);border:1px solid var(--g3);text-decoration:none">↗ Ver planilha</a>':'')+
+    '</div>';
+  openModal('stud');
 }
 
 function buildTabs() {
@@ -663,7 +819,8 @@ function renderTeacherPanel(t) {
     '</tr>';
   }).join('');
 
-  const pausedRow = paused.length ? '<div class="paused-row"><span class="prl">Pausados</span>'+paused.map(function(s){ return '<span class="bk bx">'+s.n+'</span>'; }).join('')+'</div>' : '';
+  // Pausados movidos para o painel dedicado — não mostrar inline
+  const pausedRow = '';
 
   panel.innerHTML =
     '<div class="ph">'+
