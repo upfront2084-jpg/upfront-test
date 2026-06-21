@@ -424,7 +424,7 @@ function parseSheetStudents(ss, teacher) {
 
 <script>
 // ── STATE ────────────────────────────────────────────
-var APPS_URL='', MODE='demo', DB={teachers:{},updated:''}, ALF='all';
+var APPS_URL='https://script.google.com/macros/s/AKfycbxs02Vs_D9NPdy-KTyU8g2QZD9SEdOtrc7MB_-lZTGPmnsfWWwFfFym2N9WE0HANm2J/exec', MODE='live', DB={teachers:{},updated:''}, ALF='all';
 var MONTHS=['','Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 
 // ── ALERT LOGIC ──────────────────────────────────────
@@ -987,9 +987,20 @@ function toast(msg, type){
   setTimeout(function(){el.remove();},3500);
 }
 
-// ── INIT ──────────────────────────────────────────────
+
+
+
+
+// ── INIT: auto-lança em modo live ─────────────────────
 (function(){
-  try{var s=localStorage.getItem('uf_apps_url');if(s)document.getElementById('setup-url').value=s;}catch(e){}
+  document.getElementById('setup').style.display='none';
+  document.getElementById('loading').style.display='flex';
+  fetchData().then(launch).catch(function(){
+    MODE='demo'; buildDemo();
+    document.getElementById('loading').style.display='none';
+    launch();
+    toast('Erro ao conectar — exibindo dados demo','warn');
+  });
 })();
 </script>
 </body>
