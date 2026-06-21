@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UpFront · Dashboard Pedagógico</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0e1a;--bg2:#111627;--bg3:#181f30;--bg4:#1e2840;--bg5:#253050;
+  --border:#1e2d4a;--border2:#263655;
+  --g1:#00e5a0;--g2:#00b87a;--g4:#003d28;--g5:#001f14;
+  --r1:#ff4d6d;--r2:#cc1f40;--r5:#1a0009;
+  --y1:#ffc947;--y2:#cc9a00;--y5:#1a1200;
+  --b1:#5599ff;--b2:#2266cc;--b5:#001033;
+  --o1:#ff8c42;--o2:#cc5f00;--o5:#1a0e00;
+  --p1:#b06aff;--p2:#7733cc;--p5:#1a0033;
+  --t1:#e8eeff;--t2:#8ea3cc;--t3:#4a5f88;--t4:#2a3a55;
+  --mono:'JetBrains Mono',monospace;--sans:'Inter',sans-serif;
+  --r:8px;--r2:12px;--r3:18px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:14px}
+body{background:var(--bg);color:var(--t1);font-family:var(--sans);min-height:100vh;overflow-x:hidden}
+
+/* SETUP */
+#setup{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:999;padding:20px}
+.setup-box{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r3);padding:32px;width:100%;max-width:580px;box-shadow:0 24px 80px rgba(0,0,0,.7)}
+.setup-logo{display:flex;align-items:center;gap:12px;margin-bottom:24px}
+.logo-mark{width:42px;height:42px;border-radius:11px;background:linear-gradient(135deg,var(--g1),var(--g2));display:flex;align-items:center;justify-content:center}
+.logo-mark svg{width:22px;height:22px;stroke:#000;fill:none;stroke-width:2.2}
+.logo-name{font-size:17px;font-weight:700;color:var(--t1)}
+.logo-sub{font-size:10px;color:var(--t3);font-family:var(--mono)}
+.setup-title{font-size:22px;font-weight:700;margin-bottom:6px}
+.setup-desc{font-size:12px;color:var(--t2);line-height:1.7;margin-bottom:20px}
+.step{display:flex;gap:10px;padding:12px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);margin-bottom:8px}
+.step-n{width:22px;height:22px;border-radius:50%;background:var(--g5);border:1px solid var(--g4);color:var(--g1);font:700 10px var(--mono);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.step-body{font-size:12px;color:var(--t2);line-height:1.6}
+.step-body strong{color:var(--t1)}
+.code-block{background:var(--bg);border:1px solid var(--border2);border-radius:var(--r);padding:12px 14px;font:11px/1.7 var(--mono);color:var(--g2);overflow-x:auto;white-space:pre;margin:10px 0;max-height:220px;overflow-y:auto}
+.url-input{width:100%;padding:10px 13px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);color:var(--t1);font:12px var(--mono);outline:none;margin:10px 0;transition:border-color .15s}
+.url-input:focus{border-color:var(--g2)}
+.url-input::placeholder{color:var(--t4)}
+.setup-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.setup-note{margin-top:12px;font-size:10px;color:var(--t3);line-height:1.6}
+.setup-note code{color:var(--t2);font-family:var(--mono)}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:5px;padding:8px 16px;border-radius:var(--r);border:none;cursor:pointer;font:600 12px var(--sans);transition:all .12s;white-space:nowrap}
+.btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2}
+.btn-p{background:var(--g1);color:#000}.btn-p:hover{background:var(--g2)}
+.btn-g{background:var(--bg4);color:var(--t2);border:1px solid var(--border2)}.btn-g:hover{background:var(--bg5);color:var(--t1)}
+
+/* APP */
+#app{display:none;flex-direction:column;min-height:100vh}
+
+/* TOPBAR */
+.topbar{height:56px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 20px;flex-shrink:0;position:sticky;top:0;z-index:100}
+.tb-left{display:flex;align-items:center;gap:14px}
+.tb-logo{display:flex;align-items:center;gap:8px}
+.tb-mark{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--g1),var(--g2));display:flex;align-items:center;justify-content:center}
+.tb-mark svg{width:16px;height:16px;stroke:#000;fill:none;stroke-width:2.2}
+.tb-name{font-size:14px;font-weight:700}
+.tb-badge{font:500 10px var(--mono);padding:2px 8px;border-radius:99px;background:var(--g5);color:var(--g2);border:1px solid var(--g4)}
+.tb-right{display:flex;align-items:center;gap:8px}
+.sync-btn{display:flex;align-items:center;gap:6px;font:500 10px var(--mono);color:var(--t3);cursor:pointer;padding:5px 10px;border-radius:99px;border:1px solid var(--border);background:var(--bg3);transition:all .15s}
+.sync-btn:hover{border-color:var(--border2);color:var(--t2)}
+.sync-btn.syncing{color:var(--y1);border-color:var(--y2);background:var(--y5)}
+.sync-btn.error{color:var(--r1);border-color:var(--r2);background:var(--r5)}
+.sdot{width:6px;height:6px;border-radius:50%;background:var(--g1);flex-shrink:0}
+.sync-btn.syncing .sdot{background:var(--y1);animation:pulse 1s infinite}
+.sync-btn.error .sdot{background:var(--r1)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.2}}
+
+/* NAVTABS */
+.navtabs{background:var(--bg2);border-bottom:1px solid var(--border);display:flex;padding:0 20px;gap:2px;overflow-x:auto}
+.navtabs::-webkit-scrollbar{display:none}
+.ntab{padding:12px 16px;font:500 12px var(--sans);color:var(--t3);cursor:pointer;border:none;border-bottom:2px solid transparent;background:none;white-space:nowrap;transition:all .12s;display:flex;align-items:center;gap:6px}
+.ntab:hover{color:var(--t1)}.ntab.on{color:var(--g1);border-bottom-color:var(--g1)}
+.ntab-badge{font:600 9px var(--mono);padding:1px 5px;border-radius:99px;background:var(--r5);color:var(--r1);border:1px solid var(--r2);display:none}
+.ntab-badge.v{display:inline}
+
+/* FILTERBAR */
+.filterbar{padding:10px 20px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.fsel{padding:6px 11px;border-radius:var(--r);border:1px solid var(--border);background:var(--bg3);color:var(--t1);font:12px var(--sans);outline:none;cursor:pointer;transition:border-color .15s}
+.fsel:focus{border-color:var(--g2)}
+.fsel option{background:var(--bg2)}
+.fsearch{padding:6px 11px;border-radius:var(--r);border:1px solid var(--border);background:var(--bg3);color:var(--t1);font:12px var(--sans);outline:none;width:200px;transition:border-color .15s}
+.fsearch:focus{border-color:var(--g2)}
+.fsearch::placeholder{color:var(--t4)}
+.fchip{padding:5px 12px;border-radius:99px;border:1px solid var(--border);background:var(--bg3);color:var(--t3);font:500 11px var(--sans);cursor:pointer;transition:all .12s}
+.fchip:hover,.fchip.on{background:var(--g5);color:var(--g1);border-color:var(--g4)}
+.fchip.cr{background:var(--r5);color:var(--r1);border-color:var(--r2)}
+.fchip.wa{background:var(--o5);color:var(--o1);border-color:var(--o2)}
+.fchip.ok{background:var(--g5);color:var(--g1);border-color:var(--g4)}
+.fsep{width:1px;height:20px;background:var(--border);flex-shrink:0}
+
+/* CONTENT */
+.content{padding:20px;flex:1}
+.panel{display:none}.panel.on{display:block}
+
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:10px;margin-bottom:20px}
+.sc{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:16px;position:relative;overflow:hidden;transition:transform .15s,box-shadow .15s}
+.sc:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,0,0,.5)}
+.sc::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:2px 2px 0 0}
+.sc.g::after{background:linear-gradient(90deg,var(--g1),var(--g2))}.sc.r::after{background:linear-gradient(90deg,var(--r1),var(--r2))}.sc.o::after{background:linear-gradient(90deg,var(--o1),var(--o2))}.sc.y::after{background:linear-gradient(90deg,var(--y1),var(--y2))}.sc.b::after{background:linear-gradient(90deg,var(--b1),var(--b2))}.sc.p::after{background:linear-gradient(90deg,var(--p1),var(--p2))}
+.sc-lb{font:500 9px var(--mono);color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.sc-val{font:700 24px var(--mono);line-height:1;margin-bottom:3px}
+.sc.g .sc-val{color:var(--g1)}.sc.r .sc-val{color:var(--r1)}.sc.o .sc-val{color:var(--o1)}.sc.y .sc-val{color:var(--y1)}.sc.b .sc-val{color:var(--b1)}.sc.p .sc-val{color:var(--p1)}
+.sc-sub{font-size:10px;color:var(--t3)}
+
+/* TCARD */
+.tcard{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;margin-bottom:16px}
+.tcard-h{padding:13px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.tcard-title{font:600 13px var(--sans);color:var(--t1)}
+.tcard-sub{font:400 10px var(--mono);color:var(--t3)}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{text-align:left;padding:9px 14px;font:600 9px var(--mono);color:var(--t3);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border);background:var(--bg3);white-space:nowrap}
+td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:middle;color:var(--t1)}
+tr:last-child td{border-bottom:none}
+tbody tr{transition:background .1s}
+tbody tr:hover td{background:var(--bg3)}
+.tm{font-family:var(--mono);color:var(--t2)}.tn{font-weight:600}.tc2{font:500 10px var(--mono);color:var(--t3)}
+
+/* BADGES */
+.bk{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:4px;font:600 9px var(--mono);white-space:nowrap}
+.bk::before{content:'';width:4px;height:4px;border-radius:50%;flex-shrink:0}
+.bg2{background:var(--g5);color:var(--g1);border:1px solid var(--g4)}.bg2::before{background:var(--g1)}
+.br2{background:var(--r5);color:var(--r1);border:1px solid var(--r2)}.br2::before{background:var(--r1)}
+.by2{background:var(--y5);color:var(--y1);border:1px solid var(--y2)}.by2::before{background:var(--y1)}
+.bo2{background:var(--o5);color:var(--o1);border:1px solid var(--o2)}.bo2::before{background:var(--o1)}
+.bb2{background:var(--b5);color:var(--b1);border:1px solid var(--b2)}.bb2::before{background:var(--b1)}
+.bx2{background:var(--bg4);color:var(--t3);border:1px solid var(--border2)}.bx2::before{background:var(--t3)}
+
+/* ALERT DOT */
+.adot{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font:700 12px var(--sans);flex-shrink:0}
+.ad0{background:var(--g5);color:var(--g1);border:1px solid var(--g4)}
+.ad1{background:var(--o5);color:var(--o1);border:1px solid var(--o2)}
+.ad2{background:var(--r5);color:var(--r1);border:1px solid var(--r2)}
+
+/* ALERT ITEM */
+.ai{display:flex;align-items:center;gap:10px;padding:11px 18px;border-bottom:1px solid var(--border);transition:background .1s}
+.ai:last-child{border-bottom:none}.ai:hover{background:var(--bg3)}
+.ai.sev2{border-left:3px solid var(--r2)}.ai.sev1{border-left:3px solid var(--o2)}
+.ai-info{flex:1}
+.ai-name{font:600 12px var(--sans);color:var(--t1);margin-bottom:2px}
+.ai-detail{font:400 10px var(--mono);color:var(--t3)}
+.ai-teacher{font:500 10px var(--sans);color:var(--t2)}
+.ai-tag{font:600 9px var(--mono);padding:2px 7px;border-radius:4px;white-space:nowrap;flex-shrink:0}
+.tg-r{background:var(--r5);color:var(--r1);border:1px solid var(--r2)}
+.tg-o{background:var(--o5);color:var(--o1);border:1px solid var(--o2)}
+.tg-g{background:var(--g5);color:var(--g1);border:1px solid var(--g4)}
+
+/* TEACHER CARDS */
+.tcgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-bottom:20px}
+.tccard{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:16px;transition:transform .15s,box-shadow .15s}
+.tccard:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.5)}
+.tcc-h{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.tcc-av{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--g4),var(--g5));display:flex;align-items:center;justify-content:center;font:700 13px var(--sans);color:var(--g1);flex-shrink:0}
+.tcc-name{font:700 13px var(--sans);color:var(--t1)}
+.tcc-cnt{font:400 10px var(--mono);color:var(--t3)}
+.tcc-row{display:flex;justify-content:space-between;font-size:11px;color:var(--t2);margin-bottom:5px}
+.tcc-v{font-family:var(--mono)}
+.tcc-bar{margin-top:12px;display:flex;gap:6px}
+.tcc-pill{flex:1;text-align:center;padding:4px 6px;border-radius:var(--r);font:600 10px var(--mono)}
+.tp-r{background:var(--r5);color:var(--r1);border:1px solid var(--r2)}
+.tp-o{background:var(--o5);color:var(--o1);border:1px solid var(--o2)}
+.tp-g{background:var(--g5);color:var(--g1);border:1px solid var(--g4)}
+
+/* OV GRID */
+.ov-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+
+/* EMPTY */
+.empty{text-align:center;padding:36px;color:var(--t3);font:12px var(--mono)}
+
+/* TOAST */
+.toast{position:fixed;bottom:22px;right:22px;background:var(--bg2);border:1px solid var(--border2);border-left:3px solid var(--g1);padding:10px 16px;border-radius:var(--r);font:12px var(--sans);color:var(--t1);box-shadow:0 4px 24px rgba(0,0,0,.6);z-index:9999;animation:su .2s ease}
+.toast.err{border-left-color:var(--r1)}.toast.warn{border-left-color:var(--y1)}
+@keyframes su{from{transform:translateY(10px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+/* LOADING */
+#loading{position:fixed;inset:0;background:var(--bg);display:none;flex-direction:column;align-items:center;justify-content:center;z-index:500;gap:16px}
+.ring{width:40px;height:40px;border-radius:50%;border:3px solid var(--bg4);border-top-color:var(--g1);animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ring-txt{font:12px var(--mono);color:var(--t3)}
+
+@media(max-width:640px){.stats-row{grid-template-columns:1fr 1fr}.tcgrid{grid-template-columns:1fr}.ov-grid{grid-template-columns:1fr}.fsearch{width:100%}}
+</style>
+</head>
+<body>
+
+<!-- SETUP -->
+<div id="setup">
+<div class="setup-box">
+  <div class="setup-logo">
+    <div class="logo-mark"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
+    <div><div class="logo-name">UpFront Idiomas</div><div class="logo-sub">Dashboard Pedagógico · 2026</div></div>
+  </div>
+  <div class="setup-title">Conectar aos Control Sheets</div>
+  <div class="setup-desc">Publique um Apps Script que leia os control sheets de todos os professores e retorne JSON. Siga os passos abaixo.</div>
+
+  <div class="step"><div class="step-n">1</div><div class="step-body">Abra qualquer planilha → <strong>Extensões → Apps Script</strong>. Cole o script abaixo e salve com <strong>Ctrl+S</strong>.</div></div>
+  <div class="code-block">const SHEET_IDS = {
+  'Alesson':  '1oqVLjEERQk9VVvK7G7pz4OlQHfE3NmqOCQf0M9ZUVMI',
+  'Angie':    '1tfPDgsKygQy_cE_RKfjALUBqZtbVTOj-Tbwl_C6vC5c',
+  'Eliza':    '1GgmPfRHaVoS9EiSLt8kvMUBDgDk2upi9LY9sHQEgsNo',
+  'Flávia':   '1Y2m6-2l-DEnZzxJ3iE7v1033tE02jldkjKVwycm6RK8',
+  'Gabriela': '1XXdbvagMUoCjHjAZmJD9iz6Rh9XtvrV18WEzYWDzUPM',
+  'Gabes':    '1Rhk8pcvTFxtOduGFEgBpA3GtR8V1Lh92kDDFYg1mEY0',
+  'Juliana':  '1EW5niOgx5VAZSqlb46v-UlzRl3ewTjsmIhD5xknA0eE',
+  'Laura':    '1XNHgIKalR7-IDDWia8WpQEmbCUlr-Er2AR4ugvBoBg4',
+  'Patricia': '1ZNDyNV4JyooZCnKqeloop_GNZGGmzR0ZF011BRZqaCs',
+  'Samu':     '1RIj9z-c0e6NWdSaX2SevN-jDoJruPknoBqTC2J-KKBo'
+};
+
+function doGet() {
+  const out = { teachers:{}, updated: new Date().toISOString() };
+  for (const [name, id] of Object.entries(SHEET_IDS)) {
+    try {
+      const ss = SpreadsheetApp.openById(id);
+      out.teachers[name] = parseSheetStudents(ss, name);
+    } catch(e) { out.teachers[name] = []; }
+  }
+  return ContentService.createTextOutput(JSON.stringify(out))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function parseSheetStudents(ss, teacher) {
+  const students = [];
+  ss.getSheets().forEach(sheet => {
+    const rows = sheet.getDataRange().getValues();
+    let cur = null;
+    rows.forEach(row => {
+      const r = row.map(c => String(c||'').trim());
+      // Detecta código VIP/GRU/KID
+      const codeCol = r.findIndex(c => /^(VIP|GRU|KID)\s*-\s*\d+/i.test(c));
+      if (codeCol >= 0) {
+        if (cur) students.push(cur);
+        // Nome geralmente na mesma linha em outra coluna
+        const nameCol = r.findIndex((c,i) => i !== codeCol && c.length > 1
+          && !/^\d+$/.test(c) && !/^(VIP|GRU|cod|aluno|prof)/i.test(c)
+          && i > 4);
+        cur = { teacher, code: r[codeCol],
+          name: nameCol>=0 ? r[nameCol] : '',
+          classes: [], stats:{ok:0,nc:0,ca:0,cp:0,f:0,r:0} };
+        return;
+      }
+      // Linha de aula: col[2] tem status válido e col[1] tem número
+      const st = r[2].toUpperCase();
+      if (cur && /^\d+$/.test(r[1]) &&
+          ['OK','NC','CA','CP','F','R','AB','VC','CF'].includes(st)) {
+        const dateParts = (r[4]||'').split('/');
+        const month = dateParts.length>=2 ? parseInt(dateParts[1])||0 : 0;
+        cur.classes.push({ status:st, month,
+          date:r[4], time:r[5], content:r[6], obs:r[7],
+          teacher: r[3]||teacher });
+        if(st==='OK')cur.stats.ok++;
+        else if(st==='NC')cur.stats.nc++;
+        else if(st==='CA')cur.stats.ca++;
+        else if(st==='CP')cur.stats.cp++;
+        else if(st==='F')cur.stats.f++;
+        else if(st==='R')cur.stats.r++;
+      }
+    });
+    if (cur) students.push(cur);
+  });
+  return students;
+}</div>
+
+  <div class="step"><div class="step-n">2</div><div class="step-body"><strong>Implantar → Nova implantação</strong> → Tipo: <strong>App da Web</strong> → Acesso: <strong>Qualquer pessoa</strong> → <strong>Implantar</strong>.</div></div>
+  <div class="step"><div class="step-n">3</div><div class="step-body">Cole a URL gerada abaixo e clique em <strong>Conectar</strong>.</div></div>
+
+  <input class="url-input" id="setup-url" placeholder="https://script.google.com/macros/s/..." type="url">
+  <div class="setup-actions">
+    <button class="btn btn-p" onclick="doConnect()">
+      <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>Conectar
+    </button>
+    <button class="btn btn-g" onclick="doDemo()">Abrir com dados de demonstração</button>
+  </div>
+  <div class="setup-note"><strong style="color:var(--t2)">Importante:</strong> as planilhas de Juliana e Alesson (<code>gabrielcalmet2@gmail.com</code>) devem estar compartilhadas com a conta do Apps Script.</div>
+</div>
+</div>
+
+<!-- LOADING -->
+<div id="loading">
+  <div class="ring"></div>
+  <div class="ring-txt">Lendo control sheets…</div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="tb-left">
+      <div class="tb-logo">
+        <div class="tb-mark"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
+        <span class="tb-name">UpFront</span>
+      </div>
+      <span class="tb-badge" id="tb-mode">demo</span>
+    </div>
+    <div class="tb-right">
+      <div class="sync-btn" id="sync-btn" onclick="triggerSync()">
+        <div class="sdot"></div><span id="sync-txt">Sincronizado</span>
+      </div>
+      <span style="font:10px var(--mono);color:var(--t4)" id="sync-time"></span>
+    </div>
+  </div>
+
+  <!-- NAVTABS -->
+  <div class="navtabs">
+    <button class="ntab on" onclick="goTab('overview',this)">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+      Visão Geral
+    </button>
+    <button class="ntab" onclick="goTab('alerts',this)">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      Alertas CP/NC <span class="ntab-badge" id="alert-badge">0</span>
+    </button>
+    <button class="ntab" onclick="goTab('students',this)">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+      Alunos
+    </button>
+    <button class="ntab" onclick="goTab('teachers',this)">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/></svg>
+      Professores
+    </button>
+    <button class="ntab" onclick="goTab('classes',this)">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      Histórico
+    </button>
+  </div>
+
+  <!-- FILTERBAR -->
+  <div class="filterbar">
+    <select class="fsel" id="f-teacher" onchange="renderAll()">
+      <option value="">Todos professores</option>
+    </select>
+    <select class="fsel" id="f-month" onchange="renderAll()">
+      <option value="0">Todos os meses</option>
+      <option value="1">Janeiro</option><option value="2">Fevereiro</option>
+      <option value="3">Março</option><option value="4">Abril</option>
+      <option value="5">Maio</option><option value="6">Junho</option>
+      <option value="7">Julho</option><option value="8">Agosto</option>
+      <option value="9">Setembro</option><option value="10">Outubro</option>
+      <option value="11">Novembro</option><option value="12">Dezembro</option>
+    </select>
+    <div class="fsep"></div>
+    <input class="fsearch" id="f-search" placeholder="Buscar aluno…" oninput="renderAll()">
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- OVERVIEW -->
+    <div class="panel on" id="panel-overview">
+      <div class="stats-row" id="ov-stats"></div>
+      <div class="ov-grid">
+        <div class="tcard">
+          <div class="tcard-h"><span class="tcard-title">🔴 Alertas Críticos</span><span class="tcard-sub" id="crit-cnt"></span></div>
+          <div id="crit-list"></div>
+        </div>
+        <div class="tcard">
+          <div class="tcard-h"><span class="tcard-title">🟠 Alertas de Atenção</span><span class="tcard-sub" id="warn-cnt"></span></div>
+          <div id="warn-list"></div>
+        </div>
+      </div>
+      <div class="tcard">
+        <div class="tcard-h"><span class="tcard-title">Resumo por Professor</span></div>
+        <div class="tw"><table><thead><tr>
+          <th>Professor</th><th>Alunos</th><th>OK</th><th>NC</th><th>CA</th><th>CP</th><th>F</th><th>R</th><th>Presença</th>
+        </tr></thead><tbody id="ov-tbl"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- ALERTS -->
+    <div class="panel" id="panel-alerts">
+      <div class="filterbar" style="background:transparent;padding:0;border:none;margin-bottom:16px">
+        <button class="fchip on" onclick="fAlert('all',this)">Todos</button>
+        <button class="fchip cr" onclick="fAlert('crit',this)">🔴 Crítico (2+ no mês)</button>
+        <button class="fchip wa" onclick="fAlert('warn',this)">🟠 Atenção (1 no mês)</button>
+        <button class="fchip ok" onclick="fAlert('ok',this)">✅ OK</button>
+      </div>
+      <div class="tcard">
+        <div class="tcard-h"><span class="tcard-title">Alertas CP / NC</span><span class="tcard-sub" id="al-sub"></span></div>
+        <div id="al-list"></div>
+      </div>
+    </div>
+
+    <!-- STUDENTS -->
+    <div class="panel" id="panel-students">
+      <div class="tcard">
+        <div class="tcard-h"><span class="tcard-title">Alunos</span><span class="tcard-sub" id="stu-sub"></span></div>
+        <div class="tw"><table><thead><tr>
+          <th>Aluno</th><th>Código</th><th>Professor</th><th>OK</th><th>NC</th><th>CA</th><th>CP</th><th>R</th><th>Presença</th><th>Alerta</th>
+        </tr></thead><tbody id="stu-tbl"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- TEACHERS -->
+    <div class="panel" id="panel-teachers">
+      <div class="tcgrid" id="tc-cards"></div>
+      <div class="tcard">
+        <div class="tcard-h"><span class="tcard-title">Detalhe por Professor</span></div>
+        <div class="tw"><table><thead><tr>
+          <th>Professor</th><th>Alunos</th><th>OK</th><th>NC</th><th>CP</th><th>CA</th><th>Presença</th><th>Em Alerta</th>
+        </tr></thead><tbody id="tc-tbl"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- CLASSES -->
+    <div class="panel" id="panel-classes">
+      <div class="tcard">
+        <div class="tcard-h"><span class="tcard-title">Histórico de Aulas</span><span class="tcard-sub" id="cls-sub"></span></div>
+        <div class="tw"><table><thead><tr>
+          <th>Data</th><th>Aluno</th><th>Professor</th><th>Status</th><th>Horário</th><th>Conteúdo</th><th>Obs.</th>
+        </tr></thead><tbody id="cls-tbl"></tbody></table></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ── STATE ────────────────────────────────────────────
+var APPS_URL='', MODE='demo', DB={teachers:{},updated:''}, ALF='all';
+var MONTHS=['','Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+
+// ── ALERT LOGIC ──────────────────────────────────────
+function alertLvl(student, month) {
+  var cls = month ? student.classes.filter(function(c){return c.month===month;}) : student.classes;
+  var cpnc = cls.filter(function(c){return c.status==='NC'||c.status==='CP';}).length;
+  var reps = cls.filter(function(c){return c.status==='R';}).length;
+  var net  = Math.max(0, cpnc - reps);
+  return net>=2 ? 2 : net===1 ? 1 : 0;
+}
+function alertEmoji(l){return l===2?'🔴':l===1?'🟠':'✅';}
+function alertTag(l){return l===2?'CRÍTICO':l===1?'ATENÇÃO':'OK';}
+function alertTagCls(l){return l===2?'tg-r':l===1?'tg-o':'tg-g';}
+function adotCls(l){return l===2?'ad2':l===1?'ad1':'ad0';}
+
+// ── DATA HELPERS ─────────────────────────────────────
+function allStudents(){
+  var out=[];
+  Object.values(DB.teachers).forEach(function(arr){
+    if(Array.isArray(arr)) arr.forEach(function(s){if(s&&Array.isArray(s.classes))out.push(s);});
+  });
+  return out;
+}
+
+function filteredStudents(){
+  var teacher=document.getElementById('f-teacher').value||'';
+  var month=parseInt(document.getElementById('f-month').value)||0;
+  var search=(document.getElementById('f-search').value||'').toLowerCase();
+  return allStudents().filter(function(s){
+    if(teacher&&s.teacher!==teacher)return false;
+    if(search&&!s.name.toLowerCase().includes(search)&&!s.code.toLowerCase().includes(search))return false;
+    return true;
+  });
+}
+
+function getMonth(){return parseInt(document.getElementById('f-month').value)||0;}
+
+// ── CONNECT ──────────────────────────────────────────
+function doConnect(){
+  var url=document.getElementById('setup-url').value.trim();
+  if(!url){toast('Cole a URL do Apps Script','warn');return;}
+  try{localStorage.setItem('uf_apps_url',url);}catch(e){}
+  APPS_URL=url; MODE='live';
+  document.getElementById('setup').style.display='none';
+  document.getElementById('loading').style.display='flex';
+  fetchData().then(launch).catch(function(){
+    document.getElementById('loading').style.display='none';
+    document.getElementById('setup').style.display='flex';
+    toast('Erro ao conectar. Verifique a URL.','err');
+  });
+}
+
+function doDemo(){
+  MODE='demo'; buildDemo();
+  document.getElementById('setup').style.display='none';
+  launch();
+}
+
+function launch(){
+  document.getElementById('loading').style.display='none';
+  document.getElementById('app').style.display='flex';
+  document.getElementById('app').style.flexDirection='column';
+  document.getElementById('tb-mode').textContent=MODE;
+  populateFilters(); renderAll();
+  if(MODE==='live') setInterval(fetchData, 5*60*1000);
+}
+
+// ── FETCH ────────────────────────────────────────────
+function fetchData(){
+  var btn=document.getElementById('sync-btn');
+  var txt=document.getElementById('sync-txt');
+  btn.className='sync-btn syncing'; txt.textContent='Sincronizando…';
+  return fetch(APPS_URL).then(function(r){return r.json();}).then(function(data){
+    DB=data; btn.className='sync-btn'; txt.textContent='Sincronizado';
+    document.getElementById('sync-time').textContent=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+    populateFilters(); renderAll(); toast('✓ Dados atualizados');
+  }).catch(function(e){
+    btn.className='sync-btn error'; txt.textContent='Erro';
+    setTimeout(function(){btn.className='sync-btn';txt.textContent='Tentar novamente';},4000);
+    throw e;
+  });
+}
+
+function triggerSync(){
+  if(MODE==='demo'){toast('Modo demo — conecte um Apps Script para dados reais','warn');return;}
+  fetchData();
+}
+
+// ── DEMO DATA ────────────────────────────────────────
+function mk(st,mo){return{status:st,month:mo,date:'',time:'',content:'',obs:''};}
+function mkS(name,code,teacher,classes){
+  var stats={ok:0,nc:0,ca:0,cp:0,f:0,r:0};
+  classes.forEach(function(c){
+    if(c.status==='OK')stats.ok++;else if(c.status==='NC')stats.nc++;
+    else if(c.status==='CA')stats.ca++;else if(c.status==='CP')stats.cp++;
+    else if(c.status==='F')stats.f++;else if(c.status==='R')stats.r++;
+  });
+  return{name:name,code:code,teacher:teacher,classes:classes,stats:stats};
+}
+
+function buildDemo(){
+  DB.updated=new Date().toISOString();
+  DB.teachers={
+    'Angie':[
+      mkS('Indiamara','VIP-58','Angie',[
+        mk('OK',1),mk('OK',1),mk('OK',1),mk('OK',1),mk('OK',1),mk('OK',1),mk('OK',1),mk('OK',1),
+        mk('OK',2),mk('OK',2),mk('OK',2),mk('OK',2),mk('F',2),mk('F',2),mk('OK',2),mk('OK',2),
+        mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),
+        mk('OK',4),mk('OK',4),mk('CA',4),mk('CA',4),mk('CA',4),mk('OK',4),mk('OK',4),mk('OK',4),
+        mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),
+        mk('OK',6),mk('OK',6),mk('CA',6),mk('OK',6),mk('OK',6),mk('OK',6),
+      ]),
+      mkS('Isabela','VIP-153','Angie',[
+        mk('OK',1),mk('CA',1),mk('OK',1),mk('CA',1),mk('OK',1),mk('OK',1),mk('OK',1),mk('OK',1),
+        mk('OK',2),mk('OK',2),mk('OK',2),mk('CA',2),mk('F',2),mk('F',2),mk('OK',2),mk('OK',2),
+        mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),mk('CA',3),mk('OK',3),mk('OK',3),
+        mk('OK',4),mk('OK',4),mk('OK',4),mk('OK',4),mk('OK',4),mk('OK',4),mk('CA',4),mk('CA',4),
+        mk('OK',5),mk('OK',5),mk('OK',5),mk('NC',5),mk('CA',5),mk('CA',5),mk('CA',5),mk('OK',5),
+        mk('OK',6),mk('OK',6),mk('OK',6),mk('CA',6),mk('CA',6),
+      ]),
+      mkS('Eduardo','VIP-158','Angie',[
+        mk('NC',1),mk('NC',1),mk('NC',1),mk('OK',1),mk('NC',2),mk('OK',2),mk('OK',2),mk('OK',2),mk('F',2),mk('F',2),mk('NC',2),
+        mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),mk('NC',3),mk('OK',3),mk('OK',3),mk('NC',3),
+        mk('OK',4),mk('OK',4),mk('CA',4),mk('OK',4),mk('CA',4),mk('OK',4),mk('NC',4),
+        mk('OK',5),mk('OK',5),mk('NC',5),mk('OK',5),mk('NC',5),mk('NC',5),mk('CP',5),
+        mk('OK',6),mk('F',6),mk('OK',6),mk('OK',6),mk('OK',6),mk('OK',6),mk('CA',6),mk('OK',6),
+      ]),
+      mkS('Matheus H.','VIP-242','Angie',[
+        mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),mk('CA',3),mk('CA',3),mk('OK',3),mk('OK',3),
+        mk('OK',4),mk('OK',4),mk('OK',4),mk('OK',4),mk('OK',4),mk('F',4),mk('OK',4),mk('OK',4),
+        mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),
+        mk('OK',6),mk('F',6),mk('OK',6),mk('OK',6),mk('OK',6),mk('OK',6),
+      ]),
+      mkS('Felipe L.','VIP-247','Angie',[
+        mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),
+        mk('OK',4),mk('OK',4),mk('OK',4),mk('F',4),mk('CA',4),mk('OK',4),mk('OK',4),
+        mk('OK',5),mk('OK',5),mk('OK',5),mk('CA',5),mk('CA',5),mk('CA',5),mk('OK',5),
+        mk('OK',6),mk('F',6),mk('OK',6),mk('OK',6),mk('OK',6),mk('OK',6),
+      ]),
+      mkS('Bruno','VIP-259','Angie',[
+        mk('OK',4),mk('OK',4),mk('CA',4),
+        mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),
+        mk('OK',5),mk('OK',5),mk('F',6),mk('OK',6),mk('OK',6),mk('OK',6),mk('OK',6),mk('OK',6),
+      ]),
+      mkS('Anthony','VIP-184','Angie',[
+        mk('CP',2),mk('OK',2),mk('OK',2),
+        mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),
+        mk('OK',4),mk('OK',4),mk('OK',4),mk('OK',4),mk('OK',4),mk('OK',4),mk('OK',4),mk('OK',4),
+        mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),
+        mk('OK',6),mk('CA',6),mk('OK',6),mk('OK',6),mk('OK',6),mk('OK',6),mk('OK',6),
+      ]),
+    ],
+    'Eliza':[
+      mkS('Henrique','VIP-245','Eliza',[
+        mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),
+        mk('OK',4),mk('OK',4),mk('OK',4),mk('OK',4),mk('OK',4),mk('CA',4),mk('F',4),mk('OK',4),mk('OK',4),mk('OK',4),mk('OK',4),mk('OK',4),
+        mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),
+        mk('OK',6),mk('OK',6),mk('NC',6),mk('OK',6),mk('OK',6),mk('OK',6),mk('OK',6),mk('OK',6),mk('OK',6),
+      ]),
+      mkS('Michele','VIP-248','Eliza',[
+        mk('OK',3),mk('OK',3),mk('CA',3),mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),
+        mk('OK',4),mk('OK',4),mk('CA',4),mk('OK',4),mk('CA',4),mk('OK',4),mk('CA',4),mk('OK',4),
+        mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),mk('CA',5),mk('OK',5),
+        mk('OK',6),mk('OK',6),mk('OK',6),mk('OK',6),mk('OK',6),mk('OK',6),mk('OK',6),mk('OK',6),
+      ]),
+      mkS('Ingrid','VIP-217','Eliza',[
+        mk('OK',3),mk('OK',3),mk('CA',3),mk('OK',3),
+        mk('OK',4),mk('OK',4),mk('CA',4),mk('CA',4),
+        mk('OK',5),mk('OK',5),mk('OK',5),mk('NC',5),
+        mk('CA',6),mk('OK',6),mk('OK',6),mk('OK',6),
+      ]),
+      mkS('Kauane','VIP-263','Eliza',[
+        mk('OK',4),mk('OK',4),mk('F',4),mk('CA',4),mk('OK',4),mk('OK',4),
+        mk('NC',5),mk('NC',5),
+        mk('OK',6),mk('F',6),mk('OK',6),
+      ]),
+      mkS('Kelvim','VIP-258','Eliza',[
+        mk('OK',4),mk('OK',4),mk('F',4),mk('CA',4),mk('OK',4),mk('OK',4),
+        mk('NC',5),mk('NC',5),
+      ]),
+    ],
+    'Alesson':[
+      mkS('Deborah','VIP-179','Alesson',[
+        mk('OK',6),mk('F',6),mk('OK',6),mk('CA',6),mk('CP',6),
+      ]),
+    ],
+    'Samu':[
+      mkS('Ingrid','VIP-217','Samu',[
+        mk('OK',3),mk('OK',3),mk('CA',3),mk('OK',3),
+        mk('OK',4),mk('OK',4),mk('CA',4),mk('CA',4),
+      ]),
+      mkS('Gabriela','VIP-200','Samu',[
+        mk('OK',1),mk('OK',1),mk('OK',1),mk('OK',1),mk('OK',1),mk('OK',1),mk('OK',1),mk('OK',1),
+        mk('OK',2),mk('OK',2),mk('OK',2),mk('OK',2),mk('OK',2),mk('OK',2),mk('OK',2),mk('OK',2),
+        mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),
+        mk('OK',4),mk('OK',4),mk('OK',4),mk('OK',4),mk('OK',4),mk('OK',4),mk('OK',4),mk('OK',4),
+        mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),
+        mk('OK',6),mk('OK',6),mk('OK',6),mk('OK',6),mk('OK',6),mk('OK',6),
+      ]),
+    ],
+    'Gabriela':[
+      mkS('Rodrigo','VIP-220','Gabriela',[
+        mk('OK',1),mk('OK',1),mk('OK',1),mk('OK',1),mk('OK',1),mk('OK',1),mk('OK',1),mk('OK',1),
+        mk('OK',2),mk('OK',2),mk('OK',2),mk('OK',2),mk('OK',2),mk('OK',2),mk('OK',2),mk('OK',2),
+        mk('OK',3),mk('NC',3),mk('NC',3),mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),mk('R',3),mk('R',3),
+        mk('OK',4),mk('OK',4),mk('OK',4),mk('OK',4),mk('OK',4),mk('OK',4),mk('OK',4),mk('OK',4),
+        mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),
+        mk('OK',6),mk('OK',6),mk('OK',6),mk('OK',6),mk('OK',6),mk('OK',6),
+      ]),
+      mkS('Jamili','VIP-221','Gabriela',[
+        mk('OK',1),mk('OK',1),mk('OK',1),mk('OK',1),mk('OK',1),mk('OK',1),mk('OK',1),mk('OK',1),
+        mk('OK',2),mk('OK',2),mk('OK',2),mk('OK',2),mk('OK',2),mk('OK',2),mk('OK',2),mk('OK',2),
+        mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),
+        mk('OK',4),mk('OK',4),mk('CP',4),mk('CP',4),mk('OK',4),mk('OK',4),mk('OK',4),mk('OK',4),
+        mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),
+        mk('OK',6),mk('OK',6),mk('OK',6),mk('OK',6),mk('OK',6),mk('OK',6),
+      ]),
+    ],
+    'Gabes':[
+      mkS('Beatriz','VIP-210','Gabes',[
+        mk('OK',1),mk('OK',1),mk('OK',1),mk('OK',1),mk('OK',1),mk('OK',1),mk('OK',1),mk('OK',1),
+        mk('OK',2),mk('OK',2),mk('OK',2),mk('OK',2),mk('OK',2),mk('OK',2),mk('OK',2),mk('OK',2),
+        mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),
+        mk('OK',4),mk('OK',4),mk('OK',4),mk('NC',4),mk('OK',4),mk('OK',4),mk('OK',4),mk('OK',4),
+        mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),
+        mk('OK',6),mk('OK',6),mk('OK',6),mk('OK',6),mk('OK',6),mk('OK',6),
+      ]),
+    ],
+    'Patricia':[
+      mkS('Priscila F.','VIP-230','Patricia',[
+        mk('OK',1),mk('OK',1),mk('OK',1),mk('OK',1),mk('OK',1),mk('OK',1),mk('OK',1),mk('OK',1),
+        mk('OK',2),mk('OK',2),mk('OK',2),mk('OK',2),mk('OK',2),mk('OK',2),mk('OK',2),mk('OK',2),
+        mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),
+        mk('OK',4),mk('OK',4),mk('OK',4),mk('OK',4),mk('OK',4),mk('OK',4),mk('OK',4),mk('OK',4),
+        mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),mk('CP',5),mk('CP',5),mk('OK',5),
+        mk('OK',6),mk('OK',6),mk('OK',6),mk('OK',6),mk('OK',6),mk('OK',6),
+      ]),
+      mkS('Mirella','VIP-231','Patricia',[
+        mk('OK',1),mk('OK',1),mk('OK',1),mk('OK',1),mk('OK',1),mk('OK',1),mk('OK',1),mk('OK',1),
+        mk('OK',2),mk('OK',2),mk('OK',2),mk('OK',2),mk('OK',2),mk('OK',2),mk('OK',2),mk('OK',2),
+        mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),
+        mk('OK',4),mk('OK',4),mk('OK',4),mk('OK',4),mk('OK',4),mk('OK',4),mk('OK',4),mk('OK',4),
+        mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),
+        mk('OK',6),mk('OK',6),mk('OK',6),mk('OK',6),mk('OK',6),mk('OK',6),
+      ]),
+    ],
+    'Laura':[
+      mkS('Giseli','VIP-240','Laura',[
+        mk('OK',4),mk('OK',4),mk('OK',4),mk('OK',4),mk('OK',4),mk('OK',4),mk('OK',4),mk('OK',4),
+        mk('OK',5),mk('OK',5),mk('OK',5),mk('NC',5),mk('NC',5),mk('OK',5),mk('OK',5),mk('OK',5),
+        mk('OK',6),mk('OK',6),mk('OK',6),mk('OK',6),mk('OK',6),mk('OK',6),
+      ]),
+      mkS('Emily','VIP-241','Laura',[
+        mk('OK',4),mk('OK',4),mk('OK',4),mk('OK',4),mk('OK',4),mk('OK',4),mk('OK',4),mk('OK',4),
+        mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),
+        mk('OK',6),mk('OK',6),mk('OK',6),mk('OK',6),mk('OK',6),mk('OK',6),
+      ]),
+    ],
+    'Juliana':[
+      mkS('Ricardo','VIP-254','Juliana',[
+        mk('OK',1),mk('OK',1),mk('OK',1),mk('OK',1),mk('OK',1),mk('OK',1),mk('OK',1),mk('OK',1),
+        mk('OK',2),mk('OK',2),mk('OK',2),mk('OK',2),mk('OK',2),mk('OK',2),mk('OK',2),mk('OK',2),
+        mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),
+        mk('OK',4),mk('OK',4),mk('OK',4),mk('OK',4),mk('OK',4),mk('OK',4),mk('OK',4),mk('OK',4),
+        mk('OK',5),mk('OK',5),mk('CP',5),mk('CP',5),mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),
+        mk('OK',6),mk('OK',6),mk('OK',6),mk('OK',6),mk('OK',6),mk('OK',6),
+      ]),
+      mkS('Aline J.','VIP-255','Juliana',[
+        mk('OK',1),mk('OK',1),mk('OK',1),mk('OK',1),mk('OK',1),mk('OK',1),mk('OK',1),mk('OK',1),
+        mk('OK',2),mk('OK',2),mk('OK',2),mk('OK',2),mk('OK',2),mk('OK',2),mk('OK',2),mk('OK',2),
+        mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),
+        mk('OK',4),mk('OK',4),mk('OK',4),mk('OK',4),mk('OK',4),mk('OK',4),mk('OK',4),mk('OK',4),
+        mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),
+        mk('OK',6),mk('OK',6),mk('OK',6),mk('OK',6),mk('OK',6),mk('OK',6),
+      ]),
+    ],
+    'Flávia':[
+      mkS('Leticia','VIP-160','Flávia',[
+        mk('OK',1),mk('OK',1),mk('OK',1),mk('OK',1),mk('OK',1),mk('OK',1),mk('OK',1),mk('OK',1),
+        mk('OK',2),mk('OK',2),mk('OK',2),mk('OK',2),mk('OK',2),mk('OK',2),mk('OK',2),mk('OK',2),
+        mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),
+        mk('OK',4),mk('OK',4),mk('OK',4),mk('OK',4),mk('NC',4),mk('NC',4),mk('OK',4),mk('OK',4),
+        mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),
+        mk('OK',6),mk('OK',6),mk('OK',6),mk('OK',6),mk('OK',6),mk('OK',6),
+      ]),
+      mkS('Desyrée','VIP-165','Flávia',[
+        mk('OK',1),mk('OK',1),mk('OK',1),mk('OK',1),mk('OK',1),mk('OK',1),mk('OK',1),mk('OK',1),
+        mk('OK',2),mk('OK',2),mk('OK',2),mk('OK',2),mk('OK',2),mk('OK',2),mk('OK',2),mk('OK',2),
+        mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),mk('OK',3),
+        mk('OK',4),mk('OK',4),mk('OK',4),mk('OK',4),mk('OK',4),mk('OK',4),mk('OK',4),mk('OK',4),
+        mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),mk('OK',5),
+        mk('OK',6),mk('OK',6),mk('OK',6),mk('OK',6),mk('OK',6),mk('OK',6),
+      ]),
+    ],
+  };
+}
+
+// ── NAV ─────────────────────────────────────────────
+function goTab(id, btn){
+  document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('on');});
+  document.getElementById('panel-'+id).classList.add('on');
+  document.querySelectorAll('.ntab').forEach(function(b){b.classList.remove('on');});
+  btn.classList.add('on');
+  renderAll();
+}
+
+// ── FILTERS ──────────────────────────────────────────
+function populateFilters(){
+  var teachers=Object.keys(DB.teachers).sort();
+  var sel=document.getElementById('f-teacher');
+  var cur=sel.value;
+  sel.innerHTML='<option value="">Todos professores</option>'+
+    teachers.map(function(t){return'<option'+(t===cur?' selected':'')+' value="'+t+'">'+t+'</option>';}).join('');
+}
+
+// ── RENDER ALL ────────────────────────────────────────
+function renderAll(){rOV();rAlerts();rStudents();rTeachers();rClasses();}
+
+// ── STATUS BADGE ──────────────────────────────────────
+function stBadge(st){
+  var map={OK:'bg2',NC:'br2',CA:'bo2',CP:'by2',F:'bx2',R:'bb2',AB:'bg2',VC:'bx2'};
+  return '<span class="bk '+(map[st]||'bx2')+'">'+st+'</span>';
+}
+
+// ── OVERVIEW ──────────────────────────────────────────
+function rOV(){
+  var m=getMonth(), stu=filteredStudents();
+  var ok=0,nc=0,ca=0,cp=0,r=0,crit=0,warn=0,okCnt=0;
+  stu.forEach(function(s){
+    var cls=m?s.classes.filter(function(c){return c.month===m;}):s.classes;
+    cls.forEach(function(c){
+      if(c.status==='OK')ok++;else if(c.status==='NC')nc++;
+      else if(c.status==='CA')ca++;else if(c.status==='CP')cp++;
+      else if(c.status==='R')r++;
+    });
+    var l=alertLvl(s,m);
+    if(l===2)crit++;else if(l===1)warn++;else okCnt++;
+  });
+  var total=ok+nc+cp;
+  var pct=total?((ok/total)*100).toFixed(0)+'%':'—';
+
+  document.getElementById('ov-stats').innerHTML=[
+    {l:'Alunos',v:stu.length,c:'b',s:'no filtro'},
+    {l:'Aulas Dadas',v:ok,c:'g',s:'OK'},
+    {l:'Não Compareceu',v:nc,c:'r',s:'NC'},
+    {l:'Cancel. Aluno',v:ca,c:'o',s:'CA'},
+    {l:'Cancel. Prof.',v:cp,c:'y',s:'CP'},
+    {l:'Reposições',v:r,c:'p',s:'R realizadas'},
+    {l:'Alerta Crítico',v:crit,c:'r',s:'2+ NC/CP mês'},
+    {l:'Alerta Atenção',v:warn,c:'o',s:'1 NC/CP mês'},
+    {l:'Taxa Presença',v:pct,c:'g',s:'aulas/agendadas'},
+  ].map(function(x){return'<div class="sc '+x.c+'"><div class="sc-lb">'+x.l+'</div><div class="sc-val">'+x.v+'</div><div class="sc-sub">'+x.s+'</div></div>';}).join('');
+
+  var critList=stu.filter(function(s){return alertLvl(s,m)===2;});
+  var warnList=stu.filter(function(s){return alertLvl(s,m)===1;});
+  document.getElementById('crit-cnt').textContent=critList.length+' aluno(s)';
+  document.getElementById('warn-cnt').textContent=warnList.length+' aluno(s)';
+
+  function miniList(list,el){
+    if(!list.length){el.innerHTML='<div class="empty">✅ Nenhum</div>';return;}
+    el.innerHTML=list.slice(0,8).map(function(s){
+      var cls=m?s.classes.filter(function(c){return c.month===m;}):s.classes;
+      var nc2=cls.filter(function(c){return c.status==='NC';}).length;
+      var cp2=cls.filter(function(c){return c.status==='CP';}).length;
+      return'<div class="ai"><div class="ai-info"><div class="ai-name">'+s.name+' <span class="tc2">'+s.code+'</span></div><div class="ai-detail">NC: '+nc2+' · CP: '+cp2+' · '+s.teacher+'</div></div></div>';
+    }).join('');
+  }
+  miniList(critList,document.getElementById('crit-list'));
+  miniList(warnList,document.getElementById('warn-list'));
+
+  var byT={};
+  stu.forEach(function(s){
+    if(!byT[s.teacher])byT[s.teacher]={ok:0,nc:0,ca:0,cp:0,f:0,r:0,stu:[]};
+    byT[s.teacher].stu.push(s);
+    var cls=m?s.classes.filter(function(c){return c.month===m;}):s.classes;
+    cls.forEach(function(c){
+      var t=byT[s.teacher];
+      if(c.status==='OK')t.ok++;else if(c.status==='NC')t.nc++;
+      else if(c.status==='CA')t.ca++;else if(c.status==='CP')t.cp++;
+      else if(c.status==='F')t.f++;else if(c.status==='R')t.r++;
+    });
+  });
+
+  document.getElementById('ov-tbl').innerHTML=
+    Object.entries(byT).sort(function(a,b){return b[1].ok-a[1].ok;}).map(function(e){
+      var t=e[0],d=e[1];
+      var tot=d.ok+d.nc+d.cp;
+      var p=tot?((d.ok/tot)*100).toFixed(0)+'%':'—';
+      return'<tr><td class="tn">'+t+'</td><td class="tm">'+d.stu.length+'</td>'+
+        '<td class="tm" style="color:var(--g1)">'+d.ok+'</td>'+
+        '<td class="tm" style="color:var(--r1)">'+d.nc+'</td>'+
+        '<td class="tm" style="color:var(--o1)">'+d.ca+'</td>'+
+        '<td class="tm" style="color:var(--y1)">'+d.cp+'</td>'+
+        '<td class="tm" style="color:var(--t3)">'+d.f+'</td>'+
+        '<td class="tm" style="color:var(--p1)">'+d.r+'</td>'+
+        '<td class="tm">'+p+'</td></tr>';
+    }).join('')||'<tr><td colspan="9" class="empty">Sem dados</td></tr>';
+}
+
+// ── ALERTS ────────────────────────────────────────────
+function rAlerts(){
+  var m=getMonth(), stu=filteredStudents();
+  var withLvl=stu.map(function(s){
+    var cls=m?s.classes.filter(function(c){return c.month===m;}):s.classes;
+    return Object.assign({},s,{
+      lvl:alertLvl(s,m),
+      ncC:cls.filter(function(c){return c.status==='NC';}).length,
+      cpC:cls.filter(function(c){return c.status==='CP';}).length,
+    });
+  }).sort(function(a,b){return b.lvl-a.lvl||(b.ncC+b.cpC-a.ncC-a.cpC);});
+
+  var cnt=withLvl.filter(function(s){return s.lvl>0;}).length;
+  document.getElementById('alert-badge').textContent=cnt;
+  document.getElementById('alert-badge').className='ntab-badge'+(cnt?' v':'');
+
+  var filtered=ALF==='all'?withLvl:
+    ALF==='crit'?withLvl.filter(function(s){return s.lvl===2;}):
+    ALF==='warn'?withLvl.filter(function(s){return s.lvl===1;}):
+    withLvl.filter(function(s){return s.lvl===0;});
+
+  document.getElementById('al-sub').textContent=filtered.length+' aluno(s) · '+(m?MONTHS[m]:'todos os meses');
+  document.getElementById('al-list').innerHTML=filtered.length?
+    filtered.map(function(s){
+      return'<div class="ai'+(s.lvl===2?' sev2':s.lvl===1?' sev1':'')+'">'+
+        '<div class="adot '+adotCls(s.lvl)+'">'+alertEmoji(s.lvl)+'</div>'+
+        '<div class="ai-info">'+
+          '<div class="ai-name">'+s.name+' <span class="tc2">'+s.code+'</span></div>'+
+          '<div class="ai-detail">NC: '+s.ncC+' · CP: '+s.cpC+' · Reposições: '+s.stats.r+'</div>'+
+        '</div>'+
+        '<div class="ai-teacher">'+s.teacher+'</div>'+
+        '<span class="ai-tag '+alertTagCls(s.lvl)+'">'+alertTag(s.lvl)+'</span>'+
+      '</div>';
+    }).join(''):
+    '<div class="empty">✅ Sem alertas para este filtro</div>';
+}
+
+function fAlert(type,btn){
+  ALF=type;
+  document.querySelectorAll('#panel-alerts .fchip').forEach(function(b){b.classList.remove('on');});
+  btn.classList.add('on');
+  rAlerts();
+}
+
+// ── STUDENTS ──────────────────────────────────────────
+function rStudents(){
+  var m=getMonth();
+  var stu=filteredStudents().map(function(s){return Object.assign({},s,{lvl:alertLvl(s,m)});})
+    .sort(function(a,b){return b.lvl-a.lvl;});
+  document.getElementById('stu-sub').textContent=stu.length+' aluno(s)';
+  document.getElementById('stu-tbl').innerHTML=stu.length?stu.map(function(s){
+    var cls=m?s.classes.filter(function(c){return c.month===m;}):s.classes;
+    var ok=cls.filter(function(c){return c.status==='OK';}).length;
+    var nc=cls.filter(function(c){return c.status==='NC';}).length;
+    var ca=cls.filter(function(c){return c.status==='CA';}).length;
+    var cp=cls.filter(function(c){return c.status==='CP';}).length;
+    var r=cls.filter(function(c){return c.status==='R';}).length;
+    var tot=ok+nc+cp;
+    var p=tot?((ok/tot)*100).toFixed(0)+'%':'—';
+    return'<tr>'+
+      '<td class="tn">'+s.name+'</td>'+
+      '<td class="tc2">'+s.code+'</td>'+
+      '<td class="tm">'+s.teacher+'</td>'+
+      '<td class="tm" style="color:var(--g1)">'+ok+'</td>'+
+      '<td class="tm" style="color:var(--r1)">'+nc+'</td>'+
+      '<td class="tm" style="color:var(--o1)">'+ca+'</td>'+
+      '<td class="tm" style="color:var(--y1)">'+cp+'</td>'+
+      '<td class="tm" style="color:var(--p1)">'+r+'</td>'+
+      '<td class="tm">'+p+'</td>'+
+      '<td><div class="adot '+adotCls(s.lvl)+'" style="margin:0">'+alertEmoji(s.lvl)+'</div></td>'+
+    '</tr>';
+  }).join(''):'<tr><td colspan="10" class="empty">Sem alunos</td></tr>';
+}
+
+// ── TEACHERS ──────────────────────────────────────────
+function rTeachers(){
+  var m=getMonth(), stu=filteredStudents();
+  var byT={};
+  stu.forEach(function(s){
+    if(!byT[s.teacher])byT[s.teacher]={ok:0,nc:0,ca:0,cp:0,r:0,stu:[]};
+    byT[s.teacher].stu.push(s);
+    var cls=m?s.classes.filter(function(c){return c.month===m;}):s.classes;
+    cls.forEach(function(c){
+      var t=byT[s.teacher];
+      if(c.status==='OK')t.ok++;else if(c.status==='NC')t.nc++;
+      else if(c.status==='CA')t.ca++;else if(c.status==='CP')t.cp++;
+      else if(c.status==='R')t.r++;
+    });
+  });
+
+  document.getElementById('tc-cards').innerHTML=
+    Object.entries(byT).sort(function(a,b){return b[1].stu.length-a[1].stu.length;}).map(function(e){
+      var t=e[0],d=e[1];
+      var crit=d.stu.filter(function(s){return alertLvl(s,m)===2;}).length;
+      var warn=d.stu.filter(function(s){return alertLvl(s,m)===1;}).length;
+      var ok2=d.stu.filter(function(s){return alertLvl(s,m)===0;}).length;
+      var tot=d.ok+d.nc+d.cp;
+      var p=tot?((d.ok/tot)*100).toFixed(0)+'%':'—';
+      return'<div class="tccard">'+
+        '<div class="tcc-h"><div class="tcc-av">'+t.substring(0,2).toUpperCase()+'</div>'+
+        '<div><div class="tcc-name">'+t+'</div><div class="tcc-cnt">'+d.stu.length+' aluno(s)</div></div></div>'+
+        '<div class="tcc-row"><span>Aulas dadas</span><span class="tcc-v" style="color:var(--g1)">'+d.ok+'</span></div>'+
+        '<div class="tcc-row"><span>Não compareceu</span><span class="tcc-v" style="color:var(--r1)">'+d.nc+'</span></div>'+
+        '<div class="tcc-row"><span>Cancel. professor</span><span class="tcc-v" style="color:var(--y1)">'+d.cp+'</span></div>'+
+        '<div class="tcc-row"><span>Reposições</span><span class="tcc-v" style="color:var(--p1)">'+d.r+'</span></div>'+
+        '<div class="tcc-row"><span>Taxa presença</span><span class="tcc-v">'+p+'</span></div>'+
+        '<div class="tcc-bar">'+
+          '<div class="tcc-pill tp-r">🔴 '+crit+'</div>'+
+          '<div class="tcc-pill tp-o">🟠 '+warn+'</div>'+
+          '<div class="tcc-pill tp-g">✅ '+ok2+'</div>'+
+        '</div></div>';
+    }).join('');
+
+  document.getElementById('tc-tbl').innerHTML=
+    Object.entries(byT).sort(function(a,b){return b[1].stu.length-a[1].stu.length;}).map(function(e){
+      var t=e[0],d=e[1];
+      var alCnt=d.stu.filter(function(s){return alertLvl(s,m)>0;}).length;
+      var tot=d.ok+d.nc+d.cp;
+      var p=tot?((d.ok/tot)*100).toFixed(0)+'%':'—';
+      return'<tr><td class="tn">'+t+'</td><td class="tm">'+d.stu.length+'</td>'+
+        '<td class="tm" style="color:var(--g1)">'+d.ok+'</td>'+
+        '<td class="tm" style="color:var(--r1)">'+d.nc+'</td>'+
+        '<td class="tm" style="color:var(--y1)">'+d.cp+'</td>'+
+        '<td class="tm" style="color:var(--o1)">'+d.ca+'</td>'+
+        '<td class="tm">'+p+'</td>'+
+        '<td class="tm" style="color:var(--r1)">'+alCnt+'</td></tr>';
+    }).join('');
+}
+
+// ── CLASSES ───────────────────────────────────────────
+function rClasses(){
+  var m=getMonth(), stu=filteredStudents();
+  var all=[];
+  stu.forEach(function(s){
+    var cls=m?s.classes.filter(function(c){return c.month===m;}):s.classes;
+    cls.forEach(function(c){
+      if(c.status) all.push(Object.assign({},c,{studentName:s.name,teacher:s.teacher,code:s.code}));
+    });
+  });
+  all.sort(function(a,b){return a.month-b.month||a.date.localeCompare(b.date);});
+  document.getElementById('cls-sub').textContent=all.length+' aula(s)';
+  document.getElementById('cls-tbl').innerHTML=all.length?all.map(function(c){
+    return'<tr>'+
+      '<td class="tm">'+(c.date||MONTHS[c.month]||'—')+'</td>'+
+      '<td class="tn">'+c.studentName+'</td>'+
+      '<td class="tm">'+c.teacher+'</td>'+
+      '<td>'+stBadge(c.status)+'</td>'+
+      '<td class="tm">'+(c.time||'—')+'</td>'+
+      '<td style="max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--t2)">'+(c.content||'—')+'</td>'+
+      '<td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--t3);font-size:10px">'+(c.obs||'')+'</td>'+
+    '</tr>';
+  }).join(''):'<tr><td colspan="7" class="empty">Sem aulas</td></tr>';
+}
+
+// ── TOAST ─────────────────────────────────────────────
+function toast(msg, type){
+  var el=document.createElement('div');
+  el.className='toast'+(type==='err'?' err':type==='warn'?' warn':'');
+  el.textContent=msg;
+  document.body.appendChild(el);
+  setTimeout(function(){el.remove();},3500);
+}
+
+// ── INIT ──────────────────────────────────────────────
+(function(){
+  try{var s=localStorage.getItem('uf_apps_url');if(s)document.getElementById('setup-url').value=s;}catch(e){}
+})();
+</script>
+</body>
+</html>
