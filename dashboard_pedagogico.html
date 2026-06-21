@@ -1019,19 +1019,42 @@ function forceShowApp() {
   showApp();
 }
 
-// Fetch com timeout de 45 segundos
+// Fetch com timeout
 function fetchWithTimeout(url, ms) {
   return new Promise(function(resolve, reject) {
     const timer = setTimeout(function() {
-      reject(new Error('Timeout — Apps Script demorou mais de ' + (ms/1000) + 's'));
+      reject(new Error('Timeout após ' + (ms/1000) + 's'));
     }, ms);
-    fetch(url).then(function(r) {
-      clearTimeout(timer);
-      resolve(r);
-    }).catch(function(e) {
-      clearTimeout(timer);
-      reject(e);
+    fetch(url, {mode:'cors'}).then(function(r) {
+      clearTimeout(timer); resolve(r);
+    }).catch(function() {
+      // Fallback: tenta sem CORS enforcement
+      fetch(url).then(function(r) {
+        clearTimeout(timer); resolve(r);
+      }).catch(function(e) {
+        clearTimeout(timer); reject(e);
+      });
     });
+  });
+}
+
+// JSONP fallback — funciona sempre, ignora CORS
+function fetchJSONP(url) {
+  return new Promise(function(resolve, reject) {
+    const cb = 'uf_cb_' + Date.now();
+    const script = document.createElement('script');
+    const timer = setTimeout(function() {
+      cleanup(); reject(new Error('JSONP timeout'));
+    }, 60000);
+    function cleanup() {
+      clearTimeout(timer);
+      delete window[cb];
+      if (script.parentNode) script.parentNode.removeChild(script);
+    }
+    window[cb] = function(data) { cleanup(); resolve(data); };
+    script.src = url + (url.includes('?')?'&':'?') + 'callback=' + cb;
+    script.onerror = function() { cleanup(); reject(new Error('Script load error')); };
+    document.head.appendChild(script);
   });
 }
 
@@ -1068,31 +1091,42 @@ function parseTeacherData(tName, students) {
   }
 }
 
+function processData(d) {
+  if (!d || !d.teachers) throw new Error('Resposta inválida do servidor');
+  for (const name in d.teachers) {
+    parseTeacherData(name, d.teachers[name]);
+  }
+  if (TEACHERS.length === 0) throw new Error('Nenhum aluno encontrado');
+  showApp();
+}
+
 function loadAllTeachers() {
   TEACHERS = [];
-  loadTxt.textContent = 'Carregando dados... (cache ativo)';
+  loadTxt.textContent = 'Carregando dados...';
 
-  // Com cache no Apps Script, 1 único request é suficiente e rápido
-  fetchWithTimeout(APPS_URL, 60000)
+  // Tenta fetch normal primeiro
+  fetchWithTimeout(APPS_URL, 30000)
     .then(function(r) {
       if (!r.ok) throw new Error('HTTP ' + r.status);
       return r.json();
     })
     .then(function(d) {
-      if (!d || !d.teachers) throw new Error('Resposta inválida do servidor');
-      for (const [name, students] of Object.entries(d.teachers)) {
-        parseTeacherData(name, students);
-      }
-      if (TEACHERS.length === 0) throw new Error('Nenhum aluno encontrado nas planilhas');
-      showApp();
+      processData(d);
     })
-    .catch(function(e) {
-      showLoadError(
-        'Não foi possível carregar os dados.<br><br>' +
-        '<strong style="color:var(--t2)">' + e.message + '</strong><br><br>' +
-        'O cache do Apps Script pode estar vazio. Execute a função ' +
-        '<strong>setupTrigger</strong> no Apps Script e tente novamente.'
-      );
+    .catch(function(fetchErr) {
+      // Se fetch falhar (CORS etc), tenta JSONP
+      loadTxt.textContent = 'Tentando método alternativo...';
+      fetchJSONP(APPS_URL)
+        .then(function(d) {
+          processData(d);
+        })
+        .catch(function(e) {
+          showLoadError(
+            'Não foi possível carregar os dados.<br><br>' +
+            '<strong style="color:var(--t2)">' + fetchErr.message + '</strong><br><br>' +
+            'Verifique se o Apps Script está implantado com acesso <strong>Qualquer pessoa</strong>.'
+          );
+        });
     });
 }
 
