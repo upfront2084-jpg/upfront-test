@@ -936,16 +936,18 @@ function triggerSync() {
   const txt = document.getElementById('sync-txt');
   btn.className = 'sync-btn sy'; txt.textContent = 'Sincronizando...';
   TEACHERS = [];
-  fetchWithTimeout(APPS_URL, 60000)
-    .then(function(r){ return r.json(); })
-    .then(function(d){
-      if (d && d.teachers) {
-        for (const [name, students] of Object.entries(d.teachers)) {
-          parseTeacherData(name, students);
-        }
-      }
-    })
-    .then(function() {
+
+  const timer = setTimeout(function() {
+    btn.className = 'sync-btn er'; txt.textContent = 'Timeout';
+    setTimeout(function(){ btn.className='sync-btn'; txt.textContent='Sincronizar'; }, 4000);
+  }, 60000);
+
+  window.__ufSyncCallback = function(d) {
+    clearTimeout(timer);
+    if (d && d.teachers) {
+      TEACHERS = [];
+      for (var name in d.teachers) parseTeacherData(name, d.teachers[name]);
+    }
     document.getElementById('tabs').innerHTML =
       '<button class="tab on" id="tab-all" onclick="goPanel(\'all\',this)">Todos <span class="tcnt ok" id="cnt-all">0</span></button>'+
       '<button class="tab" id="tab-pausados" onclick="goPanel(\'pausados\',this)">⏸ Pausados <span class="tcnt" id="cnt-pausados" style="background:rgba(110,135,176,.15);color:var(--t2)">0</span></button>';
@@ -959,11 +961,17 @@ function triggerSync() {
     document.getElementById('sync-time').textContent =
       String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
     toast('✓ Sincronizado · '+TEACHERS.reduce(function(a,t){ return a+t.students.length; },0)+' alunos');
-  }).catch(function(e) {
+  };
+
+  var s2 = document.createElement('script');
+  s2.src = APPS_URL + '?callback=__ufSyncCallback&t=' + Date.now();
+  s2.onerror = function() {
+    clearTimeout(timer);
     btn.className = 'sync-btn er'; txt.textContent = 'Erro';
     setTimeout(function(){ btn.className='sync-btn'; txt.textContent='Sincronizar'; }, 5000);
-    toast('Erro: ' + e.message, 'e');
-  });
+    toast('Erro ao carregar script', 'e');
+  };
+  document.head.appendChild(s2);
 }
 
 // ══════════════════════════════════════════════
@@ -1058,11 +1066,8 @@ function fetchJSONP(url) {
   });
 }
 
-// Carrega um professor por vez (muito mais rápido)
-const TEACHER_NAMES = Object.keys(SHEET_IDS);
 const loadTxt = document.getElementById('load-txt');
 TEACHERS = [];
-let loaded = 0;
 
 function parseTeacherData(tName, students) {
   if (!Array.isArray(students) || students.length === 0) return;
@@ -1091,43 +1096,53 @@ function parseTeacherData(tName, students) {
   }
 }
 
-function processData(d) {
-  if (!d || !d.teachers) throw new Error('Resposta inválida do servidor');
-  for (const name in d.teachers) {
+// Callback global chamado pelo JSONP
+window.__ufCallback = function(d) {
+  clearTimeout(window.__ufTimer);
+  if (!d || !d.teachers) {
+    showLoadError('Dados inválidos recebidos do servidor.');
+    return;
+  }
+  TEACHERS = [];
+  for (var name in d.teachers) {
     parseTeacherData(name, d.teachers[name]);
   }
-  if (TEACHERS.length === 0) throw new Error('Nenhum aluno encontrado');
+  if (TEACHERS.length === 0) {
+    showLoadError('Nenhum aluno encontrado. Execute setupTrigger no Apps Script.');
+    return;
+  }
   showApp();
-}
+};
 
 function loadAllTeachers() {
   TEACHERS = [];
   loadTxt.textContent = 'Carregando dados...';
 
-  // Tenta fetch normal primeiro
-  fetchWithTimeout(APPS_URL, 30000)
-    .then(function(r) {
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      return r.json();
-    })
-    .then(function(d) {
-      processData(d);
-    })
-    .catch(function(fetchErr) {
-      // Se fetch falhar (CORS etc), tenta JSONP
-      loadTxt.textContent = 'Tentando método alternativo...';
-      fetchJSONP(APPS_URL)
-        .then(function(d) {
-          processData(d);
-        })
-        .catch(function(e) {
-          showLoadError(
-            'Não foi possível carregar os dados.<br><br>' +
-            '<strong style="color:var(--t2)">' + fetchErr.message + '</strong><br><br>' +
-            'Verifique se o Apps Script está implantado com acesso <strong>Qualquer pessoa</strong>.'
-          );
-        });
-    });
+  // Timer de 60s
+  window.__ufTimer = setTimeout(function() {
+    var s = document.getElementById('__uf_jsonp');
+    if (s) s.remove();
+    showLoadError(
+      'Tempo esgotado (60s).<br><br>' +
+      'O Apps Script está demorando muito. Certifique-se de ter executado ' +
+      '<strong>setupTrigger</strong> para popular o cache.'
+    );
+  }, 60000);
+
+  // Injeta script JSONP — funciona sempre, sem CORS
+  var existing = document.getElementById('__uf_jsonp');
+  if (existing) existing.remove();
+  var s = document.createElement('script');
+  s.id = '__uf_jsonp';
+  s.src = APPS_URL + '?callback=__ufCallback&t=' + Date.now();
+  s.onerror = function() {
+    clearTimeout(window.__ufTimer);
+    showLoadError(
+      'Não foi possível carregar o script do Apps Script.<br><br>' +
+      'Verifique se a URL está correta e se o acesso é "Qualquer pessoa".'
+    );
+  };
+  document.head.appendChild(s);
 }
 
 loadAllTeachers();
