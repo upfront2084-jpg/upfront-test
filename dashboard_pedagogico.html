@@ -49,6 +49,14 @@ body{background:var(--ink);color:var(--t1);font-family:var(--f);line-height:1.5;
 .icon-btn{padding:5px 12px;border-radius:var(--r1);border:1px solid var(--line2);background:var(--ink3);color:var(--t2);font:500 11px var(--f);cursor:pointer;transition:all .12s}
 .icon-btn:hover{background:var(--ink4);color:var(--t1)}
 
+/* PERIOD FILTER */
+.pf-bar{display:flex;align-items:center;gap:6px;padding:10px 22px;background:var(--ink2);border-bottom:1px solid var(--line)}
+.pf-lbl{font:600 9px var(--fm);color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-right:2px}
+.pf-btn{padding:4px 13px;border-radius:99px;border:1px solid var(--line2);background:var(--ink3);color:var(--t3);font:600 10px var(--fm);cursor:pointer;transition:all .12s}
+.pf-btn:hover{border-color:var(--line2);color:var(--t2)}
+.pf-btn.on{background:var(--gd);border-color:var(--g3);color:var(--g)}
+.pf-sep{width:1px;height:16px;background:var(--line2);margin:0 4px}
+
 /* ALERT BANNER */
 .ab{margin:14px 22px 0;padding:11px 16px;border-radius:var(--r2);background:rgba(255,77,109,.05);border:1px solid var(--r2);display:flex;align-items:center;gap:10px}
 .ab.hidden{display:none}
@@ -234,6 +242,16 @@ tbody tr.rwn td{background:rgba(255,190,0,.03)}
   </div>
 </div>
 
+<!-- PERIOD FILTER BAR -->
+<div class="pf-bar">
+  <span class="pf-lbl">Período:</span>
+  <button class="pf-btn" id="pf-sem" onclick="setPeriod('week',this)">Esta Semana</button>
+  <button class="pf-btn on" id="pf-mes" onclick="setPeriod('month',this)">Este Mês</button>
+  <button class="pf-btn" id="pf-ano" onclick="setPeriod('year',this)">Todo o Ano</button>
+  <div class="pf-sep"></div>
+  <span style="font:500 10px var(--fm);color:var(--t3)" id="pf-label">Junho 2026</span>
+</div>
+
 <div class="ab hidden" id="ab">
   <div class="ab-pulse"></div>
   <div class="ab-txt"><strong id="ab-title">Alertas</strong> — <span id="ab-desc"></span></div>
@@ -336,6 +354,55 @@ const SHEET_IDS = {
 };
 
 const MN=['','Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+const MNF=['','Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+
+// PERIOD FILTER — 'week' | 'month' | 'year'
+// Alertas sempre a partir de junho/2026 (mês 6)
+const ALERT_START_MONTH = 6;
+let PERIOD = 'month'; // padrão: mês atual
+
+function getToday() { return new Date(); }
+
+function getFilteredHist(hist) {
+  const today = getToday();
+  const curM = today.getMonth() + 1; // mês atual (1-12)
+  const curY = today.getFullYear();
+
+  if (PERIOD === 'week') {
+    // Últimos 7 dias — usa a data DD/MM se disponível, senão pelo mês
+    const cutoff = new Date(today); cutoff.setDate(cutoff.getDate() - 7);
+    return hist.filter(function(h) {
+      if (!h.d || !h.d.includes('/')) {
+        // Sem data exata: inclui só do mês atual
+        return h.m === curM;
+      }
+      const parts = h.d.split('/');
+      if (parts.length < 2) return false;
+      const d = parseInt(parts[0]), m = parseInt(parts[1]);
+      const y = parts.length >= 3 ? parseInt(parts[2]) : curY;
+      const dt = new Date(y, m-1, d);
+      return dt >= cutoff && dt <= today;
+    });
+  }
+  if (PERIOD === 'month') {
+    return hist.filter(function(h){ return h.m === curM; });
+  }
+  // 'year' — a partir de junho 2026
+  return hist.filter(function(h){ return h.m >= ALERT_START_MONTH; });
+}
+
+function setPeriod(p, btn) {
+  PERIOD = p;
+  document.querySelectorAll('.pf-btn').forEach(function(b){ b.classList.remove('on'); });
+  btn.classList.add('on');
+  const today = getToday();
+  const curM = today.getMonth() + 1;
+  const label = p === 'week' ? 'Últimos 7 dias'
+    : p === 'month' ? MNF[curM] + ' ' + today.getFullYear()
+    : 'Jun–' + MNF[curM] + ' ' + today.getFullYear();
+  document.getElementById('pf-label').textContent = label;
+  renderAll();
+}
 let TEACHERS = [];
 let dismissedAlerts = {};
 try { dismissedAlerts = JSON.parse(localStorage.getItem('uf_dismissed')||'{}'); } catch(e){}
@@ -405,9 +472,11 @@ function getUnresolvedTriggers(hist) {
 function checkAlert(tName, s) {
   const key = tName + '__' + s.n;
   if (dismissedAlerts[key]) return {lv:'none', reason:'dispensado'};
-  const done = s.hist.filter(function(h){ return h.c && h.c.trim(); });
+  // Alertas apenas sobre o histórico filtrado pelo período
+  const filteredHist = getFilteredHist(s.hist);
+  const done = filteredHist.filter(function(h){ return h.c && h.c.trim(); });
   if (!done.length) return {lv:'none', reason:''};
-  const unres = getUnresolvedTriggers(s.hist);
+  const unres = getUnresolvedTriggers(filteredHist);
   if (!unres.length) return {lv:'none', reason:''};
   const lastTwo = unres.slice(-2);
   const consec = lastTwo.length === 2;
@@ -433,8 +502,11 @@ function checkAlert(tName, s) {
 function init() {
   buildTabs();
   buildTeacherPanels();
-  renderAll();
+  // Set initial period label dynamically
   const now = new Date();
+  const curM = now.getMonth() + 1;
+  document.getElementById('pf-label').textContent = MNF[curM] + ' ' + now.getFullYear();
+  renderAll();
   document.getElementById('sync-time').textContent =
     String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
   toast('✓ ' + TEACHERS.length + ' professores · ' +
@@ -564,11 +636,12 @@ function renderTeacherPanel(t) {
               : '<span class="bk bg">✓ OK</span>';
     const dismissBtn = (a.lv!=='none'&&a.reason!=='dispensado')
       ? '<button class="dismiss-btn" onclick="dismissAlert(\''+t.name+'\',\''+s.n.replace(/'/g,"\\'")+'\')" title="Ignorar alerta">✕ Ignorar</button>' : '';
-    const okc = s.hist.filter(function(h){ return ['ok','r'].includes(norm(h.c)); }).length;
-    const nc  = s.hist.filter(function(h){ return isTrig(h.c); }).length;
-    const rep = s.hist.filter(function(h){ return norm(h.c)==='r'; }).length;
-    const unresC = getUnresolvedTriggers(s.hist).length;
-    const pills = s.hist.map(function(h) {
+    const fhist = getFilteredHist(s.hist);
+    const okc = fhist.filter(function(h){ return ['ok','r'].includes(norm(h.c)); }).length;
+    const nc  = fhist.filter(function(h){ return isTrig(h.c); }).length;
+    const rep = fhist.filter(function(h){ return norm(h.c)==='r'; }).length;
+    const unresC = getUnresolvedTriggers(fhist).length;
+    const pills = fhist.map(function(h) {
       const n = norm(h.c);
       const lbl = n==='em'?'·':((h.c||'').toUpperCase().slice(0,2)||'·');
       return '<div class="hp '+n+'" title="'+(h.d||'—')+' — '+(h.c||'agendado')+'">'+lbl+'</div>';
@@ -653,7 +726,7 @@ function openStudDetail(tName, sName) {
     ? '<div style="background:var(--yd);border:1px solid #664d00;border-radius:8px;padding:12px;margin-bottom:12px"><div style="font:700 11px var(--fm);color:var(--y);margin-bottom:4px">🟡 ATENÇÃO — Monitorar</div><div style="font-size:11px">'+a.reason+'</div></div>'
     : '<div style="background:var(--gd);border:1px solid var(--g3);border-radius:8px;padding:10px;margin-bottom:12px;font:700 11px var(--fm);color:var(--g)">✓ Aluno em dia</div>';
 
-  const histRows = s.hist.filter(function(h){ return h.c; }).map(function(h,i,arr) {
+  const histRows = fhist.filter(function(h){ return h.c; }).map(function(h,i,arr) {
     const nc = norm(h.c);
     const isTriggered = isTrig(h.c);
     const nextCode = arr[i+1] ? norm(arr[i+1].c) : null;
@@ -668,14 +741,15 @@ function openStudDetail(tName, sName) {
       '<td><span style="font-size:11px;color:'+statusColor+'">'+statusTxt+'</span></td></tr>';
   }).join('');
 
-  const repCount = s.hist.filter(function(h){ return norm(h.c)==='r'; }).length;
-  const unresolved = getUnresolvedTriggers(s.hist).length;
+  const fhist = getFilteredHist(s.hist);
+  const repCount = fhist.filter(function(h){ return norm(h.c)==='r'; }).length;
+  const unresolved = getUnresolvedTriggers(fhist).length;
 
   document.getElementById('sm-t').textContent = s.n + ' · ' + s.cod;
   document.getElementById('sm-b').innerHTML =
     '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px">'+
-      '<div style="background:var(--ink3);border-radius:8px;padding:10px;text-align:center"><div style="font:700 20px var(--fm);color:var(--g)">'+s.hist.filter(function(h){ return ['ok','r'].includes(norm(h.c)); }).length+'</div><div style="font:10px var(--fm);color:var(--t3);text-transform:uppercase">Aulas OK</div></div>'+
-      '<div style="background:var(--ink3);border-radius:8px;padding:10px;text-align:center"><div style="font:700 20px var(--fm);color:var(--r)">'+s.hist.filter(function(h){ return isTrig(h.c); }).length+'</div><div style="font:10px var(--fm);color:var(--t3);text-transform:uppercase">CP/NC</div></div>'+
+      '<div style="background:var(--ink3);border-radius:8px;padding:10px;text-align:center"><div style="font:700 20px var(--fm);color:var(--g)">'+fhist.filter(function(h){ return ['ok','r'].includes(norm(h.c)); }).length+'</div><div style="font:10px var(--fm);color:var(--t3);text-transform:uppercase">Aulas OK</div></div>'+
+      '<div style="background:var(--ink3);border-radius:8px;padding:10px;text-align:center"><div style="font:700 20px var(--fm);color:var(--r)">'+fhist.filter(function(h){ return isTrig(h.c); }).length+'</div><div style="font:10px var(--fm);color:var(--t3);text-transform:uppercase">CP/NC</div></div>'+
       '<div style="background:var(--ink3);border-radius:8px;padding:10px;text-align:center"><div style="font:700 20px var(--fm);color:var(--b)">'+repCount+'</div><div style="font:10px var(--fm);color:var(--t3);text-transform:uppercase">Repostos</div></div>'+
       '<div style="background:'+(unresolved>0?'rgba(255,77,109,.08)':'var(--ink3)')+';border:1px solid '+(unresolved>0?'var(--r2)':'transparent')+';border-radius:8px;padding:10px;text-align:center"><div style="font:700 20px var(--fm);color:'+(unresolved>0?'var(--r)':'var(--t3)')+'">'+unresolved+'</div><div style="font:10px var(--fm);color:var(--t3);text-transform:uppercase">Pendente Rep.</div></div>'+
     '</div>'+
