@@ -531,29 +531,13 @@
   <div class="section-header">
     <div class="section-number">4</div>
     <div>
-      <div class="section-title">Writing &amp; Grammar</div>
-      <div class="section-sub">Write about the topic · Escreva sobre o tópico</div>
+      <div class="section-title">Grammar</div>
+      <div class="section-sub">Complete the sentences · Complete as frases</div>
     </div>
   </div>
   <div class="section-body">
 
-    <div class="q-block" style="border-bottom:none;">
-      <div class="writing-box">
-        <div class="writing-topic">✏️ Topic: My Last Weekend &amp; My Plans</div>
-        <div class="writing-prompt">Write 6–8 sentences about what you did last weekend and what you are going to do next weekend. Use the past tense AND the future.</div>
-        <div class="writing-hints">Use these expressions:
-          <ul>
-            <li><strong>Simple Past</strong> — I went / I ate / I met / I felt / I could</li>
-            <li><strong>Will / Be going to</strong> — I'll call / I'm going to meet</li>
-            <li><strong>Enjoy + -ing</strong> — I enjoyed meeting…</li>
-            <li><strong>There is / There are</strong> — There is a party…</li>
-            <li><strong>Give TO / Give somebody</strong> — I gave her a gift</li>
-          </ul>
-        </div>
-        <textarea id="writingAnswer" placeholder="Write your paragraph here...&#10;&#10;Example: Last weekend I met my colleague at the coffee shop. We enjoyed talking for a long time. I felt happy after. Next weekend, I'm going to visit my uncle..."></textarea>
-        <div class="word-count" id="wordCount">0 words</div>
-      </div>
-    </div>
+
 
     <!-- C13: Future WILL -->
     <div class="q-block">
@@ -645,11 +629,7 @@
     });
   });
 
-  // WORD COUNT
-  document.getElementById('writingAnswer').addEventListener('input', function() {
-    const w = this.value.trim() === '' ? 0 : this.value.trim().split(/\s+/).length;
-    document.getElementById('wordCount').textContent = w + ' word' + (w !== 1 ? 's' : '');
-  });
+  
 
   // PROGRESS
   function updateProgress() {
