@@ -260,7 +260,7 @@
     <!-- C18: Would -->
     <div class="q-block">
       <div class="q-meta"><span class="q-tag">Q 10 · Class 18</span></div>
-      <div class="q-text">They _____ put spices on the food — they don't like it.</div>
+      <div class="q-text">They _____ spices on the food — they don't like it.</div>
       <div class="options" data-q="10" data-ans="C">
         <div class="opt" data-v="A"><span class="opt-letter">A</span> would put</div>
         <div class="opt" data-v="B"><span class="opt-letter">B</span> wouldn't putting</div>
@@ -520,29 +520,13 @@
   <div class="section-header">
     <div class="section-number">4</div>
     <div>
-      <div class="section-title">Writing &amp; Grammar</div>
-      <div class="section-sub">Write and answer · Escreva e responda</div>
+      <div class="section-title">Grammar</div>
+      <div class="section-sub">Complete the sentences · Complete as frases</div>
     </div>
   </div>
   <div class="section-body">
 
-    <div class="q-block" style="border-bottom:none;">
-      <div class="writing-box">
-        <div class="writing-topic">✏️ Topic: Describe a person you know well</div>
-        <div class="writing-prompt">Write 6–8 sentences describing a friend, family member or colleague. Include their personality, appearance, and what they like to do.</div>
-        <div class="writing-hints">Use these expressions:
-          <ul>
-            <li><strong>What's he/she like?</strong> — He's kind, hardworking and calm</li>
-            <li><strong>What does he/she look like?</strong> — She's tall, good-looking and thin</li>
-            <li><strong>Have you ever...?</strong> — Have you ever seen him dance?</li>
-            <li><strong>He/she feels like + -ing</strong> — She always feels like going cycling</li>
-            <li><strong>Kind of / Because of / As usual</strong></li>
-          </ul>
-        </div>
-        <textarea id="writingAnswer" placeholder="Write your paragraph here...&#10;&#10;Example: My best friend is kind and hardworking. She's good-looking, tall and thin. She feels like going cycling every weekend. As usual, she always forgets to smile at new people..."></textarea>
-        <div class="word-count" id="wordCount">0 words</div>
-      </div>
-    </div>
+
 
     <!-- C19: Jealous of -->
     <div class="q-block">
@@ -632,10 +616,7 @@
     });
   });
 
-  document.getElementById('writingAnswer').addEventListener('input', function() {
-    const w = this.value.trim() === '' ? 0 : this.value.trim().split(/\s+/).length;
-    document.getElementById('wordCount').textContent = w + ' word' + (w !== 1 ? 's' : '');
-  });
+  
 
   function updateProgress() {
     const n = Object.keys(answers).length;
