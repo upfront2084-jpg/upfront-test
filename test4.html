@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Upfront Idiomas — Test · Classes 21–26</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --navy:   #1A1A2E; --blue:   #1F3A5F; --teal:   #2E7D7D; --teal-l: #e0f2f2;
+    --light:  #F5F7FA; --white:  #ffffff; --border: #d0d5dd;
+    --red:    #8B1A1A; --green:  #1a5c35; --orange: #b85c00;
+    --text:   #1A1A2E; --muted:  #6b7280;
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Inter', sans-serif; background: #eef1f6; color: var(--text); min-height: 100vh; padding-bottom: 60px; }
+
+  .test-header { background: var(--navy); padding: 0; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 12px rgba(0,0,0,.3); }
+  .header-inner { max-width: 860px; margin: 0 auto; padding: 18px 32px; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+  .brand-name { font-family: 'Sora', sans-serif; font-size: 22px; font-weight: 800; color: #fff; letter-spacing: -.02em; }
+  .brand-sub { font-size: 11px; color: #8892aa; font-weight: 400; letter-spacing: .08em; text-transform: uppercase; margin-top: 2px; }
+  .header-badge { background: var(--teal); color: #fff; font-size: 11px; font-weight: 600; padding: 6px 14px; border-radius: 20px; letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; }
+  .progress-wrap { background: #2a2d3e; height: 4px; }
+  .progress-fill { height: 100%; background: var(--teal); transition: width .4s ease; width: 0%; }
+  .progress-label { max-width: 860px; margin: 0 auto; padding: 6px 32px; display: flex; justify-content: flex-end; font-size: 11px; color: #8892aa; background: var(--navy); }
+  .page-wrap { max-width: 860px; margin: 0 auto; padding: 32px 24px; }
+
+  .section-card { background: var(--white); border-radius: 12px; overflow: hidden; margin-bottom: 28px; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+  .section-header { background: var(--blue); padding: 13px 24px; display: flex; align-items: center; gap: 12px; }
+  .section-number { background: var(--teal); color: #fff; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+  .section-title { color: #fff; font-size: 14px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+  .section-sub { color: #a8c4cc; font-size: 12px; margin-top: 1px; }
+  .section-body { padding: 0; }
+
+  .q-block { padding: 20px 24px; border-bottom: 1px solid #f0f2f5; }
+  .q-block:last-child { border-bottom: none; }
+  .q-meta { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .q-tag { background: var(--teal-l); color: var(--teal); font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 20px; letter-spacing: .08em; text-transform: uppercase; }
+  .q-text { font-size: 15px; font-weight: 500; color: var(--navy); line-height: 1.55; margin-bottom: 14px; }
+
+  .options { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  @media (max-width: 520px) { .options { grid-template-columns: 1fr; } }
+  .opt { display: flex; align-items: center; gap: 10px; padding: 11px 14px; border: 1.5px solid var(--border); border-radius: 8px; cursor: pointer; background: #fff; transition: all .15s; font-size: 13.5px; color: var(--text); text-align: left; user-select: none; }
+  .opt:hover { border-color: var(--teal); background: #f4fafa; }
+  .opt.selected { border-color: var(--blue); background: #eaf1f8; }
+  .opt.correct  { border-color: var(--green); background: #eaf7ef; color: var(--green); cursor: default; }
+  .opt.wrong    { border-color: var(--red);   background: #fdf1f0; color: var(--red);   cursor: default; }
+  .opt.revealed { cursor: default; }
+  .opt-letter { width: 24px; height: 24px; border-radius: 6px; background: var(--light); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; flex-shrink: 0; color: var(--blue); transition: all .15s; }
+  .opt.selected .opt-letter { background: var(--blue); color: #fff; border-color: var(--blue); }
+  .opt.correct  .opt-letter { background: var(--green); color: #fff; border-color: var(--green); }
+  .opt.wrong    .opt-letter { background: var(--red);   color: #fff; border-color: var(--red); }
+
+  .listen-box { margin: 0 24px 20px; background: var(--light); border: 1.5px solid var(--border); border-radius: 10px; padding: 16px; }
+  .listen-label { font-size: 11px; font-weight: 700; color: var(--teal); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 10px; }
+  .audio-row { display: flex; align-items: center; gap: 14px; background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; }
+  .play-btn { width: 40px; height: 40px; background: var(--blue); border: none; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background .15s; }
+  .play-btn:hover { background: var(--teal); }
+  .play-btn svg { width: 16px; height: 16px; fill: #fff; margin-left: 2px; }
+  .audio-info { flex: 1; }
+  .audio-title { font-size: 13px; font-weight: 600; color: var(--navy); }
+  .audio-hint  { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .audio-note  { font-size: 11px; color: var(--muted); font-style: italic; margin-top: 8px; }
+  .audio-upload { margin-top: 8px; display: flex; align-items: center; gap: 8px; }
+  .audio-upload label { background: var(--blue); color: #fff; padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer; letter-spacing: .04em; }
+  .audio-upload span { font-size: 11px; color: var(--muted); }
+  #audioFileInput { display: none; }
+  #audioPlayer { display: none; width: 100%; margin-top: 10px; }
+
+  .reading-box { margin: 0 24px 20px; background: var(--white); border: 1.5px solid var(--border); border-radius: 10px; overflow: hidden; }
+  .reading-header { background: var(--light); padding: 10px 18px; font-size: 11px; font-weight: 700; color: var(--blue); letter-spacing: .08em; text-transform: uppercase; border-bottom: 1px solid var(--border); }
+  .reading-text { padding: 18px; font-size: 13.5px; line-height: 1.85; color: var(--text); border-left: 4px solid var(--teal); margin: 14px; background: #f9fbfb; border-radius: 0 8px 8px 0; }
+  .reading-text p { margin-bottom: 10px; }
+  .reading-text p:last-child { margin-bottom: 0; }
+  .spk { font-weight: 700; color: var(--blue); }
+
+  .submit-wrap { text-align: center; padding: 8px 0 32px; }
+  .submit-btn { background: var(--navy); color: #fff; font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 600; padding: 15px 52px; border: none; border-radius: 8px; cursor: pointer; letter-spacing: .03em; transition: background .15s, transform .1s; box-shadow: 0 4px 16px rgba(26,26,46,.25); }
+  .submit-btn:hover { background: var(--blue); }
+  .submit-btn:active { transform: scale(.98); }
+  .submit-btn:disabled { background: #9ca3af; cursor: not-allowed; box-shadow: none; }
+  .submit-note { font-size: 12px; color: var(--muted); margin-top: 10px; }
+
+  .result-card { display: none; background: #fff; border-radius: 14px; padding: 36px 32px; text-align: center; margin-bottom: 32px; box-shadow: 0 4px 24px rgba(0,0,0,.1); border: 2px solid var(--navy); }
+  .result-card.show { display: block; }
+  .result-eyebrow { font-size: 11px; font-weight: 700; color: var(--muted); letter-spacing: .12em; text-transform: uppercase; margin-bottom: 10px; }
+  .result-score { font-family: 'Sora', sans-serif; font-size: 56px; font-weight: 800; color: var(--navy); line-height: 1; }
+  .result-pct { font-size: 18px; color: var(--muted); margin-top: 4px; margin-bottom: 16px; }
+  .result-grade { display: inline-block; font-size: 18px; font-weight: 700; padding: 8px 28px; border-radius: 8px; margin-bottom: 20px; }
+  .g-a { background: #eaf7ef; color: var(--green); }
+  .g-b { background: #eaf1f8; color: var(--blue); }
+  .g-c { background: #fff8ec; color: var(--orange); }
+  .g-d { background: #fdf1f0; color: var(--red); }
+  .result-breakdown { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 8px; }
+  .rb { background: var(--light); border-radius: 8px; padding: 12px; font-size: 12px; color: var(--muted); }
+  .rb strong { display: block; font-size: 22px; font-weight: 700; color: var(--navy); margin-bottom: 2px; }
+  .print-btn { margin-top: 20px; background: transparent; border: 1.5px solid var(--border); color: var(--muted); font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 500; padding: 9px 24px; border-radius: 8px; cursor: pointer; transition: all .15s; }
+  .print-btn:hover { border-color: var(--blue); color: var(--blue); }
+
+  @media print {
+    body { background: white; }
+    .test-header, .progress-wrap, .progress-label, .submit-wrap, .print-btn { display: none !important; }
+    .section-card { box-shadow: none; border: 1px solid #ccc; }
+    .opt.correct { background: #eaf7ef !important; -webkit-print-color-adjust: exact; }
+    .opt.wrong   { background: #fdf1f0 !important; }
+    .result-card.show { border: 2px solid #333; }
+  }
+</style>
+</head>
+<body>
+
+<header class="test-header">
+  <div class="header-inner">
+    <div>
+      <div class="brand-name">Upfront Idiomas</div>
+      <div class="brand-sub">English Course — Test · Classes 21–26</div>
+    </div>
+    <div class="header-badge">Test · C21–C26</div>
+  </div>
+  <div class="progress-wrap"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label"><span id="progressLabel">0 / 30 answered</span></div>
+</header>
+
+<div class="page-wrap">
+
+<div class="result-card" id="resultCard">
+  <div class="result-eyebrow">Your Result</div>
+  <div class="result-score" id="rScore">0/30</div>
+  <div class="result-pct"  id="rPct">0% correct</div>
+  <div class="result-grade" id="rGrade"></div>
+  <div class="result-breakdown" id="rBreakdown"></div>
+  <button class="print-btn" onclick="window.print()">🖨 Print / Save as PDF</button>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     PART 1 — GRAMMAR
+═══════════════════════════════════════════════ -->
+<div class="section-card">
+  <div class="section-header">
+    <div class="section-number">1</div>
+    <div>
+      <div class="section-title">Grammar &amp; Multiple Choice</div>
+      <div class="section-sub">Choose the best answer · Escolha a melhor resposta</div>
+    </div>
+  </div>
+  <div class="section-body">
+
+    <!-- C21: Comparative better/worse -->
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 1 · Class 21</span></div>
+      <div class="q-text">My new blender is _____ the old one — it works much faster.</div>
+      <div class="options" data-q="1" data-ans="B">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> more good than</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> better than</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> gooder than</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> best than</div>
+      </div>
+    </div>
+
+    <!-- C21: Remind -->
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 2 · Class 21</span></div>
+      <div class="q-text">She _____ me to pay the electricity bill before the deadline.</div>
+      <div class="options" data-q="2" data-ans="C">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> charged</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> hoped</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> reminded</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> cost</div>
+      </div>
+    </div>
+
+    <!-- C21: Both of them -->
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 3 · Class 21</span></div>
+      <div class="q-text">I hope she buys _____ — the kettle and the toaster are on sale today.</div>
+      <div class="options" data-q="3" data-ans="A">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> both of them</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> the two</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> either</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> all of them</div>
+      </div>
+    </div>
+
+    <!-- C22: Lend -->
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 4 · Class 22</span></div>
+      <div class="q-text">Can you _____ me your gold necklace for the party tonight?</div>
+      <div class="options" data-q="4" data-ans="D">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> borrow</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> owe</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> save</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> lend</div>
+      </div>
+    </div>
+
+    <!-- C22: Owe -->
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 5 · Class 22</span></div>
+      <div class="q-text">They _____ me 200 dollars from last month. They still haven't paid me back!</div>
+      <div class="options" data-q="5" data-ans="B">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> lent</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> owe</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> borrowed</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> saved</div>
+      </div>
+    </div>
+
+    <!-- C22: Neither -->
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 6 · Class 22</span></div>
+      <div class="q-text">"Do you prefer the silver ring or the gold one?" — "_____ of them. I want the diamond one."</div>
+      <div class="options" data-q="6" data-ans="C">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> Both</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> Either</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> Neither</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> None</div>
+      </div>
+    </div>
+
+    <!-- C23: Should -->
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 7 · Class 23</span></div>
+      <div class="q-text">You _____ sign the contract before the landlord rents it to someone else.</div>
+      <div class="options" data-q="7" data-ans="A">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> should</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> could</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> would</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> shouldn't</div>
+      </div>
+    </div>
+
+    <!-- C23: I don't mind + -ing -->
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 8 · Class 23</span></div>
+      <div class="q-text">I don't mind _____ the apartment — I'm used to living with other people.</div>
+      <div class="options" data-q="8" data-ans="C">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> share</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> to share</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> sharing</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> shared</div>
+      </div>
+    </div>
+
+    <!-- C23: Make up your mind -->
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 9 · Class 23</span></div>
+      <div class="q-text">She needs to _____ soon — the apartment is available only until Friday.</div>
+      <div class="options" data-q="9" data-ans="D">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> take out a loan</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> become crowded</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> pay attention</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> make up her mind</div>
+      </div>
+    </div>
+
+    <!-- C24: Used to -->
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 10 · Class 24</span></div>
+      <div class="q-text">He _____ walk to school every day when he was young.</div>
+      <div class="options" data-q="10" data-ans="B">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> used</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> used to</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> was used</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> would used to</div>
+      </div>
+    </div>
+
+    <!-- C24: Superlative -->
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 11 · Class 24</span></div>
+      <div class="q-text">That skyscraper is _____ building in the entire city — it has 95 floors!</div>
+      <div class="options" data-q="11" data-ans="A">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> the tallest</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> the more tall</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> taller than</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> most tall</div>
+      </div>
+    </div>
+
+    <!-- C24: Yell -->
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 12 · Class 24</span></div>
+      <div class="q-text">Please don't _____ at me. I can hear you perfectly well.</div>
+      <div class="options" data-q="12" data-ans="D">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> lie</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> tie</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> dry</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> yell</div>
+      </div>
+    </div>
+
+    <!-- C25: Tell (told) -->
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 13 · Class 25</span></div>
+      <div class="q-text">She _____ me everything about the engagement. It was such a beautiful story!</div>
+      <div class="options" data-q="13" data-ans="B">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> said</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> told</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> spoke</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> talked</div>
+      </div>
+    </div>
+
+    <!-- C25: Married to -->
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 14 · Class 25</span></div>
+      <div class="q-text">He is married _____ a woman he met in college. They've been together for ten years.</div>
+      <div class="options" data-q="14" data-ans="C">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> with</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> from</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> to</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> for</div>
+      </div>
+    </div>
+
+    <!-- C26: Unfortunately -->
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 15 · Class 26</span></div>
+      <div class="q-text">_____, I won't be able to come to the meeting. Something came up at work.</div>
+      <div class="options" data-q="15" data-ans="A">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> Unfortunately</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> Fortunately</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> Probably</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> Seriously</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     PART 2 — LISTENING
+═══════════════════════════════════════════════ -->
+<div class="section-card">
+  <div class="section-header">
+    <div class="section-number">2</div>
+    <div>
+      <div class="section-title">Listening Comprehension</div>
+      <div class="section-sub">Listen and answer · Ouça e responda</div>
+    </div>
+  </div>
+  <div class="section-body">
+
+    <div class="listen-box">
+      <div class="listen-label">Audio — Conversation</div>
+      <div class="audio-row">
+        <button class="play-btn" onclick="togglePlay()">
+          <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+        <div class="audio-info">
+          <div class="audio-title">Test 4 · Listening Track</div>
+          <div class="audio-hint">A conversation between two friends — Classes 21–26 vocabulary</div>
+        </div>
+      </div>
+      <audio id="audioPlayer" controls></audio>
+      <div class="audio-upload">
+        <label for="audioFileInput">Upload Audio</label>
+        <input type="file" id="audioFileInput" accept="audio/*" onchange="loadAudio(this)">
+        <span id="audioFileName">No file selected</span>
+      </div>
+      <div class="audio-note">🎧 Listen to the conversation and answer questions 16–20.</div>
+    </div>
+
+    <!-- Q16 -->
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 16</span></div>
+      <div class="q-text">What did Patricia borrow from her sister?</div>
+      <div class="options" data-q="16" data-ans="C">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> A gold bracelet</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> A diamond ring</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> A silver necklace</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> A leather purse</div>
+      </div>
+    </div>
+
+    <!-- Q17 -->
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 17</span></div>
+      <div class="q-text">Why does Roberto want to take out a loan?</div>
+      <div class="options" data-q="17" data-ans="A">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> To rent a new apartment</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> To buy a new car</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> To pay his debts</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> To share with a friend</div>
+      </div>
+    </div>
+
+    <!-- Q18 -->
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 18</span></div>
+      <div class="q-text">What does Patricia say about Roberto's old apartment?</div>
+      <div class="options" data-q="18" data-ans="B">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> It was the most expensive in the area</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> It used to be nicer but became too crowded</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> The landlord asked him to leave</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> He should have paid more attention to it</div>
+      </div>
+    </div>
+
+    <!-- Q19 -->
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 19</span></div>
+      <div class="q-text">What happened to Roberto's cousin?</div>
+      <div class="options" data-q="19" data-ans="D">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> She got divorced</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> She broke up with her boyfriend</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> She became a widow</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> She got engaged</div>
+      </div>
+    </div>
+
+    <!-- Q20 -->
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 20</span></div>
+      <div class="q-text">How does Patricia feel about the news?</div>
+      <div class="options" data-q="20" data-ans="B">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> She's worried about the money</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> She's happy and says it's wonderful</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> She doesn't care about it</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> She thinks it was unfortunate</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     PART 3 — READING
+═══════════════════════════════════════════════ -->
+<div class="section-card">
+  <div class="section-header">
+    <div class="section-number">3</div>
+    <div>
+      <div class="section-title">Reading Comprehension</div>
+      <div class="section-sub">Read and answer · Leia e responda</div>
+    </div>
+  </div>
+  <div class="section-body">
+
+    <div class="reading-box">
+      <div class="reading-header">Read the conversation below · Leia a conversa abaixo</div>
+      <div class="reading-text">
+        <p><span class="spk">Carla:</span> Hey Marcus, you look worried. Is everything okay?</p>
+        <p><span class="spk">Marcus:</span> Not really. I'm short of cash this month. My roommate moved out, so now I have to pay all the rent alone. I used to share the bills with him, but now I can't afford it.</p>
+        <p><span class="spk">Carla:</span> That's tough. Maybe you should find someone else to share the apartment with you. Have you thought about it?</p>
+        <p><span class="spk">Marcus:</span> I don't mind sharing, but the apartment has become too crowded with all his old furniture. I need to leave some of it behind or tie everything up and move it out. Unfortunately, I haven't made up my mind yet.</p>
+        <p><span class="spk">Carla:</span> You should pay attention to the deadlines — the landlord told me the rent is due on Friday. Fortunately, my brother is looking for a place. He's reliable and he probably won't owe you anything.</p>
+        <p><span class="spk">Marcus:</span> That sounds great! Tell him to call me. By the way, did you hear about Diana? She got engaged last week!</p>
+        <p><span class="spk">Carla:</span> Yes! She's married to the most wonderful man. I'm so happy for them both.</p>
+      </div>
+    </div>
+
+    <!-- Q21 -->
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 21</span></div>
+      <div class="q-text">Why is Marcus short of cash this month?</div>
+      <div class="options" data-q="21" data-ans="A">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> His roommate moved out and he now pays all the rent alone</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> He lent money to his landlord</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> He borrowed too much and can't pay back</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> He bought new furniture for the apartment</div>
+      </div>
+    </div>
+
+    <!-- Q22 -->
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 22</span></div>
+      <div class="q-text">What does Marcus say about sharing the apartment?</div>
+      <div class="options" data-q="22" data-ans="C">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> He minds sharing because he's shy</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> He used to hate living with people</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> He doesn't mind sharing but the apartment is too crowded</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> He should pay attention to the landlord</div>
+      </div>
+    </div>
+
+    <!-- Q23 -->
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 23</span></div>
+      <div class="q-text">What does Carla say about her brother?</div>
+      <div class="options" data-q="23" data-ans="D">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> He is short of cash and needs help</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> He wants to borrow money from Marcus</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> He already made up his mind to move in</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> He is looking for a place and is reliable</div>
+      </div>
+    </div>
+
+    <!-- Q24 -->
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 24</span></div>
+      <div class="q-text">What does "made up my mind" mean in Marcus's sentence?</div>
+      <div class="options" data-q="24" data-ans="B">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> Invented a story</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> Made a decision</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> Became more intelligent</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> Stopped paying attention</div>
+      </div>
+    </div>
+
+    <!-- Q25 -->
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 25</span></div>
+      <div class="q-text">What piece of news does Marcus share at the end?</div>
+      <div class="options" data-q="25" data-ans="C">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> Diana got divorced</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> Diana became a widow</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> Diana got engaged</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> Diana got married</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     PART 4 — GRAMMAR
+═══════════════════════════════════════════════ -->
+<div class="section-card">
+  <div class="section-header">
+    <div class="section-number">4</div>
+    <div>
+      <div class="section-title">Grammar</div>
+      <div class="section-sub">Complete the sentences · Complete as frases</div>
+    </div>
+  </div>
+  <div class="section-body">
+
+    <!-- C26: Tie -->
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 26 · Class 26</span></div>
+      <div class="q-text">You should _____ your shoelaces before you go out — otherwise you might fall.</div>
+      <div class="options" data-q="26" data-ans="C">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> lie</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> leave</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> tie</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> die</div>
+      </div>
+    </div>
+
+    <!-- C26: Pay attention to -->
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 27 · Class 26</span></div>
+      <div class="q-text">Please _____ the road — it's dangerous to look at your phone while driving.</div>
+      <div class="options" data-q="27" data-ans="B">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> take care</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> pay attention to</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> pick up</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> follow up</div>
+      </div>
+    </div>
+
+    <!-- C26: Fortunately -->
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 28 · Class 26</span></div>
+      <div class="q-text">_____, they found the lost keys before the flight departed. Everyone was relieved.</div>
+      <div class="options" data-q="28" data-ans="D">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> Unfortunately</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> Possibly</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> Probably</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> Fortunately</div>
+      </div>
+    </div>
+
+    <!-- C26: Short of cash / take out a loan -->
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 29 · Class 26</span></div>
+      <div class="q-text">He was _____ this month, so he decided to take out a loan from the bank.</div>
+      <div class="options" data-q="29" data-ans="A">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> short of cash</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> out of mind</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> broken up</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> used to pay</div>
+      </div>
+    </div>
+
+    <!-- C26: Break up / Last -->
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 30 · Class 26</span></div>
+      <div class="q-text">Their relationship didn't _____ long — they _____ after only two months.</div>
+      <div class="options" data-q="30" data-ans="C">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> last / broke down</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> lie / broke</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> last / broke up</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> leave / broken up</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- SUBMIT -->
+<div class="submit-wrap">
+  <button class="submit-btn" id="submitBtn" onclick="submitTest()">Submit Test</button>
+  <div class="submit-note">Answer all 30 questions before submitting · Responda todas as 30 questões antes de enviar</div>
+</div>
+
+</div>
+
+<script>
+const TOTAL = 30;
+let answered = new Set();
+
+document.querySelectorAll('.opt').forEach(opt => {
+  opt.addEventListener('click', function() {
+    const wrap = this.closest('.options');
+    if (wrap.classList.contains('locked')) return;
+    wrap.querySelectorAll('.opt').forEach(o => o.classList.remove('selected'));
+    this.classList.add('selected');
+    answered.add(wrap.dataset.q);
+    updateProgress();
+  });
+});
+
+function updateProgress() {
+  const n = answered.size;
+  document.getElementById('progressFill').style.width = (n / TOTAL * 100) + '%';
+  document.getElementById('progressLabel').textContent = n + ' / ' + TOTAL + ' answered';
+}
+
+function submitTest() {
+  let correct = 0;
+  const sectionScores = { 'Grammar P1': {c:0,t:0}, 'Listening': {c:0,t:0}, 'Reading': {c:0,t:0}, 'Grammar P4': {c:0,t:0} };
+
+  document.querySelectorAll('.options').forEach(wrap => {
+    wrap.classList.add('locked');
+    const ans = wrap.dataset.ans;
+    const qNum = parseInt(wrap.dataset.q);
+    let section = qNum <= 15 ? 'Grammar P1' : qNum <= 20 ? 'Listening' : qNum <= 25 ? 'Reading' : 'Grammar P4';
+    sectionScores[section].t++;
+
+    const selected = wrap.querySelector('.opt.selected');
+    wrap.querySelectorAll('.opt').forEach(o => {
+      o.classList.add('revealed');
+      if (o.dataset.v === ans) o.classList.add('correct');
+    });
+    if (selected) {
+      if (selected.dataset.v === ans) { correct++; sectionScores[section].c++; }
+      else selected.classList.add('wrong');
+    }
+  });
+
+  const pct = Math.round(correct / TOTAL * 100);
+  document.getElementById('rScore').textContent = correct + '/' + TOTAL;
+  document.getElementById('rPct').textContent = pct + '% correct';
+
+  const gradeEl = document.getElementById('rGrade');
+  if (pct >= 90)      { gradeEl.textContent = 'Excellent — A'; gradeEl.className = 'result-grade g-a'; }
+  else if (pct >= 75) { gradeEl.textContent = 'Good — B';      gradeEl.className = 'result-grade g-b'; }
+  else if (pct >= 60) { gradeEl.textContent = 'Average — C';   gradeEl.className = 'result-grade g-c'; }
+  else                { gradeEl.textContent = 'Needs review — D'; gradeEl.className = 'result-grade g-d'; }
+
+  const bd = document.getElementById('rBreakdown');
+  bd.innerHTML = Object.entries(sectionScores).map(([k,v]) =>
+    `<div class="rb"><strong>${v.c}/${v.t}</strong>${k}</div>`).join('');
+
+  const card = document.getElementById('resultCard');
+  card.classList.add('show');
+  card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  document.getElementById('submitBtn').disabled = true;
+}
+
+function loadAudio(input) {
+  if (input.files && input.files[0]) {
+    const url = URL.createObjectURL(input.files[0]);
+    const player = document.getElementById('audioPlayer');
+    player.src = url;
+    player.style.display = 'block';
+    document.getElementById('audioFileName').textContent = input.files[0].name;
+  }
+}
+
+function togglePlay() {
+  const p = document.getElementById('audioPlayer');
+  if (!p.src) return;
+  p.paused ? p.play() : p.pause();
+}
+</script>
+
+</body>
+</html>
