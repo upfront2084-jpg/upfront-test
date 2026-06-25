@@ -192,7 +192,7 @@
       </div>
       <div style="display:flex; gap:10px; align-items:center;">
         <div class="header-badge" id="headerBadge">Writing Task</div>
-        <button class="back-btn" onclick="goBack()">← Voltar</button>
+        <button class="back-btn" onclick="goBack()" style="display:none;">← Voltar</button>
       </div>
     </div>
   </header>
@@ -302,14 +302,14 @@ const TESTS = {
 
 let currentTest = null;
 
-// Auto-open group from portal or show selector
+// Auto-open group from portal (selector is never shown directly)
 (function(){
   const preGroup = localStorage.getItem('uf_writing_group');
   localStorage.removeItem('uf_writing_group');
   if (preGroup && TESTS[parseInt(preGroup)]) {
     openTest(parseInt(preGroup));
   } else {
-    document.getElementById('selector').style.display = 'block';
+    openTest(1); // default to group 1 if no group set
   }
 })();
 
