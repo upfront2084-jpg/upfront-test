@@ -2253,10 +2253,10 @@ function _startListeners(){
   FB.listen('uf_writing_subs',function(){if(CR==='teacher')renderHome();});
   if(CR==='student'&&CU){
     FB.listenUnlock(CU,function(){if(CL)renderClassesInto('levelClassGrid',CL);});
-    // Fallback: re-pull from Firestore every 30s in case real-time listener misses updates
+    // Fallback: re-pull from Firestore every 15s in case real-time listener misses updates
     setInterval(function(){
       FB.pullAll(function(){if(CL)renderClassesInto('levelClassGrid',CL);});
-    },30000);
+    },15000);
   }
 }
 
@@ -2543,7 +2543,9 @@ function renderClassesInto(targetId,lvl){
       }else{
         var oralOn=isProvaEnabled(CU,gi,'oral');
         var writOn=isProvaEnabled(CU,gi,'escrita');
-        if(writOn) html+='<a class="cc-btn" style="background:#0C5460;color:#fff;border-color:#0C5460;" href="'+writUrl+'" target="_blank">✏️ Prova Escrita</a>';
+        if(oralOn) html+='<a class="cc-btn" style="background:#1a1a2e;color:#fff;border-color:#1a1a2e;margin-top:4px;" href="'+oralUrl+'" target="_blank">🎙️ Prova Oral</a>';
+        if(writOn) html+='<a class="cc-btn" style="background:#0C5460;color:#fff;border-color:#0C5460;margin-top:4px;" href="'+writUrl+'" target="_blank">✏️ Prova Escrita</a>';
+        if(!oralOn&&!writOn) html+='<div style="font-size:11px;color:var(--muted);margin-top:6px;">⏳ Aguardando liberação da prova <button onclick="FB.pullAll(function(){if(CL)renderClassesInto(\'levelClassGrid\',CL);})" style="background:none;border:none;color:#0C5460;cursor:pointer;font-size:11px;text-decoration:underline;">🔄 Atualizar</button></div>';
       }
     }
     html+='</div></div>';
