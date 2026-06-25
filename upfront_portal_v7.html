@@ -2523,10 +2523,10 @@ function renderClassesInto(targetId,lvl){
     }else{
       var tu=c.testUrl||'';
       var gi=(c.gi!==undefined)?c.gi:0;
-      if(tu) html+='<button class="cc-btn cc-btn-hw" style="background:#e8f5e9;color:#1b5e20;border-color:#a5d6a7;" onclick="openTestGate(\''+tu+'\')">🔗 Abrir Teste Online</button>';
       var oralUrl=c.oralUrl||'test_teacher_model_c.html';
       var writUrl=c.writUrl||'test_student_writing.html';
       if(isTeacher){
+        if(tu) html+='<button class="cc-btn cc-btn-hw" style="background:#e8f5e9;color:#1b5e20;border-color:#a5d6a7;" onclick="openTestGate(\''+tu+'\')">🔗 Abrir Teste Online</button>';
         html+='<a class="cc-btn cc-btn-pdf-t" href="'+oralUrl+'" target="_blank">📋 Prova Oral</a>';
         html+='<a class="cc-btn" style="background:#0C5460;color:#fff;border-color:#0C5460;" href="'+writUrl+'" target="_blank">✏️ Prova Escrita</a>';
         if(_unlockStudent){
@@ -2539,10 +2539,13 @@ function renderClassesInto(targetId,lvl){
           html+='<div style="font-size:10px;color:var(--muted);margin-top:4px;">↑ Selecione aluno para gerenciar acesso às provas</div>';
         }
       }else{
-        var oralOn=isProvaEnabled(CU,gi,'oral');
         var writOn=isProvaEnabled(CU,gi,'escrita');
-        if(writOn) html+='<a class="cc-btn" style="background:#0C5460;color:#fff;border-color:#0C5460;margin-top:4px;" href="'+writUrl+'" target="_blank">✏️ Prova Escrita</a>';
-        if(!oralOn&&!writOn) html+='<div style="font-size:11px;color:var(--muted);margin-top:6px;">⏳ Aguardando liberação da prova <button onclick="FB.pullAll(function(){if(CL)renderClassesInto(\'levelClassGrid\',CL);})" style="background:none;border:none;color:#0C5460;cursor:pointer;font-size:11px;text-decoration:underline;">🔄 Atualizar</button></div>';
+        if(writOn){
+          if(tu) html+='<button class="cc-btn cc-btn-hw" style="background:#e8f5e9;color:#1b5e20;border-color:#a5d6a7;" onclick="openTestGate(\''+tu+'\')">🔗 Abrir Teste Online</button>';
+          html+='<a class="cc-btn" style="background:#0C5460;color:#fff;border-color:#0C5460;margin-top:4px;" href="'+writUrl+'" target="_blank">✏️ Prova Escrita</a>';
+        }else{
+          html+='<div style="font-size:12px;color:var(--muted);margin-top:6px;text-align:center;">⏳ Prova ainda não liberada</div>';
+        }
       }
     }
     html+='</div></div>';
