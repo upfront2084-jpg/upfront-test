@@ -2253,6 +2253,10 @@ function _startListeners(){
   FB.listen('uf_writing_subs',function(){if(CR==='teacher')renderHome();});
   if(CR==='student'&&CU){
     FB.listenUnlock(CU,function(){if(CL)renderClassesInto('levelClassGrid',CL);});
+    // Fallback: re-pull from Firestore every 30s in case real-time listener misses updates
+    setInterval(function(){
+      FB.pullAll(function(){if(CL)renderClassesInto('levelClassGrid',CL);});
+    },30000);
   }
 }
 
