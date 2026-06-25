@@ -2490,7 +2490,7 @@ function renderClassesInto(targetId,lvl){
     var sub=!isTeacher?loadSub(CU,ck):null;
     var isSubmitted=sub&&sub.submitted;
     var isDraft=sub&&!sub.submitted;
-    if(!isTeacher&&!isClassUnlocked(ck))return;
+    if(!isTeacher&&!isTest&&!isClassUnlocked(ck))return;
     html+='<div class="class-card'+(isTest?' test-card':'')+'">';
     html+='<div class="cc-num">'+lvl+(isTest?' · Revisão':' · Aula')+'</div>';
     html+='<div class="cc-title">'+label+'</div>';
@@ -2530,12 +2530,10 @@ function renderClassesInto(targetId,lvl){
         html+='<a class="cc-btn cc-btn-pdf-t" href="'+oralUrl+'" target="_blank">📋 Prova Oral</a>';
         html+='<a class="cc-btn" style="background:#0C5460;color:#fff;border-color:#0C5460;" href="'+writUrl+'" target="_blank">✏️ Prova Escrita</a>';
         if(_unlockStudent){
-          var oralOn=isProvaEnabled(_unlockStudent,gi,'oral');
-          var writOn=isProvaEnabled(_unlockStudent,gi,'escrita');
+          var provaOn=isProvaEnabled(_unlockStudent,gi,'oral')&&isProvaEnabled(_unlockStudent,gi,'escrita');
           html+='<div style="border-top:1px solid var(--border);margin-top:8px;padding-top:8px;">';
           html+='<div style="font-size:11px;color:var(--muted);margin-bottom:6px;">Acesso de '+esc(_unlockStudent)+':</div>';
-          html+='<button class="cc-btn" style="font-size:11px;background:'+(oralOn?'#d4edda':'#f8d7da')+';color:'+(oralOn?'#155724':'#721c24')+';border-color:'+(oralOn?'#c3e6cb':'#f5c6cb')+';" onclick="toggleProvaAccess(\''+_unlockStudent+'\','+gi+',\'oral\')">'+(oralOn?'🔓 Oral Liberada':'🔒 Liberar Oral')+'</button>';
-          html+='<button class="cc-btn" style="font-size:11px;margin-top:4px;background:'+(writOn?'#d4edda':'#f8d7da')+';color:'+(writOn?'#155724':'#721c24')+';border-color:'+(writOn?'#c3e6cb':'#f5c6cb')+';" onclick="toggleProvaAccess(\''+_unlockStudent+'\','+gi+',\'escrita\')">'+(writOn?'🔓 Escrita Liberada':'🔒 Liberar Escrita')+'</button>';
+          html+='<button class="cc-btn" style="font-size:12px;background:'+(provaOn?'#d4edda':'#f8d7da')+';color:'+(provaOn?'#155724':'#721c24')+';border-color:'+(provaOn?'#c3e6cb':'#f5c6cb')+';" onclick="toggleProvaAmbos(\''+_unlockStudent+'\','+gi+')">'+(provaOn?'🔓 Prova Liberada':'🔒 Liberar Prova')+'</button>';
           html+='</div>';
         }else{
           html+='<div style="font-size:10px;color:var(--muted);margin-top:4px;">↑ Selecione aluno para gerenciar acesso às provas</div>';
@@ -3405,6 +3403,18 @@ function toggleProvaAccess(student,groupIdx,type){
   p[k]=!p[k];
   saveProvaAccess(p);
   if(CL) renderClassesInto('levelClassGrid',CL);
+}
+function toggleProvaAmbos(student,groupIdx){
+  if(!student){showToast('Selecione um aluno primeiro.');return;}
+  var p=loadProvaAccess();
+  var oralKey=getProvaKey(student,groupIdx,'oral');
+  var writKey=getProvaKey(student,groupIdx,'escrita');
+  var wasOn=p[oralKey]&&p[writKey];
+  p[oralKey]=!wasOn;
+  p[writKey]=!wasOn;
+  saveProvaAccess(p);
+  if(CL) renderClassesInto('levelClassGrid',CL);
+  showToast(wasOn?'🔒 Prova bloqueada para '+student:'🔓 Prova liberada para '+student);
 }
 function isProvaEnabled(student,groupIdx,type){
   if(!student)return false;
