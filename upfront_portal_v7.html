@@ -891,7 +891,7 @@ var CLASS_DATA={
 
 var DRIVES={
   A1:[{n:1},{n:2},{n:3},{n:4},{n:5},{n:6},{n:7},
-      {n:'7 — Test 1-7',ck:'A1-7t',test:true,gi:0,folder:'1LXwS9JVYFhtD1X3W3tKjgPb77bVtmOl7',testUrl:'https://drive.google.com/drive/folders/1LXwS9JVYFhtD1X3W3tKjgPb77bVtmOl7',oralUrl:'https://upfront2084-jpg.github.io/upfront-test/teacher0107.html',writUrl:'https://upfront2084-jpg.github.io/upfront-test/writing0107.html'},
+      {n:'7 — Test 1-7',ck:'A1-7t',test:true,gi:0,folder:'1LXwS9JVYFhtD1X3W3tKjgPb77bVtmOl7',testUrl:'https://upfront2084-jpg.github.io/upfront-test/',oralUrl:'https://upfront2084-jpg.github.io/upfront-test/teacher0107.html',writUrl:'https://upfront2084-jpg.github.io/upfront-test/writing0107.html'},
       {n:8},{n:9},{n:10},{n:11},{n:12},{n:13},
       {n:'13 — Test 8-13',ck:'A1-13t',test:true,gi:1,folder:'1jbKX_kUTOXQi_Sri-5IQfI_v45bh1Dtz',testUrl:'https://upfront2084-jpg.github.io/upfront-test/test2.html',oralUrl:'https://upfront2084-jpg.github.io/upfront-test/teacher0813.html',writUrl:'https://upfront2084-jpg.github.io/upfront-test/writing0813.html'}],
   A2:[{n:14},{n:15},{n:16},{n:17},{n:18},{n:19},{n:20},
@@ -3345,9 +3345,10 @@ function openWritingSubModal(){
     html+='</div>';
   });
   html+='</div>';
-  document.getElementById('hwModalTitle').textContent='\u270f\ufe0f Provas Escritas Enviadas';
-  document.getElementById('hwModalBody').innerHTML=html;
-  document.getElementById('hwFeedbackSection').style.display='none';
+  document.getElementById('hwTitle').textContent='\u270f\ufe0f Provas Escritas Enviadas';
+  document.getElementById('hwSub').textContent='Textos enviados pelos alunos';
+  document.getElementById('hwBody').innerHTML=html;
+  document.getElementById('hwActions').innerHTML='<button class="btn btn-outline" onclick="closeHW()">Fechar</button>';
   document.getElementById('hwModal').style.display='flex';
 }
 function renderHome(){
