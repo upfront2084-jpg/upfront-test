@@ -563,8 +563,17 @@ var FB=(function(){
     if(!db||_pushing)return;
     try{db.collection('portal').doc(docId(k)).set({v:v,ts:Date.now()});}catch(e){}
   }
+  function pushLocalToCloud(){
+    if(!db)return;
+    SYNCED_KEYS.forEach(function(k){
+      var v=localStorage.getItem(k);
+      if(v!=null){
+        try{db.collection('portal').doc(docId(k)).set({v:v,ts:Date.now()});}catch(e){}
+      }
+    });
+  }
   init();
-  return {push:push,pullAll:pullAll,listen:listen,pushUnlock:pushUnlock,listenUnlock:listenUnlock,pushRaw:pushRaw,db:function(){return db;}};
+  return {push:push,pullAll:pullAll,listen:listen,pushUnlock:pushUnlock,listenUnlock:listenUnlock,pushRaw:pushRaw,pushLocalToCloud:pushLocalToCloud,db:function(){return db;}};
 })();
 
 // ═══════════════════════════════════════════════
@@ -2205,6 +2214,8 @@ function doLogin(){
   // Pull latest data from Firebase then authenticate
   FB.pullAll(function(){
     if(btn){btn.disabled=false;btn.textContent='Entrar';}
+    // Push local data to Firestore (ensures data created before Firebase is synced up)
+    FB.pushLocalToCloud();
     ADMIN_CREDS=_loadAdminCreds();
     // Admin check
     if(loginTab==='admin'){
