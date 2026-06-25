@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Upfront Idiomas — Writing Task · Classes 14–20</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --navy: #1A1A2E; --blue: #1F3A5F; --teal: #2E7D7D; --teal-l: #e0f2f2;
+    --light: #F5F7FA; --white: #ffffff; --border: #d0d5dd;
+    --text: #1A1A2E; --muted: #6b7280;
+  }
+  body { font-family: 'Inter', sans-serif; background: #eef1f6; color: var(--text); min-height: 100vh; padding-bottom: 60px; }
+
+  /* ── Password Gate ── */
+  #gate {
+    position: fixed; inset: 0; background: var(--navy);
+    display: flex; align-items: center; justify-content: center; z-index: 999;
+  }
+  .gate-box {
+    background: var(--white); border-radius: 16px; padding: 40px 36px;
+    max-width: 360px; width: 90%; text-align: center; box-shadow: 0 8px 32px rgba(0,0,0,.4);
+  }
+  .gate-logo { font-family: 'Sora', sans-serif; font-size: 26px; font-weight: 800; color: var(--navy); margin-bottom: 4px; }
+  .gate-sub { font-size: 12px; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; margin-bottom: 28px; }
+  .gate-label { font-size: 13px; font-weight: 600; color: var(--blue); text-align: left; margin-bottom: 6px; display: block; }
+  .gate-input {
+    width: 100%; padding: 11px 14px; border: 1.5px solid var(--border); border-radius: 8px;
+    font-size: 15px; font-family: inherit; outline: none; margin-bottom: 8px;
+    transition: border-color .2s;
+  }
+  .gate-input:focus { border-color: var(--teal); }
+  .gate-error { font-size: 12px; color: #b91c1c; margin-bottom: 12px; min-height: 18px; }
+  .gate-btn {
+    width: 100%; padding: 12px; background: var(--teal); color: #fff;
+    border: none; border-radius: 8px; font-size: 15px; font-weight: 600;
+    cursor: pointer; font-family: inherit; transition: background .2s;
+  }
+  .gate-btn:hover { background: #265f5f; }
+  .gate-note { margin-top: 16px; font-size: 11px; color: var(--muted); }
+
+  /* ── Writing Page ── */
+  .test-header { background: var(--navy); padding: 0; box-shadow: 0 2px 12px rgba(0,0,0,.3); }
+  .header-inner { max-width: 860px; margin: 0 auto; padding: 18px 32px; display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .brand-name { font-family: 'Sora', sans-serif; font-size: 22px; font-weight: 800; color: #fff; letter-spacing: -.02em; }
+  .brand-sub { font-size: 11px; color: #8892aa; font-weight: 400; letter-spacing: .08em; text-transform: uppercase; margin-top: 2px; }
+  .header-badge { background: var(--teal); color: #fff; font-size: 11px; font-weight: 600; padding: 6px 14px; border-radius: 20px; letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; }
+
+  .page-wrap { max-width: 860px; margin: 0 auto; padding: 32px 24px; }
+  .section-card { background: var(--white); border-radius: 12px; overflow: hidden; margin-bottom: 28px; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+  .section-header { background: var(--blue); padding: 13px 24px; display: flex; align-items: center; gap: 12px; }
+  .section-number { background: var(--teal); color: #fff; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+  .section-title { color: #fff; font-size: 14px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+  .section-sub { color: #a8c4cc; font-size: 12px; margin-top: 1px; }
+  .section-body { padding: 24px; }
+
+  .writing-topic { background: var(--teal-l); border: 1.5px solid var(--teal); border-radius: 8px; padding: 14px 18px; font-size: 16px; font-weight: 700; color: var(--teal); margin-bottom: 14px; }
+  .writing-prompt { font-size: 13.5px; color: var(--text); line-height: 1.65; margin-bottom: 16px; }
+  .hints-box { background: var(--light); border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px; margin-bottom: 20px; }
+  .hints-title { font-size: 11px; font-weight: 700; color: var(--blue); letter-spacing: .08em; text-transform: uppercase; margin-bottom: 8px; }
+  .hints-box ul { padding-left: 20px; }
+  .hints-box li { font-size: 13px; color: var(--text); margin-bottom: 4px; line-height: 1.5; }
+  .hints-box li strong { color: var(--blue); }
+
+  .student-info { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+  .info-field { display: flex; flex-direction: column; gap: 5px; }
+  .info-label { font-size: 11px; font-weight: 700; color: var(--blue); text-transform: uppercase; letter-spacing: .06em; }
+  .info-input {
+    padding: 9px 12px; border: 1.5px solid var(--border); border-radius: 8px;
+    font-size: 14px; font-family: inherit; outline: none; transition: border-color .2s;
+  }
+  .info-input:focus { border-color: var(--teal); }
+
+  .writing-area {
+    width: 100%; min-height: 200px; padding: 14px 16px;
+    border: 1.5px solid var(--border); border-radius: 8px;
+    font-family: 'Inter', sans-serif; font-size: 15px; line-height: 1.7;
+    resize: vertical; outline: none; transition: border-color .2s;
+    color: var(--text);
+  }
+  .writing-area:focus { border-color: var(--teal); }
+  .word-count { font-size: 12px; color: var(--muted); margin-top: 8px; text-align: right; }
+
+  .action-bar { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 20px; }
+  .btn { padding: 11px 22px; border-radius: 8px; font-size: 14px; font-weight: 600; font-family: inherit; cursor: pointer; border: none; transition: all .2s; }
+  .btn-save { background: var(--teal); color: #fff; }
+  .btn-save:hover { background: #265f5f; }
+  .btn-print { background: var(--blue); color: #fff; }
+  .btn-print:hover { background: #162d4a; }
+  .btn-copy { background: var(--light); color: var(--blue); border: 1.5px solid var(--border); }
+  .btn-copy:hover { background: var(--teal-l); border-color: var(--teal); }
+  .btn-clear { background: #fff0f0; color: #b91c1c; border: 1.5px solid #fca5a5; }
+  .btn-clear:hover { background: #fee2e2; }
+
+  .save-toast {
+    display: none; position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    background: var(--teal); color: #fff; padding: 12px 24px; border-radius: 30px;
+    font-size: 14px; font-weight: 600; box-shadow: 0 4px 20px rgba(0,0,0,.2);
+    z-index: 100; white-space: nowrap;
+  }
+
+  #writing-page { display: none; }
+
+  @media (max-width: 600px) {
+    .student-info { grid-template-columns: 1fr; }
+    .header-inner { padding: 14px 18px; }
+    .page-wrap { padding: 20px 14px; }
+  }
+  @media print {
+    #gate, .action-bar { display: none !important; }
+    #writing-page { display: block !important; }
+    .test-header { box-shadow: none; }
+    .section-card { box-shadow: none; border: 1px solid #ccc; }
+    .writing-area { border: 1px solid #ccc; min-height: 240px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── PASSWORD GATE ── -->
+<div id="gate">
+  <div class="gate-box">
+    <div class="gate-logo">Upfront Idiomas</div>
+    <div class="gate-sub">Writing Task · Student Access</div>
+    <label class="gate-label" for="pwInput">Digite a senha de acesso</label>
+    <input class="gate-input" type="password" id="pwInput" placeholder="••••••••" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false">
+    <div class="gate-error" id="gateError"></div>
+    <button class="gate-btn" onclick="checkPassword()">Entrar</button>
+    <div class="gate-note">A senha é fornecida pelo professor no início da aula.</div>
+  </div>
+</div>
+
+<!-- ── WRITING PAGE ── -->
+<div id="writing-page">
+  <header class="test-header">
+    <div class="header-inner">
+      <div>
+        <div class="brand-name">Upfront Idiomas</div>
+        <div class="brand-sub">Writing Task · Classes 14–20</div>
+      </div>
+      <div class="header-badge">Classes 14–20</div>
+    </div>
+  </header>
+
+  <div class="page-wrap">
+    <div class="section-card">
+      <div class="section-header">
+        <div class="section-number">1</div>
+        <div>
+          <div class="section-title">Writing Task — Produção Escrita</div>
+          <div class="section-sub">Leia as instruções e escreva seu texto no espaço abaixo</div>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="writing-topic">✏️ Topic: Describe a Person You Know Well</div>
+        <div class="writing-prompt">Write 6–8 sentences describing a friend, family member or colleague. Include their personality, appearance, and what they like to do.</div>
+        <div class="hints-box">
+          <div class="hints-title">Estruturas esperadas</div>
+          <ul>
+            <li><strong>What's he/she like?</strong> — He's kind, hardworking and calm…</li>
+            <li><strong>What does he/she look like?</strong> — She's tall, good-looking and thin…</li>
+            <li><strong>Have you ever…?</strong> — Have you ever seen him dance?</li>
+            <li><strong>He/she feels like + -ing</strong> — She always feels like going cycling…</li>
+            <li><strong>Kind of / Because of / As usual</strong> — As usual, she forgets to smile…</li>
+          </ul>
+        </div>
+
+        <div class="student-info">
+          <div class="info-field">
+            <span class="info-label">Nome do aluno</span>
+            <input class="info-input" type="text" id="studentName" placeholder="Seu nome completo">
+          </div>
+          <div class="info-field">
+            <span class="info-label">Data</span>
+            <input class="info-input" type="date" id="studentDate">
+          </div>
+        </div>
+
+        <textarea class="writing-area" id="writingArea" placeholder="Escreva seu texto aqui..."></textarea>
+        <div class="word-count" id="wordCount">0 palavras · 0 frases</div>
+
+        <div class="action-bar">
+          <button class="btn btn-save" onclick="saveText()">💾 Salvar rascunho</button>
+          <button class="btn btn-copy" onclick="copyText()">📋 Copiar texto</button>
+          <button class="btn btn-print" onclick="window.print()">🖨️ Imprimir</button>
+          <button class="btn btn-clear" onclick="clearText()">🗑️ Limpar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="save-toast" id="toast"></div>
+
+<script>
+const MASTER_PASSWORD = 'upfront123';
+const STORAGE_KEY = 'upfront_writing_3';
+
+function getPortalPassword() {
+  try { var p = JSON.parse(localStorage.getItem('uf_passwords')); return (p && p.studentExam) ? p.studentExam : MASTER_PASSWORD; } catch(e) { return MASTER_PASSWORD; }
+}
+function checkPassword() {
+  const val = document.getElementById('pwInput').value;
+  const err = document.getElementById('gateError');
+  const validPass = getPortalPassword();
+  if (val === validPass || val === MASTER_PASSWORD) {
+    document.getElementById('gate').style.display = 'none';
+    document.getElementById('writing-page').style.display = 'block';
+    initPage();
+  } else {
+    err.textContent = 'Senha incorreta. Tente novamente.';
+    document.getElementById('pwInput').value = '';
+    document.getElementById('pwInput').focus();
+  }
+}
+
+document.getElementById('pwInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') checkPassword();
+});
+
+function initPage() {
+  document.getElementById('studentDate').value = new Date().toISOString().split('T')[0];
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (saved) {
+    try {
+      const d = JSON.parse(saved);
+      document.getElementById('studentName').value = d.name || '';
+      document.getElementById('studentDate').value = d.date || document.getElementById('studentDate').value;
+      document.getElementById('writingArea').value = d.text || '';
+      updateCount();
+    } catch(e) {}
+  }
+}
+
+function updateCount() {
+  const text = document.getElementById('writingArea').value.trim();
+  const words = text ? text.split(/\s+/).filter(Boolean).length : 0;
+  const sentences = text ? (text.match(/[.!?]+/g) || []).length : 0;
+  document.getElementById('wordCount').textContent = `${words} palavra${words !== 1 ? 's' : ''} · ${sentences} frase${sentences !== 1 ? 's' : ''}`;
+}
+
+document.getElementById('writingArea').addEventListener('input', updateCount);
+
+function saveText() {
+  const data = {
+    name: document.getElementById('studentName').value,
+    date: document.getElementById('studentDate').value,
+    text: document.getElementById('writingArea').value
+  };
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  showToast('✅ Rascunho salvo!');
+}
+
+function copyText() {
+  const name = document.getElementById('studentName').value;
+  const text = document.getElementById('writingArea').value;
+  const full = name ? `${name}\n\n${text}` : text;
+  navigator.clipboard.writeText(full).then(() => showToast('📋 Texto copiado!')).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = full; document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+    showToast('📋 Texto copiado!');
+  });
+}
+
+function clearText() {
+  if (confirm('Tem certeza que deseja limpar o texto?')) {
+    document.getElementById('writingArea').value = '';
+    updateCount();
+    localStorage.removeItem(STORAGE_KEY);
+  }
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.display = 'block';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => { t.style.display = 'none'; }, 2500);
+}
+</script>
+</body>
+</html>
