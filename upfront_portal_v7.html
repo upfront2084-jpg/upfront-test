@@ -567,9 +567,14 @@ var FB=(function(){
     if(!db)return;
     SYNCED_KEYS.forEach(function(k){
       var v=localStorage.getItem(k);
-      if(v!=null){
-        try{db.collection('portal').doc(docId(k)).set({v:v,ts:Date.now()});}catch(e){}
-      }
+      if(v==null)return;
+      var id=docId(k);
+      // Only push if Firestore doesn't have this key yet (local data wins on first upload)
+      db.collection('portal').doc(id).get().then(function(doc){
+        if(!doc.exists){
+          db.collection('portal').doc(id).set({v:v,ts:Date.now()}).catch(function(){});
+        }
+      }).catch(function(){});
     });
   }
   init();
@@ -585,11 +590,12 @@ var ADMIN_CREDS=_loadAdminCreds();
 function loadUsers(){
   var u=LS.get('uf_users');
   if(!u){
+    // Return defaults without saving to Firestore (avoids overwriting real data on fresh devices)
     u={
       teacher:{professor:{name:'Professor Demo',pass:'1234',role:'teacher',students:[]}},
       student:{alice:{name:'Alice Silva',pass:'1234',role:'student'},bob:{name:'Bob Santos',pass:'1234',role:'student'}}
     };
-    LS.set('uf_users',u);
+    localStorage.setItem('uf_users',JSON.stringify(u)); // local only, no Firestore push
   }
   // ensure all teachers have students array
   Object.keys(u.teacher).forEach(function(k){if(!u.teacher[k].students)u.teacher[k].students=[];});
