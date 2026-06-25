@@ -3324,7 +3324,7 @@ function countPendingHW(){
   var myStudents=(us.teacher[CU]&&us.teacher[CU].students)?us.teacher[CU].students:[];
   var count=0;
   var allCks=[];
-  Object.keys(DRIVES).forEach(function(lvl){DRIVES[lvl].forEach(function(c){if(!c.test)allCks.push(c.ck);});});
+  Object.keys(DRIVES).forEach(function(lvl){DRIVES[lvl].forEach(function(c){if(!c.test)allCks.push(c.ck||(lvl+'-'+c.n));});});
   myStudents.forEach(function(s){
     if(!us.student[s])return;
     allCks.forEach(function(ck){
@@ -3339,7 +3339,7 @@ function getPendingHWDetails(){
   var us=loadUsers();
   var myStudents=(us.teacher[CU]&&us.teacher[CU].students)?us.teacher[CU].students:[];
   var allCks=[];
-  Object.keys(DRIVES).forEach(function(lvl){DRIVES[lvl].forEach(function(c){if(!c.test)allCks.push({ck:c.ck,label:String(c.n)});});});
+  Object.keys(DRIVES).forEach(function(lvl){DRIVES[lvl].forEach(function(c){if(!c.test)allCks.push({ck:c.ck||(lvl+'-'+c.n),label:String(c.n)});});});
   var byStudent={};
   myStudents.forEach(function(s){
     if(!us.student[s])return;
@@ -3372,8 +3372,8 @@ function openHWPendingModal(){
   document.getElementById('hwModal').style.display='flex';
 }
 
-function loadWritingSubs(){try{return JSON.parse(localStorage.getItem('uf_writing_subs')||'[]');}catch(e){return[];}}
-function saveWritingSubs(subs){localStorage.setItem('uf_writing_subs',JSON.stringify(subs));}
+function loadWritingSubs(){var v=LS.get('uf_writing_subs');return Array.isArray(v)?v:[];}
+function saveWritingSubs(subs){LS.set('uf_writing_subs',subs);}
 function deleteWritingSub(idx){var s=loadWritingSubs();s.splice(idx,1);saveWritingSubs(s);renderHome();}
 function openWritingSubModal(){
   var subs=loadWritingSubs();
