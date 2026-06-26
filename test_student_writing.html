@@ -6,6 +6,8 @@
 <title>Upfront Idiomas — Writing Task</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
@@ -387,6 +389,19 @@ function clearText() {
   }
 }
 
+function pushWritingToFirestore(subs) {
+  try {
+    if (typeof firebase === 'undefined') return;
+    const app = firebase.apps.length ? firebase.apps[0] : firebase.initializeApp({
+      apiKey:"AIzaSyBhUkQw88N1pq00zBb7-IflTz4bW7VdUpA",
+      authDomain:"upfront-idiomas.firebaseapp.com",
+      projectId:"upfront-idiomas"
+    });
+    const db = firebase.firestore(app);
+    db.collection('portal').doc('uf_writing_subs').set({v: JSON.stringify(subs), ts: Date.now()});
+  } catch(e) {}
+}
+
 function submitWriting() {
   const name = document.getElementById('studentName').value.trim();
   const text = document.getElementById('writingArea').value.trim();
@@ -395,11 +410,12 @@ function submitWriting() {
   if (!text || text.length < 20) { showToast('⚠️ Escreva seu texto antes de enviar.'); return; }
   const t = TESTS[currentTest];
   const sub = { name, text, date, topic: t ? t.topicText : '', groupLabel: t ? t.range : '', groupIdx: currentTest, sentAt: new Date().toISOString() };
-  // Save to localStorage so portal can show notification
+  // Save to localStorage and push to Firestore so teacher receives notification
   try {
     const subs = JSON.parse(localStorage.getItem('uf_writing_subs') || '[]');
     subs.push(sub);
     localStorage.setItem('uf_writing_subs', JSON.stringify(subs));
+    pushWritingToFirestore(subs);
   } catch(e) {}
   // Also save draft
   saveText();
