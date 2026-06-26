@@ -2250,7 +2250,16 @@ function _startListeners(){
   // Listen for real-time changes relevant to current user
   FB.listen('uf_users',function(){ADMIN_CREDS=_loadAdminCreds();});
   FB.listen('uf_prova_access',function(){if(CL)renderClassesInto('levelClassGrid',CL);});
-  FB.listen('uf_writing_subs',function(){if(CR==='teacher')renderHome();});
+  var _lastWritingCount=CR==='teacher'?loadWritingSubs().length:0;
+  FB.listen('uf_writing_subs',function(){
+    if(CR!=='teacher')return;
+    var newCount=loadWritingSubs().length;
+    if(newCount>_lastWritingCount){
+      showToast('✏️ Nova prova escrita recebida!',4000);
+      _lastWritingCount=newCount;
+    }
+    renderHome();
+  });
   if(CR==='student'&&CU){
     FB.listenUnlock(CU,function(){if(CL)renderClassesInto('levelClassGrid',CL);});
     // Fallback: re-pull from Firestore every 15s in case real-time listener misses updates
@@ -3035,7 +3044,10 @@ function _renderCorr(){
     // feedback
     html+='<div class="fb-box"><label>Feedback para '+esc(sub.name)+':</label>';
     html+='<textarea id="fb_'+sub.user+'">'+esc(fb)+'</textarea>';
-    html+='<button class="btn btn-navy" style="margin-top:6px;padding:7px 14px;font-size:12px;" onclick="doSaveFb(\''+ck+'\',\''+sub.user+'\')">Salvar Feedback</button>';
+    html+='<div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;">';
+    html+='<button class="btn btn-navy" style="padding:7px 14px;font-size:12px;" onclick="doSaveFb(\''+ck+'\',\''+sub.user+'\')">Salvar Feedback</button>';
+    html+='<button class="btn" style="padding:7px 14px;font-size:12px;background:#0C5460;color:#fff;border-color:#0C5460;" onclick="printCorrPDF('+si+')">🖨️ Salvar como PDF</button>';
+    html+='</div>';
     html+='</div></div>';
   });
 
@@ -3065,6 +3077,54 @@ function mkCorrRow(num,q,ans,key,isEmpty,isOk){
 }
 
 function doSaveFb(ck,user){saveFbData(ck,user,document.getElementById('fb_'+user).value);showToast('Feedback salvo!');}
+function printCorrPDF(si){
+  var subs=_corrSubs;
+  if(!subs||!subs[si])return;
+  var sub=subs[si];
+  var hw=_corrHW;
+  var ck=_corrCK;
+  var sc=calcScore(hw,sub.data.answers||{});
+  var pct=Math.round(sc.correct/sc.total*100);
+  var dt=sub.data.submittedAt?new Date(sub.data.submittedAt).toLocaleString('pt-BR'):'';
+  var fb=loadFb(ck,sub.user)||'';
+  var rows='';
+  hw.etapas.forEach(function(etapa,ei){
+    etapa.exercises.forEach(function(ex,xi){
+      var label=['A','B','C'][xi];
+      var typeNames={translation:'Tradução PT→EN',match:'Match',unscramble:'Unscramble',findmistake:'Find the Mistake',multiplechoice:'Múltipla Escolha'};
+      rows+='<tr><td colspan="5" style="background:#e9ecef;font-weight:700;padding:6px 8px;">'+esc(etapa.name)+' — '+label+' ('+typeNames[ex.type]+')</td></tr>';
+      ex.items.forEach(function(item,i){
+        var k='e'+ei+'x'+xi+'i'+i;
+        var ans=(sub.data.answers||{})[k]||'';
+        var key=item.en||item.answer||'';
+        var isOk=norm(ans)===norm(key);
+        var isEmpty=!ans.trim();
+        rows+='<tr><td style="text-align:center;">'+(i+1)+'</td>';
+        rows+='<td>'+esc(item.pt||item.q||item.sentence||'')+'</td>';
+        rows+='<td style="color:'+(isEmpty?'#999':(isOk?'#155724':'#721c24'))+'">'+esc(ans||'—')+'</td>';
+        rows+='<td>'+esc(key)+'</td>';
+        rows+='<td style="color:'+(isEmpty?'#999':(isOk?'#155724':'#721c24'))+';text-align:center;">'+(isEmpty?'Branco':(isOk?'✓':'✗'))+'</td></tr>';
+      });
+    });
+  });
+  var win=window.open('','_blank');
+  win.document.write('<!DOCTYPE html><html><head><meta charset="utf-8"><title>Correção — '+esc(sub.name)+'</title>');
+  win.document.write('<style>body{font-family:Arial,sans-serif;font-size:13px;margin:24px;}h1{font-size:18px;margin-bottom:4px;}');
+  win.document.write('.info{color:#555;margin-bottom:16px;font-size:12px;}');
+  win.document.write('table{width:100%;border-collapse:collapse;margin-bottom:16px;}th,td{border:1px solid #ccc;padding:5px 8px;}th{background:#1a1a2e;color:#fff;}');
+  win.document.write('.score{background:#f0f0f0;padding:10px;border-radius:6px;margin-bottom:12px;font-weight:700;}');
+  win.document.write('.fb{background:#fff3cd;border:1px solid #ffc107;border-radius:6px;padding:10px;margin-top:12px;white-space:pre-wrap;}');
+  win.document.write('@media print{button{display:none!important;}}');
+  win.document.write('</style></head><body>');
+  win.document.write('<h1>Correção de Homework</h1>');
+  win.document.write('<div class="info">'+esc(hw.title)+' &bull; Aluno: '+esc(sub.name)+' &bull; '+esc(dt)+'</div>');
+  win.document.write('<div class="score">Resultado: '+sc.correct+'/'+sc.total+' ('+pct+'%)</div>');
+  win.document.write('<table><thead><tr><th>#</th><th>Questão</th><th>Resposta do Aluno</th><th>Gabarito</th><th>Status</th></tr></thead><tbody>'+rows+'</tbody></table>');
+  if(fb)win.document.write('<div class="fb"><strong>💬 Feedback do Professor:</strong><br>'+esc(fb)+'</div>');
+  win.document.write('<br><button onclick="window.print()" style="background:#1a1a2e;color:#fff;border:none;padding:10px 24px;border-radius:8px;font-size:14px;cursor:pointer;">🖨️ Imprimir / Salvar PDF</button>');
+  win.document.write('</body></html>');
+  win.document.close();
+}
 function closeCORR(){document.getElementById('corrModal').style.display='none';}
 
 
@@ -3117,10 +3177,10 @@ function calcScore(hw,answers){
   return{total:total,correct:correct};
 }
 
-function showToast(msg){
+function showToast(msg,dur){
   var old=document.querySelector('.toast');if(old)old.remove();
   var t=document.createElement('div');t.className='toast';t.textContent=msg;
-  document.body.appendChild(t);setTimeout(function(){t.style.opacity='0';setTimeout(function(){t.remove();},300);},2200);
+  document.body.appendChild(t);setTimeout(function(){t.style.opacity='0';setTimeout(function(){t.remove();},300);},(dur||2200));
 }
 
 
