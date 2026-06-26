@@ -3388,6 +3388,25 @@ function removeStudentFromTeacher(tk,sk){
 // ═══════════════════════════════════════════════
 //  HOME VIEW
 // ═══════════════════════════════════════════════
+function syncStudentHWToCloud(){
+  if(CR!=='student'||!CU)return;
+  var allCks=[];
+  Object.keys(DRIVES).forEach(function(lvl){DRIVES[lvl].forEach(function(c){if(!c.test)allCks.push(c.ck||(lvl+'-'+c.n));});});
+  allCks.forEach(function(ck){
+    var k=hwKey(CU,ck);
+    var v=localStorage.getItem(k);
+    if(!v)return;
+    try{var d=JSON.parse(v);if(!d||!d.submitted)return;}catch(e){return;}
+    var db=FB.db();
+    if(!db)return;
+    var id=k.replace(/[^a-zA-Z0-9_-]/g,'_');
+    db.collection('portal').doc(id).get().then(function(doc){
+      if(!doc.exists){
+        db.collection('portal').doc(id).set({v:v,ts:Date.now()}).catch(function(){});
+      }
+    }).catch(function(){});
+  });
+}
 function countPendingHW(){
   if(CR!=='teacher')return 0;
   var us=loadUsers();
@@ -3474,6 +3493,7 @@ function renderHome(){
   var pending=CR==='teacher'?countPendingHW():0;
   var writingSubs=CR==='teacher'?loadWritingSubs().length:0;
   var html='<div class="home-greeting">Ol\u00e1, '+esc(name)+'! 👋</div>';
+  if(CR==='student') syncStudentHWToCloud();
   if(pending>0){
     html+='<div style="background:#fff3cd;border:1px solid #ffc107;border-radius:10px;padding:12px 16px;margin-bottom:1rem;display:flex;align-items:center;gap:12px;">';
     html+='<span style="font-size:24px;">📬</span>';
@@ -3490,6 +3510,12 @@ function renderHome(){
     html+='<button onclick="openWritingSubModal()" style="background:#1b5e20;color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;">📄 Ver Provas Enviadas</button></div></div>';
   }
   html+='<div class="home-sub">'+(isTeacher?'Portal do Professor — Upfront Idiomas':'Portal do Aluno — Upfront Idiomas')+'</div>';
+  if(isTeacher&&pending===0){
+    html+='<div style="margin-bottom:1rem;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:10px;">';
+    html+='<span>📬 Nenhum homework pendente</span>';
+    html+='<button onclick="FB.pullAll(function(){renderHome();})" style="background:none;border:1px solid var(--border);border-radius:6px;padding:3px 10px;font-size:11px;cursor:pointer;color:var(--muted);">🔄 Atualizar</button>';
+    html+='</div>';
+  }
   html+='<div class="home-grid">';
   html+='<div class="home-card" onclick="showView(\'aulas\')">';
   html+='<div class="home-card-icon">📚</div>';
