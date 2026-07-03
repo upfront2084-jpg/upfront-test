@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Upfront Idiomas — Evaluation · Classes 34–39</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --navy: #1A1A2E; --blue: #1F3A5F; --teal: #2E7D7D; --teal-l: #e0f2f2;
+    --light: #F5F7FA; --white: #ffffff; --border: #d0d5dd;
+    --red: #8B1A1A; --green: #1a5c35; --orange: #b85c00;
+    --text: #1A1A2E; --muted: #6b7280;
+  }
+  body { font-family: 'Inter', sans-serif; background: #eef1f6; color: var(--text); min-height: 100vh; padding-bottom: 60px; }
+  .progress-wrap { background: var(--navy); padding: 0; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,.2); }
+  .progress-inner { max-width: 860px; margin: 0 auto; padding: 8px 24px; display: flex; align-items: center; gap: 14px; }
+  .progress-bar { flex: 1; height: 6px; background: #334; border-radius: 3px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--teal); border-radius: 3px; width: 0%; transition: width .3s; }
+  .progress-label { font-size: 12px; color: #8892aa; white-space: nowrap; font-weight: 500; }
+  .test-header { background: var(--navy); padding: 0; box-shadow: 0 2px 12px rgba(0,0,0,.3); }
+  .header-inner { max-width: 860px; margin: 0 auto; padding: 18px 32px; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+  .brand-name { font-family: 'Sora', sans-serif; font-size: 22px; font-weight: 800; color: #fff; letter-spacing: -.02em; }
+  .brand-sub { font-size: 11px; color: #8892aa; font-weight: 400; letter-spacing: .08em; text-transform: uppercase; margin-top: 2px; }
+  .header-badge { background: var(--teal); color: #fff; font-size: 11px; font-weight: 600; padding: 6px 14px; border-radius: 20px; letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; }
+  .page-wrap { max-width: 860px; margin: 0 auto; padding: 32px 24px; }
+  .section-card { background: var(--white); border-radius: 12px; overflow: hidden; margin-bottom: 28px; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+  .section-header { background: var(--blue); padding: 13px 24px; display: flex; align-items: center; gap: 12px; }
+  .section-number { background: var(--teal); color: #fff; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+  .section-title { color: #fff; font-size: 14px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+  .section-sub { color: #a8c4cc; font-size: 12px; margin-top: 1px; }
+  .q-block { padding: 20px 24px; border-bottom: 1px solid #f0f2f5; }
+  .q-block:last-child { border-bottom: none; }
+  .q-meta { margin-bottom: 6px; }
+  .q-tag { display: inline-block; background: var(--teal); color: #fff; font-size: 10px; font-weight: 700; padding: 3px 9px; border-radius: 20px; letter-spacing: .06em; text-transform: uppercase; }
+  .q-text { font-size: 15px; font-weight: 500; color: var(--navy); line-height: 1.55; margin-bottom: 12px; }
+  .options { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .opt { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 8px; cursor: pointer; transition: all .15s; font-size: 14px; color: var(--text); background: var(--white); user-select: none; }
+  .opt:hover { border-color: var(--teal); background: var(--teal-l); }
+  .opt.selected { border-color: var(--teal); background: var(--teal-l); color: var(--teal); font-weight: 600; }
+  .opt.correct  { border-color: #1a5c35; background: #e6f4ed; color: #1a5c35; font-weight: 600; }
+  .opt.wrong    { border-color: var(--red); background: #fdeaea; color: var(--red); font-weight: 600; }
+  .opt-letter { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 50%; background: var(--light); font-size: 11px; font-weight: 700; color: var(--blue); flex-shrink: 0; }
+  .opt.selected .opt-letter { background: var(--teal); color: #fff; }
+  .opt.correct  .opt-letter { background: #1a5c35; color: #fff; }
+  .opt.wrong    .opt-letter { background: var(--red); color: #fff; }
+  .reading-box { margin: 0 24px 20px; background: var(--white); border: 1.5px solid var(--border); border-radius: 10px; overflow: hidden; }
+  .reading-header { background: var(--light); padding: 10px 18px; font-size: 11px; font-weight: 700; color: var(--blue); letter-spacing: .08em; text-transform: uppercase; border-bottom: 1px solid var(--border); }
+  .reading-text { padding: 18px; font-size: 13.5px; line-height: 1.75; color: var(--text); }
+  .reading-text p { margin-bottom: 12px; }
+  .reading-text p:last-child { margin-bottom: 0; }
+  .listen-box { margin: 0 24px 4px; background: var(--light); border: 1.5px solid var(--border); border-radius: 10px; padding: 16px 20px; }
+  .listen-label { font-size: 11px; font-weight: 700; color: var(--blue); letter-spacing: .08em; text-transform: uppercase; margin-bottom: 12px; }
+  .audio-player-card { display: flex; align-items: center; gap: 14px; background: #fff; border: 1.5px solid var(--border); border-radius: 10px; padding: 14px 18px; }
+  .pp-btn { width: 44px; height: 44px; border-radius: 50%; background: var(--blue); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background .15s; }
+  .pp-btn svg { width: 22px; height: 22px; fill: #fff; }
+  .audio-right { flex: 1; min-width: 0; }
+  .audio-title-text { font-size: 13px; font-weight: 600; color: var(--navy); margin-bottom: 9px; }
+  .prog-row { display: flex; align-items: center; gap: 10px; }
+  .prog-track { flex: 1; height: 4px; background: #e0e5ee; border-radius: 2px; cursor: pointer; }
+  .prog-fill { height: 100%; background: var(--teal); border-radius: 2px; width: 0%; transition: width .3s; }
+  .audio-timer { font-size: 11px; color: var(--muted); flex-shrink: 0; min-width: 34px; text-align: right; font-variant-numeric: tabular-nums; }
+  .audio-note { font-size: 11px; color: var(--muted); font-style: italic; margin-top: 8px; }
+  .audio-upload { margin-top: 10px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .audio-upload label { background: var(--blue); color: #fff; padding: 7px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; }
+  .audio-upload span { font-size: 11px; color: var(--muted); }
+  #audioFileInput6 { display: none; }
+  .submit-wrap { text-align: center; padding: 8px 0 32px; }
+  .submit-btn { background: var(--navy); color: #fff; border: none; padding: 14px 40px; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: background .15s; }
+  .submit-btn:hover { background: #2d2d50; }
+  .submit-btn:disabled { background: #ccc; cursor: not-allowed; }
+  .print-btn { background: var(--teal); color: #fff; border: none; padding: 10px 24px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; margin-top: 12px; display: none; }
+  .result-card { display: none; background: #fff; border-radius: 14px; padding: 36px 32px; text-align: center; margin-bottom: 28px; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+  .result-score { font-family: 'Sora', sans-serif; font-size: 64px; font-weight: 800; color: var(--navy); line-height: 1; }
+  .result-total { font-size: 18px; color: var(--muted); margin-top: 4px; }
+  .result-grade { display: inline-block; margin: 16px 0; padding: 8px 28px; border-radius: 24px; font-size: 16px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+  .result-breakdown { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-top: 24px; }
+  .breakdown-item { background: var(--light); border-radius: 8px; padding: 14px 10px; }
+  .breakdown-label { font-size: 11px; font-weight: 600; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; margin-bottom: 6px; }
+  .breakdown-score { font-size: 22px; font-weight: 700; color: var(--navy); }
+  .breakdown-max { font-size: 11px; color: var(--muted); }
+  @media (max-width: 600px) { .options { grid-template-columns: 1fr; } .header-inner { padding: 14px 16px; } .result-breakdown { grid-template-columns: repeat(2,1fr); } }
+  @media print { .test-header, .progress-wrap, .submit-wrap, .print-btn { display: none !important; } .section-card { box-shadow: none; border: 1px solid #ccc; } }
+</style>
+</head>
+<body>
+
+<header class="test-header">
+  <div class="header-inner">
+    <div>
+      <div class="brand-name">Upfront Idiomas</div>
+      <div class="brand-sub">English Course — Evaluation · Classes 34–39</div>
+    </div>
+    <div class="header-badge">Test 6 · Classes 34–39</div>
+  </div>
+</header>
+<div class="progress-wrap">
+  <div class="progress-inner">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="progress-label" id="progressLabel">0 / 30 answered</div>
+  </div>
+</div>
+
+<div class="page-wrap">
+
+<div class="result-card" id="resultCard">
+  <div style="font-size:13px;font-weight:600;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;">Your Score</div>
+  <div class="result-score" id="resultScore">0</div>
+  <div class="result-total">out of 30</div>
+  <div class="result-grade" id="resultGrade"></div>
+  <div class="result-breakdown">
+    <div class="breakdown-item"><div class="breakdown-label">Grammar P1</div><div class="breakdown-score" id="br1">0</div><div class="breakdown-max">/ 15</div></div>
+    <div class="breakdown-item"><div class="breakdown-label">Listening</div><div class="breakdown-score" id="br2">0</div><div class="breakdown-max">/ 5</div></div>
+    <div class="breakdown-item"><div class="breakdown-label">Reading</div><div class="breakdown-score" id="br3">0</div><div class="breakdown-max">/ 5</div></div>
+    <div class="breakdown-item"><div class="breakdown-label">Grammar P4</div><div class="breakdown-score" id="br4">0</div><div class="breakdown-max">/ 5</div></div>
+  </div>
+  <button class="print-btn" id="printBtn" onclick="window.print()">Print / Save PDF</button>
+</div>
+
+<!-- PART 1 -->
+<div class="section-card">
+  <div class="section-header">
+    <div class="section-number">1</div>
+    <div>
+      <div class="section-title">Grammar — Classes 34–39</div>
+      <div class="section-sub">Choose the best option · Escolha a melhor opcao</div>
+    </div>
+  </div>
+
+  <div class="q-block">
+    <div class="q-meta"><span class="q-tag">Q 01</span></div>
+    <div class="q-text">The letter _____ by the secretary yesterday morning.</div>
+    <div class="options" data-q="1" data-ans="B">
+      <div class="opt" data-v="A"><span class="opt-letter">A</span> was writing</div>
+      <div class="opt" data-v="B"><span class="opt-letter">B</span> was written</div>
+      <div class="opt" data-v="C"><span class="opt-letter">C</span> wrote</div>
+      <div class="opt" data-v="D"><span class="opt-letter">D</span> has written</div>
+    </div>
+  </div>
+
+  <div class="q-block">
+    <div class="q-meta"><span class="q-tag">Q 02</span></div>
+    <div class="q-text">This bridge _____ in 1920 by a famous engineer.</div>
+    <div class="options" data-q="2" data-ans="C">
+      <div class="opt" data-v="A"><span class="opt-letter">A</span> built</div>
+      <div class="opt" data-v="B"><span class="opt-letter">B</span> has built</div>
+      <div class="opt" data-v="C"><span class="opt-letter">C</span> was built</div>
+      <div class="opt" data-v="D"><span class="opt-letter">D</span> were built</div>
+    </div>
+  </div>
+
+  <div class="q-block">
+    <div class="q-meta"><span class="q-tag">Q 03</span></div>
+    <div class="q-text">English _____ all over the world as a second language.</div>
+    <div class="options" data-q="3" data-ans="A">
+      <div class="opt" data-v="A"><span class="opt-letter">A</span> is spoken</div>
+      <div class="opt" data-v="B"><span class="opt-letter">B</span> speaks</div>
+      <div class="opt" data-v="C"><span class="opt-letter">C</span> was speaking</div>
+      <div class="opt" data-v="D"><span class="opt-letter">D</span> spoke</div>
+    </div>
+  </div>
+
+  <div class="q-block">
+    <div class="q-meta"><span class="q-tag">Q 04</span></div>
+    <div class="q-text">You look exhausted. You _____ get some rest tonight.</div>
+    <div class="options" data-q="4" data-ans="C">
+      <div class="opt" data-v="A"><span class="opt-letter">A</span> might</div>
+      <div class="opt" data-v="B"><span class="opt-letter">B</span> could</div>
+      <div class="opt" data-v="C"><span class="opt-letter">C</span> should</div>
+      <div class="opt" data-v="D"><span class="opt-letter">D</span> must not</div>
+    </div>
+  </div>
+
+  <div class="q-block">
+    <div class="q-meta"><span class="q-tag">Q 05</span></div>
+    <div class="q-text">You _____ show your passport at the border. It's required by law.</div>
+    <div class="options" data-q="5" data-ans="D">
+      <div class="opt" data-v="A"><span class="opt-letter">A</span> should</div>
+      <div class="opt" data-v="B"><span class="opt-letter">B</span> might</div>
+      <div class="opt" data-v="C"><span class="opt-letter">C</span> could</div>
+      <div class="opt" data-v="D"><span class="opt-letter">D</span> must</div>
+    </div>
+  </div>
+
+  <div class="q-block">
+    <div class="q-meta"><span class="q-tag">Q 06</span></div>
+    <div class="q-text">She _____ come to the party. She hasn't decided yet.</div>
+    <div class="options" data-q="6" data-ans="B">
+      <div class="opt" data-v="A"><span class="opt-letter">A</span> must</div>
+      <div class="opt" data-v="B"><span class="opt-letter">B</span> might</div>
+      <div class="opt" data-v="C"><span class="opt-letter">C</span> should</div>
+      <div class="opt" data-v="D"><span class="opt-letter">D</span> can't</div>
+    </div>
+  </div>
+
+  <div class="q-block">
+    <div class="q-meta"><span class="q-tag">Q 07</span></div>
+    <div class="q-text">If it _____ tomorrow, we will cancel the outdoor event.</div>
+    <div class="options" data-q="7" data-ans="A">
+      <div class="opt" data-v="A"><span class="opt-letter">A</span> rains</div>
+      <div class="opt" data-v="B"><span class="opt-letter">B</span> will rain</div>
+      <div class="opt" data-v="C"><span class="opt-letter">C</span> rained</div>
+      <div class="opt" data-v="D"><span class="opt-letter">D</span> is raining</div>
+    </div>
+  </div>
+
+  <div class="q-block">
+    <div class="q-meta"><span class="q-tag">Q 08</span></div>
+    <div class="q-text">If you study every day, you _____ the exam easily.</div>
+    <div class="options" data-q="8" data-ans="C">
+      <div class="opt" data-v="A"><span class="opt-letter">A</span> pass</div>
+      <div class="opt" data-v="B"><span class="opt-letter">B</span> passed</div>
+      <div class="opt" data-v="C"><span class="opt-letter">C</span> will pass</div>
+      <div class="opt" data-v="D"><span class="opt-letter">D</span> would pass</div>
+    </div>
+  </div>
+
+  <div class="q-block">
+    <div class="q-meta"><span class="q-tag">Q 09</span></div>
+    <div class="q-text">If I _____ a million dollars, I would travel around the world.</div>
+    <div class="options" data-q="9" data-ans="B">
+      <div class="opt" data-v="A"><span class="opt-letter">A</span> have</div>
+      <div class="opt" data-v="B"><span class="opt-letter">B</span> had</div>
+      <div class="opt" data-v="C"><span class="opt-letter">C</span> will have</div>
+      <div class="opt" data-v="D"><span class="opt-letter">D</span> would have</div>
+    </div>
+  </div>
+
+  <div class="q-block">
+    <div class="q-meta"><span class="q-tag">Q 10</span></div>
+    <div class="q-text">She would learn French if she _____ more free time.</div>
+    <div class="options" data-q="10" data-ans="C">
+      <div class="opt" data-v="A"><span class="opt-letter">A</span> has</div>
+      <div class="opt" data-v="B"><span class="opt-letter">B</span> will have</div>
+      <div class="opt" data-v="C"><span class="opt-letter">C</span> had</div>
+      <div class="opt" data-v="D"><span class="opt-letter">D</span> would have</div>
+    </div>
+  </div>
+
+  <div class="q-block">
+    <div class="q-meta"><span class="q-tag">Q 11</span></div>
+    <div class="q-text">He said he _____ tired after the long flight.</div>
+    <div class="options" data-q="11" data-ans="C">
+      <div class="opt" data-v="A"><span class="opt-letter">A</span> is</div>
+      <div class="opt" data-v="B"><span class="opt-letter">B</span> will be</div>
+      <div class="opt" data-v="C"><span class="opt-letter">C</span> was</div>
+      <div class="opt" data-v="D"><span class="opt-letter">D</span> were</div>
+    </div>
+  </div>
+
+  <div class="q-block">
+    <div class="q-meta"><span class="q-tag">Q 12</span></div>
+    <div class="q-text">She told me she _____ call me as soon as she arrived.</div>
+    <div class="options" data-q="12" data-ans="B">
+      <div class="opt" data-v="A"><span class="opt-letter">A</span> will</div>
+      <div class="opt" data-v="B"><span class="opt-letter">B</span> would</div>
+      <div class="opt" data-v="C"><span class="opt-letter">C</span> could</div>
+      <div class="opt" data-v="D"><span class="opt-letter">D</span> must</div>
+    </div>
+  </div>
+
+  <div class="q-block">
+    <div class="q-meta"><span class="q-tag">Q 13</span></div>
+    <div class="q-text">The woman _____ works here has been my colleague for five years.</div>
+    <div class="options" data-q="13" data-ans="C">
+      <div class="opt" data-v="A"><span class="opt-letter">A</span> which</div>
+      <div class="opt" data-v="B"><span class="opt-letter">B</span> where</div>
+      <div class="opt" data-v="C"><span class="opt-letter">C</span> who</div>
+      <div class="opt" data-v="D"><span class="opt-letter">D</span> whose</div>
+    </div>
+  </div>
+
+  <div class="q-block">
+    <div class="q-meta"><span class="q-tag">Q 14</span></div>
+    <div class="q-text">This is the book _____ I told you about last week.</div>
+    <div class="options" data-q="14" data-ans="D">
+      <div class="opt" data-v="A"><span class="opt-letter">A</span> who</div>
+      <div class="opt" data-v="B"><span class="opt-letter">B</span> where</div>
+      <div class="opt" data-v="C"><span class="opt-letter">C</span> whose</div>
+      <div class="opt" data-v="D"><span class="opt-letter">D</span> which</div>
+    </div>
+  </div>
+
+  <div class="q-block">
+    <div class="q-meta"><span class="q-tag">Q 15</span></div>
+    <div class="q-text">The city _____ I was born has changed a lot over the years.</div>
+    <div class="options" data-q="15" data-ans="D">
+      <div class="opt" data-v="A"><span class="opt-letter">A</span> who</div>
+      <div class="opt" data-v="B"><span class="opt-letter">B</span> which</div>
+      <div class="opt" data-v="C"><span class="opt-letter">C</span> that</div>
+      <div class="opt" data-v="D"><span class="opt-letter">D</span> where</div>
+    </div>
+  </div>
+</div>
+
+<!-- PART 2: LISTENING -->
+<div class="section-card">
+  <div class="section-header">
+    <div class="section-number">2</div>
+    <div>
+      <div class="section-title">Listening Comprehension</div>
+      <div class="section-sub">Listen to the audio and answer · Ouca o audio e responda</div>
+    </div>
+  </div>
+
+  <div class="listen-box">
+    <div class="listen-label">Audio — Sofia &amp; Pedro: Planning a Trip to Europe</div>
+    <div class="audio-player-card">
+      <button class="pp-btn" id="ppBtn6" onclick="toggleAudio6()">
+        <svg id="icPlay6" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        <svg id="icPause6" viewBox="0 0 24 24" style="display:none"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+      </button>
+      <div class="audio-right">
+        <div class="audio-title-text">Sofia &amp; Pedro — Classes 34–39</div>
+        <div class="prog-row">
+          <div class="prog-track" id="progTrack6"><div class="prog-fill" id="progFill6"></div></div>
+          <span class="audio-timer" id="audioTimer6">0:00</span>
+        </div>
+      </div>
+    </div>
+    <audio id="theAudio6">
+      <source src="" type="audio/mpeg">
+    </audio>
+    <div class="audio-note">Press play to listen. You can listen more than once. · Pressione play. Pode ouvir mais de uma vez.</div>
+    <div class="audio-upload">
+      <label for="audioFileInput6">Load Audio File</label>
+      <span id="audioFileName6">No file loaded</span>
+      <input type="file" id="audioFileInput6" accept="audio/*">
+    </div>
+  </div>
+
+  <div class="q-block">
+    <div class="q-meta"><span class="q-tag">Q 16</span></div>
+    <div class="q-text">What are Sofia and Pedro planning to do?</div>
+    <div class="options" data-q="16" data-ans="B">
+      <div class="opt" data-v="A"><span class="opt-letter">A</span> Move to another city</div>
+      <div class="opt" data-v="B"><span class="opt-letter">B</span> Travel to Europe</div>
+      <div class="opt" data-v="C"><span class="opt-letter">C</span> Visit a museum nearby</div>
+      <div class="opt" data-v="D"><span class="opt-letter">D</span> Book a cooking class</div>
+    </div>
+  </div>
+
+  <div class="q-block">
+    <div class="q-meta"><span class="q-tag">Q 17</span></div>
+    <div class="q-text">What does Sofia suggest about the suitcase?</div>
+    <div class="options" data-q="17" data-ans="C">
+      <div class="opt" data-v="A"><span class="opt-letter">A</span> Take the biggest one</div>
+      <div class="opt" data-v="B"><span class="opt-letter">B</span> Buy a new one</div>
+      <div class="opt" data-v="C"><span class="opt-letter">C</span> Take the smaller one</div>
+      <div class="opt" data-v="D"><span class="opt-letter">D</span> Borrow one from a friend</div>
+    </div>
+  </div>
+
+  <div class="q-block">
+    <div class="q-meta"><span class="q-tag">Q 18</span></div>
+    <div class="q-text">How did Sofia book the hotel?</div>
+    <div class="options" data-q="18" data-ans="B">
+      <div class="opt" data-v="A"><span class="opt-letter">A</span> By phone</div>
+      <div class="opt" data-v="B"><span class="opt-letter">B</span> Online</div>
+      <div class="opt" data-v="C"><span class="opt-letter">C</span> Through a travel agent</div>
+      <div class="opt" data-v="D"><span class="opt-letter">D</span> At the airport</div>
+    </div>
+  </div>
+
+  <div class="q-block">
+    <div class="q-meta"><span class="q-tag">Q 19</span></div>
+    <div class="q-text">What did Sofia read about the castle they want to visit?</div>
+    <div class="options" data-q="19" data-ans="C">
+      <div class="opt" data-v="A"><span class="opt-letter">A</span> It was rebuilt recently</div>
+      <div class="opt" data-v="B"><span class="opt-letter">B</span> It is closed on weekdays</div>
+      <div class="opt" data-v="C"><span class="opt-letter">C</span> It was built in the 14th century</div>
+      <div class="opt" data-v="D"><span class="opt-letter">D</span> It has never been open to tourists</div>
+    </div>
+  </div>
+
+  <div class="q-block">
+    <div class="q-meta"><span class="q-tag">Q 20</span></div>
+    <div class="q-text">What did Sofia's friend say about the pasta at the restaurant?</div>
+    <div class="options" data-q="20" data-ans="D">
+      <div class="opt" data-v="A"><span class="opt-letter">A</span> It was too expensive</div>
+      <div class="opt" data-v="B"><span class="opt-letter">B</span> It was made in a factory</div>
+      <div class="opt" data-v="C"><span class="opt-letter">C</span> She didn't enjoy it</div>
+      <div class="opt" data-v="D"><span class="opt-letter">D</span> It was the best she had ever tried</div>
+    </div>
+  </div>
+</div>
+
+<!-- PART 3: READING -->
+<div class="section-card">
+  <div class="section-header">
+    <div class="section-number">3</div>
+    <div>
+      <div class="section-title">Reading Comprehension</div>
+      <div class="section-sub">Read the text and answer the questions</div>
+    </div>
+  </div>
+
+  <div class="reading-box">
+    <div class="reading-header">Lucas's Surprise Party for Beatriz</div>
+    <div class="reading-text">
+      <p>Lucas has been planning a surprise party for his best friend Beatriz for two weeks. The party will be held at Lucas's apartment, which was decorated by his sister the day before. Beatriz has no idea about the party — Lucas told everyone to keep it a secret.</p>
+      <p>Lucas booked a cake from a bakery that is known for its amazing desserts. The cake was made with chocolate and strawberries, which are Beatriz's favorites. Lucas said: "If everything goes well, she will love it."</p>
+      <p>Lucas's friend Marco told him that Beatriz might arrive late because she had an appointment in the afternoon. Lucas replied: "If she arrives late, we will wait for her outside."</p>
+      <p>When Beatriz finally arrived, she was completely surprised. "I can't believe you did all this for me!" she said. Lucas smiled and told her that she deserved it. It was the best party he had ever organized.</p>
+    </div>
+  </div>
+
+  <div class="q-block">
+    <div class="q-meta"><span class="q-tag">Q 21</span></div>
+    <div class="q-text">Who is the surprise party for?</div>
+    <div class="options" data-q="21" data-ans="C">
+      <div class="opt" data-v="A"><span class="opt-letter">A</span> Lucas</div>
+      <div class="opt" data-v="B"><span class="opt-letter">B</span> Marco</div>
+      <div class="opt" data-v="C"><span class="opt-letter">C</span> Beatriz</div>
+      <div class="opt" data-v="D"><span class="opt-letter">D</span> Lucas's sister</div>
+    </div>
+  </div>
+
+  <div class="q-block">
+    <div class="q-meta"><span class="q-tag">Q 22</span></div>
+    <div class="q-text">Who decorated the apartment?</div>
+    <div class="options" data-q="22" data-ans="D">
+      <div class="opt" data-v="A"><span class="opt-letter">A</span> Beatriz</div>
+      <div class="opt" data-v="B"><span class="opt-letter">B</span> Marco</div>
+      <div class="opt" data-v="C"><span class="opt-letter">C</span> Lucas himself</div>
+      <div class="opt" data-v="D"><span class="opt-letter">D</span> Lucas's sister</div>
+    </div>
+  </div>
+
+  <div class="q-block">
+    <div class="q-meta"><span class="q-tag">Q 23</span></div>
+    <div class="q-text">What kind of cake was ordered for the party?</div>
+    <div class="options" data-q="23" data-ans="B">
+      <div class="opt" data-v="A"><span class="opt-letter">A</span> Vanilla and lemon</div>
+      <div class="opt" data-v="B"><span class="opt-letter">B</span> Chocolate and strawberries</div>
+      <div class="opt" data-v="C"><span class="opt-letter">C</span> Carrot and cream</div>
+      <div class="opt" data-v="D"><span class="opt-letter">D</span> Orange and almond</div>
+    </div>
+  </div>
+
+  <div class="q-block">
+    <div class="q-meta"><span class="q-tag">Q 24</span></div>
+    <div class="q-text">What did Marco tell Lucas about Beatriz?</div>
+    <div class="options" data-q="24" data-ans="C">
+      <div class="opt" data-v="A"><span class="opt-letter">A</span> She already knew about the party</div>
+      <div class="opt" data-v="B"><span class="opt-letter">B</span> She wouldn't come at all</div>
+      <div class="opt" data-v="C"><span class="opt-letter">C</span> She might arrive late</div>
+      <div class="opt" data-v="D"><span class="opt-letter">D</span> She was out of town</div>
+    </div>
+  </div>
+
+  <div class="q-block">
+    <div class="q-meta"><span class="q-tag">Q 25</span></div>
+    <div class="q-text">What did Beatriz say when she arrived at the party?</div>
+    <div class="options" data-q="25" data-ans="B">
+      <div class="opt" data-v="A"><span class="opt-letter">A</span> "I knew about this the whole time!"</div>
+      <div class="opt" data-v="B"><span class="opt-letter">B</span> "I can't believe you did all this for me!"</div>
+      <div class="opt" data-v="C"><span class="opt-letter">C</span> "I'd rather go home early."</div>
+      <div class="opt" data-v="D"><span class="opt-letter">D</span> "You should have told me before!"</div>
+    </div>
+  </div>
+</div>
+
+<!-- PART 4 -->
+<div class="section-card">
+  <div class="section-header">
+    <div class="section-number">4</div>
+    <div>
+      <div class="section-title">Grammar — Classes 34–39</div>
+      <div class="section-sub">Choose the best option</div>
+    </div>
+  </div>
+
+  <div class="q-block">
+    <div class="q-meta"><span class="q-tag">Q 26</span></div>
+    <div class="q-text">The new hospital _____ recently in the center of the city.</div>
+    <div class="options" data-q="26" data-ans="B">
+      <div class="opt" data-v="A"><span class="opt-letter">A</span> built</div>
+      <div class="opt" data-v="B"><span class="opt-letter">B</span> has been built</div>
+      <div class="opt" data-v="C"><span class="opt-letter">C</span> was build</div>
+      <div class="opt" data-v="D"><span class="opt-letter">D</span> is build</div>
+    </div>
+  </div>
+
+  <div class="q-block">
+    <div class="q-meta"><span class="q-tag">Q 27</span></div>
+    <div class="q-text">This _____ be right. The answer makes no sense at all.</div>
+    <div class="options" data-q="27" data-ans="C">
+      <div class="opt" data-v="A"><span class="opt-letter">A</span> should</div>
+      <div class="opt" data-v="B"><span class="opt-letter">B</span> might</div>
+      <div class="opt" data-v="C"><span class="opt-letter">C</span> can't</div>
+      <div class="opt" data-v="D"><span class="opt-letter">D</span> must not</div>
+    </div>
+  </div>
+
+  <div class="q-block">
+    <div class="q-meta"><span class="q-tag">Q 28</span></div>
+    <div class="q-text">If she _____ the job offer, she will move to Rio de Janeiro.</div>
+    <div class="options" data-q="28" data-ans="C">
+      <div class="opt" data-v="A"><span class="opt-letter">A</span> will get</div>
+      <div class="opt" data-v="B"><span class="opt-letter">B</span> got</div>
+      <div class="opt" data-v="C"><span class="opt-letter">C</span> gets</div>
+      <div class="opt" data-v="D"><span class="opt-letter">D</span> would get</div>
+    </div>
+  </div>
+
+  <div class="q-block">
+    <div class="q-meta"><span class="q-tag">Q 29</span></div>
+    <div class="q-text">He asked me _____ I was feeling better after the accident.</div>
+    <div class="options" data-q="29" data-ans="B">
+      <div class="opt" data-v="A"><span class="opt-letter">A</span> what</div>
+      <div class="opt" data-v="B"><span class="opt-letter">B</span> if</div>
+      <div class="opt" data-v="C"><span class="opt-letter">C</span> which</div>
+      <div class="opt" data-v="D"><span class="opt-letter">D</span> that</div>
+    </div>
+  </div>
+
+  <div class="q-block">
+    <div class="q-meta"><span class="q-tag">Q 30</span></div>
+    <div class="q-text">The man _____ car was stolen called the police immediately.</div>
+    <div class="options" data-q="30" data-ans="D">
+      <div class="opt" data-v="A"><span class="opt-letter">A</span> who</div>
+      <div class="opt" data-v="B"><span class="opt-letter">B</span> which</div>
+      <div class="opt" data-v="C"><span class="opt-letter">C</span> where</div>
+      <div class="opt" data-v="D"><span class="opt-letter">D</span> whose</div>
+    </div>
+  </div>
+</div>
+
+<div class="submit-wrap">
+  <button class="submit-btn" id="submitBtn" onclick="submitTest()">Submit Answers</button>
+  <button class="print-btn" id="printBtn2" onclick="window.print()">Print / Save PDF</button>
+</div>
+
+</div>
+
+<script>
+  const answers = {};
+  const TOTAL = 30;
+  let done = false;
+
+  document.querySelectorAll('.options').forEach(group => {
+    group.querySelectorAll('.opt').forEach(opt => {
+      opt.addEventListener('click', () => {
+        if (done) return;
+        const q = group.dataset.q;
+        group.querySelectorAll('.opt').forEach(o => o.classList.remove('selected'));
+        opt.classList.add('selected');
+        answers[q] = opt.dataset.v;
+        updateProgress();
+      });
+    });
+  });
+
+  function updateProgress() {
+    const n = Object.keys(answers).length;
+    document.getElementById('progressLabel').textContent = n + ' / ' + TOTAL + ' answered';
+    document.getElementById('progressFill').style.width = (n / TOTAL * 100) + '%';
+  }
+
+  function submitTest() {
+    done = true;
+    document.getElementById('submitBtn').disabled = true;
+    document.getElementById('printBtn2').style.display = 'inline-block';
+    let total = 0, p1 = 0, p2 = 0, p3 = 0, p4 = 0;
+    document.querySelectorAll('.options').forEach(group => {
+      const q = group.dataset.q;
+      const ans = group.dataset.ans;
+      const sel = answers[q];
+      const n = parseInt(q);
+      group.querySelectorAll('.opt').forEach(opt => {
+        if (opt.dataset.v === ans) opt.classList.add('correct');
+        else if (opt.dataset.v === sel && sel !== ans) opt.classList.add('wrong');
+        opt.classList.remove('selected');
+      });
+      if (sel === ans) { total++; if (n<=15) p1++; else if (n<=20) p2++; else if (n<=25) p3++; else p4++; }
+    });
+    document.getElementById('resultScore').textContent = total;
+    document.getElementById('br1').textContent = p1;
+    document.getElementById('br2').textContent = p2;
+    document.getElementById('br3').textContent = p3;
+    document.getElementById('br4').textContent = p4;
+    const pct = total / TOTAL * 100;
+    const gb = document.getElementById('resultGrade');
+    if (pct>=90){gb.textContent='A — Excellent';gb.style.background='#1a5c35';gb.style.color='#fff';}
+    else if(pct>=70){gb.textContent='B — Good';gb.style.background='#1F3A5F';gb.style.color='#fff';}
+    else if(pct>=50){gb.textContent='C — Regular';gb.style.background='#b85c00';gb.style.color='#fff';}
+    else{gb.textContent='D — Needs Work';gb.style.background='#8B1A1A';gb.style.color='#fff';}
+    const rc = document.getElementById('resultCard');
+    rc.style.display = 'block';
+    document.getElementById('printBtn').style.display = 'inline-block';
+    rc.scrollIntoView({behavior:'smooth'});
+  }
+
+  (function() {
+    var au = document.getElementById('theAudio6');
+    var btn = document.getElementById('ppBtn6');
+    var ip = document.getElementById('icPlay6');
+    var ipa = document.getElementById('icPause6');
+    var pf = document.getElementById('progFill6');
+    var timer = document.getElementById('audioTimer6');
+    var pt = document.getElementById('progTrack6');
+    window.toggleAudio6 = function() {
+      if (!au.src || au.src === window.location.href) return;
+      if (au.paused) { au.play(); ip.style.display='none'; ipa.style.display='block'; btn.style.background='var(--teal)'; }
+      else { au.pause(); ip.style.display='block'; ipa.style.display='none'; btn.style.background='var(--blue)'; }
+    };
+    au.addEventListener('timeupdate', function() {
+      if (!au.duration) return;
+      pf.style.width = (au.currentTime/au.duration*100)+'%';
+      var m=Math.floor(au.currentTime/60); var s=String(Math.floor(au.currentTime%60)).padStart(2,'0');
+      timer.textContent=m+':'+s;
+    });
+    au.addEventListener('ended', function() { ip.style.display='block'; ipa.style.display='none'; btn.style.background='var(--blue)'; pf.style.width='0%'; au.currentTime=0; });
+    pt.addEventListener('click', function(e) { if(!au.duration)return; au.currentTime=(e.offsetX/pt.offsetWidth)*au.duration; });
+    document.getElementById('audioFileInput6').addEventListener('change', function() {
+      if(this.files[0]){ var url=URL.createObjectURL(this.files[0]); au.src=url; au.load(); document.getElementById('audioFileName6').textContent=this.files[0].name; pf.style.width='0%'; timer.textContent='0:00'; ip.style.display='block'; ipa.style.display='none'; btn.style.background='var(--blue)'; }
+    });
+  })();
+</script>
+</body>
+</html>
