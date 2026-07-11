@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Upfront Idiomas — Writing Task · Classes 40–45</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --navy: #1A1A2E; --blue: #1F3A5F; --teal: #2E7D7D; --teal-l: #e0f2f2;
+    --light: #F5F7FA; --white: #ffffff; --border: #d0d5dd;
+    --text: #1A1A2E; --muted: #6b7280;
+  }
+  body { font-family: 'Inter', sans-serif; background: #eef1f6; color: var(--text); min-height: 100vh; padding-bottom: 60px; }
+  .test-header { background: var(--navy); padding: 0; box-shadow: 0 2px 12px rgba(0,0,0,.3); }
+  .header-inner { max-width: 860px; margin: 0 auto; padding: 18px 32px; display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .brand-name { font-family: 'Sora', sans-serif; font-size: 22px; font-weight: 800; color: #fff; letter-spacing: -.02em; }
+  .brand-sub { font-size: 11px; color: #8892aa; font-weight: 400; letter-spacing: .08em; text-transform: uppercase; margin-top: 2px; }
+  .header-badge { background: var(--teal); color: #fff; font-size: 11px; font-weight: 600; padding: 6px 14px; border-radius: 20px; letter-spacing: .06em; text-transform: uppercase; }
+  .page-wrap { max-width: 860px; margin: 0 auto; padding: 32px 24px; }
+  .section-card { background: var(--white); border-radius: 12px; overflow: hidden; margin-bottom: 28px; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+  .section-header { background: var(--blue); padding: 13px 24px; display: flex; align-items: center; gap: 12px; }
+  .section-number { background: var(--teal); color: #fff; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+  .section-title { color: #fff; font-size: 14px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+  .section-sub { color: #a8c4cc; font-size: 12px; margin-top: 1px; }
+  .section-body { padding: 24px; }
+  .writing-topic { background: var(--teal-l); border: 1.5px solid var(--teal); border-radius: 8px; padding: 14px 18px; font-size: 16px; font-weight: 700; color: var(--teal); margin-bottom: 14px; }
+  .writing-prompt { font-size: 13.5px; color: var(--text); line-height: 1.65; margin-bottom: 16px; }
+  .hints-box { background: var(--light); border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px; margin-bottom: 20px; }
+  .hints-title { font-size: 11px; font-weight: 700; color: var(--blue); letter-spacing: .08em; text-transform: uppercase; margin-bottom: 8px; }
+  .hints-box ul { padding-left: 20px; }
+  .hints-box li { font-size: 13px; color: var(--text); margin-bottom: 4px; line-height: 1.5; }
+  .hints-box li strong { color: var(--blue); }
+  .student-info { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+  .info-field { display: flex; flex-direction: column; gap: 5px; }
+  .info-label { font-size: 11px; font-weight: 700; color: var(--blue); text-transform: uppercase; letter-spacing: .06em; }
+  .info-input { padding: 9px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 14px; font-family: inherit; outline: none; transition: border-color .2s; }
+  .info-input:focus { border-color: var(--teal); }
+  .writing-area { width: 100%; min-height: 220px; padding: 14px 16px; border: 1.5px solid var(--border); border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 15px; line-height: 1.7; resize: vertical; outline: none; transition: border-color .2s; color: var(--text); }
+  .writing-area:focus { border-color: var(--teal); }
+  .word-count { font-size: 12px; color: var(--muted); margin-top: 8px; text-align: right; }
+  .action-bar { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 20px; }
+  .btn { padding: 11px 22px; border-radius: 8px; font-size: 14px; font-weight: 600; font-family: inherit; cursor: pointer; border: none; transition: all .2s; }
+  .btn-save { background: var(--teal); color: #fff; }
+  .btn-save:hover { background: #265f5f; }
+  .btn-print { background: var(--blue); color: #fff; }
+  .btn-print:hover { background: #162d4a; }
+  .btn-copy { background: var(--light); color: var(--blue); border: 1.5px solid var(--border); }
+  .btn-copy:hover { background: var(--teal-l); border-color: var(--teal); }
+  .btn-clear { background: #fff0f0; color: #b91c1c; border: 1.5px solid #fca5a5; }
+  .btn-clear:hover { background: #fee2e2; }
+  .btn-download { background: #1b5e20; color: #fff; }
+  .btn-download:hover { background: #145218; }
+  .save-toast { display: none; position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--teal); color: #fff; padding: 12px 24px; border-radius: 30px; font-size: 14px; font-weight: 600; box-shadow: 0 4px 20px rgba(0,0,0,.2); z-index: 100; white-space: nowrap; }
+  @media (max-width: 600px) { .student-info { grid-template-columns: 1fr; } .header-inner { padding: 14px 18px; } .page-wrap { padding: 20px 14px; } }
+  @media print { .action-bar, .test-header { display: none !important; } .section-card { box-shadow: none; border: 1px solid #ccc; } .writing-area { border: 1px solid #ccc; min-height: 240px; } }
+</style>
+</head>
+<body>
+<header class="test-header">
+  <div class="header-inner">
+    <div>
+      <div class="brand-name">Upfront Idiomas</div>
+      <div class="brand-sub">English Course — Writing Task · Classes 40–45</div>
+    </div>
+    <div class="header-badge">Parte B · Aluno</div>
+  </div>
+</header>
+<div class="page-wrap">
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-number">B</div>
+      <div>
+        <div class="section-title">Writing Task — Producao Escrita</div>
+        <div class="section-sub">Leia as instrucoes e escreva seu texto no espaco abaixo</div>
+      </div>
+    </div>
+    <div class="section-body">
+      <div class="writing-topic">Topic: A Difficult Situation I Got Over</div>
+      <div class="writing-prompt">Write 6–8 sentences about a difficult situation you faced and managed to get over. What happened? How did you feel? What did you do to overcome it? Use expressions and vocabulary from your recent classes.</div>
+      <div class="hints-box">
+        <div class="hints-title">Estruturas esperadas</div>
+        <ul>
+          <li><strong>Expressions (Class 40–41)</strong> — give up, work out, make it, get over, ever since, have a gift for, piece of cake, carry out, as well as</li>
+          <li><strong>Causative / Needs (Class 42)</strong> — I had it fixed... / The situation needed solving... / I had someone help me...</li>
+          <li><strong>Conditionals (Class 43)</strong> — If I give up, I won't... / If I had more time, I would... / Unless I tried harder, I couldn't...</li>
+          <li><strong>Reporting Verbs (Class 43–44)</strong> — I assumed that... / I pretended that... / She denied knowing...</li>
+          <li><strong>Vocabulary (Class 40–45)</strong> — struggle, succeed, fail, improve, support, manage, deserve, figure out, get away with</li>
+        </ul>
+      </div>
+      <div class="student-info">
+        <div class="info-field">
+          <span class="info-label">Nome do aluno</span>
+          <input class="info-input" type="text" id="studentName" placeholder="Seu nome completo">
+        </div>
+        <div class="info-field">
+          <span class="info-label">Data</span>
+          <input class="info-input" type="date" id="studentDate">
+        </div>
+      </div>
+      <textarea class="writing-area" id="writingArea" placeholder="Escreva seu texto aqui..."></textarea>
+      <div class="word-count" id="wordCount">0 palavras . 0 frases</div>
+      <div class="action-bar">
+        <button class="btn btn-save" onclick="saveText()">Salvar rascunho</button>
+        <button class="btn btn-copy" onclick="copyText()">Copiar texto</button>
+        <button class="btn btn-download" onclick="downloadText()">Baixar .txt</button>
+        <button class="btn btn-print" onclick="window.print()">Imprimir</button>
+        <button class="btn btn-clear" onclick="clearText()">Limpar</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="save-toast" id="toast"></div>
+<script>
+const STORAGE_KEY = 'upfront_writing_7';
+window.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('studentDate').value = new Date().toISOString().split('T')[0];
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (saved) { try { const d = JSON.parse(saved); if(d.name) document.getElementById('studentName').value=d.name; if(d.date) document.getElementById('studentDate').value=d.date; if(d.text){document.getElementById('writingArea').value=d.text;updateCount();} } catch(e){} }
+});
+function updateCount() {
+  const text = document.getElementById('writingArea').value.trim();
+  const words = text ? text.split(/\s+/).filter(Boolean).length : 0;
+  const sentences = text ? (text.match(/[.!?]+/g)||[]).length : 0;
+  document.getElementById('wordCount').textContent = words+' palavra'+(words!==1?'s':'')+' . '+sentences+' frase'+(sentences!==1?'s':'');
+}
+document.getElementById('writingArea').addEventListener('input', updateCount);
+function saveText() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({name:document.getElementById('studentName').value,date:document.getElementById('studentDate').value,text:document.getElementById('writingArea').value}));
+  showToast('Rascunho salvo!');
+}
+function copyText() {
+  const name=document.getElementById('studentName').value;
+  const text=document.getElementById('writingArea').value;
+  const full=name?name+'\n\n'+text:text;
+  navigator.clipboard.writeText(full).then(()=>showToast('Texto copiado!')).catch(()=>{const ta=document.createElement('textarea');ta.value=full;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);showToast('Texto copiado!');});
+}
+function downloadText() {
+  const name=document.getElementById('studentName').value.trim()||'aluno';
+  const date=document.getElementById('studentDate').value||new Date().toISOString().split('T')[0];
+  const text=document.getElementById('writingArea').value.trim();
+  if(!text){showToast('Escreva algo antes de baixar.');return;}
+  const content='Upfront Idiomas - Writing Task - Classes 40-45\nTopic: A Difficult Situation I Got Over\nAluno: '+name+'\nData: '+date+'\n\n'+text;
+  const blob=new Blob([content],{type:'text/plain;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='escrita_'+name.replace(/\s+/g,'_')+'_classes40-45.txt';a.click();
+  showToast('Arquivo baixado!');
+}
+function clearText() {
+  if(confirm('Tem certeza que deseja limpar o texto?')){document.getElementById('writingArea').value='';updateCount();localStorage.removeItem(STORAGE_KEY);showToast('Texto limpo.');}
+}
+function showToast(msg) {
+  const t=document.getElementById('toast');t.textContent=msg;t.style.display='block';clearTimeout(t._timer);t._timer=setTimeout(()=>{t.style.display='none';},2500);
+}
+</script>
+</body>
+</html>

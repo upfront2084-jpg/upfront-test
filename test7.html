@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Upfront Idiomas — Evaluation · Classes 40–45</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --navy: #1A1A2E; --blue: #1F3A5F; --teal: #2E7D7D; --teal-l: #e0f2f2;
+    --light: #F5F7FA; --white: #ffffff; --border: #d0d5dd;
+    --red: #8B1A1A; --green: #1a5c35;
+    --text: #1A1A2E; --muted: #6b7280;
+  }
+  body { font-family: 'Inter', sans-serif; background: #eef1f6; color: var(--text); min-height: 100vh; padding-bottom: 60px; }
+  .progress-wrap { background: var(--navy); padding: 0; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,.2); }
+  .progress-inner { max-width: 860px; margin: 0 auto; padding: 8px 24px; display: flex; align-items: center; gap: 14px; }
+  .progress-bar { flex: 1; height: 6px; background: #334; border-radius: 3px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--teal); border-radius: 3px; width: 0%; transition: width .3s; }
+  .progress-label { font-size: 12px; color: #8892aa; white-space: nowrap; font-weight: 500; }
+  .test-header { background: var(--navy); padding: 0; box-shadow: 0 2px 12px rgba(0,0,0,.3); }
+  .header-inner { max-width: 860px; margin: 0 auto; padding: 18px 32px; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+  .brand-name { font-family: 'Sora', sans-serif; font-size: 22px; font-weight: 800; color: #fff; letter-spacing: -.02em; }
+  .brand-sub { font-size: 11px; color: #8892aa; font-weight: 400; letter-spacing: .08em; text-transform: uppercase; margin-top: 2px; }
+  .header-badge { background: var(--teal); color: #fff; font-size: 11px; font-weight: 600; padding: 6px 14px; border-radius: 20px; letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; }
+  .page-wrap { max-width: 860px; margin: 0 auto; padding: 32px 24px; }
+  .section-card { background: var(--white); border-radius: 12px; overflow: hidden; margin-bottom: 28px; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+  .section-header { background: var(--blue); padding: 13px 24px; display: flex; align-items: center; gap: 12px; }
+  .section-number { background: var(--teal); color: #fff; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+  .section-title { color: #fff; font-size: 14px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+  .section-sub { color: #a8c4cc; font-size: 12px; margin-top: 1px; }
+  .q-block { padding: 20px 24px; border-bottom: 1px solid #f0f2f5; }
+  .q-block:last-child { border-bottom: none; }
+  .q-meta { margin-bottom: 6px; }
+  .q-tag { display: inline-block; background: var(--teal); color: #fff; font-size: 10px; font-weight: 700; padding: 3px 9px; border-radius: 20px; letter-spacing: .06em; text-transform: uppercase; }
+  .q-text { font-size: 15px; font-weight: 500; color: var(--navy); line-height: 1.55; margin-bottom: 12px; }
+  .options { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .opt { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 8px; cursor: pointer; transition: all .15s; font-size: 14px; color: var(--text); background: var(--white); user-select: none; }
+  .opt:hover { border-color: var(--teal); background: var(--teal-l); }
+  .opt.selected { border-color: var(--teal); background: var(--teal-l); color: var(--teal); font-weight: 600; }
+  .opt.correct  { border-color: #1a5c35; background: #e6f4ed; color: #1a5c35; font-weight: 600; }
+  .opt.wrong    { border-color: var(--red); background: #fdeaea; color: var(--red); font-weight: 600; }
+  .opt-letter { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 50%; background: var(--light); font-size: 11px; font-weight: 700; color: var(--blue); flex-shrink: 0; }
+  .opt.selected .opt-letter { background: var(--teal); color: #fff; }
+  .opt.correct  .opt-letter { background: #1a5c35; color: #fff; }
+  .opt.wrong    .opt-letter { background: var(--red); color: #fff; }
+  .reading-box { margin: 0 24px 20px; background: var(--white); border: 1.5px solid var(--border); border-radius: 10px; overflow: hidden; }
+  .reading-header { background: var(--light); padding: 10px 18px; font-size: 11px; font-weight: 700; color: var(--blue); letter-spacing: .08em; text-transform: uppercase; border-bottom: 1px solid var(--border); }
+  .reading-text { padding: 18px; font-size: 13.5px; line-height: 1.75; color: var(--text); }
+  .reading-text p { margin-bottom: 12px; }
+  .reading-text p:last-child { margin-bottom: 0; }
+  .listen-box { margin: 0 24px 4px; background: var(--light); border: 1.5px solid var(--border); border-radius: 10px; padding: 16px 20px; }
+  .listen-label { font-size: 11px; font-weight: 700; color: var(--blue); letter-spacing: .08em; text-transform: uppercase; margin-bottom: 12px; }
+  .audio-player-card { display: flex; align-items: center; gap: 14px; background: #fff; border: 1.5px solid var(--border); border-radius: 10px; padding: 14px 18px; }
+  .pp-btn { width: 44px; height: 44px; border-radius: 50%; background: var(--blue); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background .15s; }
+  .pp-btn svg { width: 22px; height: 22px; fill: #fff; }
+  .audio-right { flex: 1; min-width: 0; }
+  .audio-title-text { font-size: 13px; font-weight: 600; color: var(--navy); margin-bottom: 9px; }
+  .prog-row { display: flex; align-items: center; gap: 10px; }
+  .prog-track { flex: 1; height: 4px; background: #e0e5ee; border-radius: 2px; cursor: pointer; }
+  .prog-fill { height: 100%; background: var(--teal); border-radius: 2px; width: 0%; transition: width .3s; }
+  .audio-timer { font-size: 11px; color: var(--muted); flex-shrink: 0; min-width: 34px; text-align: right; font-variant-numeric: tabular-nums; }
+  .audio-note { font-size: 11px; color: var(--muted); font-style: italic; margin-top: 8px; }
+  .submit-wrap { text-align: center; padding: 8px 0 32px; }
+  .submit-btn { background: var(--navy); color: #fff; border: none; padding: 14px 40px; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: background .15s; }
+  .submit-btn:hover { background: #2d2d50; }
+  .print-btn { background: var(--teal); color: #fff; border: none; padding: 10px 24px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; margin-top: 12px; display: none; }
+  .result-card { display: none; background: #fff; border-radius: 14px; padding: 36px 32px; text-align: center; margin-bottom: 28px; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+  .result-score { font-family: 'Sora', sans-serif; font-size: 64px; font-weight: 800; color: var(--navy); line-height: 1; }
+  .result-total { font-size: 18px; color: var(--muted); margin-top: 4px; }
+  .result-grade { display: inline-block; margin: 16px 0; padding: 8px 28px; border-radius: 24px; font-size: 16px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+  .result-breakdown { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-top: 24px; }
+  .breakdown-item { background: var(--light); border-radius: 8px; padding: 14px 10px; }
+  .breakdown-label { font-size: 11px; font-weight: 600; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; margin-bottom: 6px; }
+  .breakdown-score { font-size: 22px; font-weight: 700; color: var(--navy); }
+  .breakdown-max { font-size: 11px; color: var(--muted); }
+  @media (max-width: 600px) { .options { grid-template-columns: 1fr; } .header-inner { padding: 14px 16px; } .result-breakdown { grid-template-columns: repeat(2,1fr); } }
+  @media print { .test-header, .progress-wrap, .submit-wrap, .print-btn { display: none !important; } .section-card { box-shadow: none; border: 1px solid #ccc; } }
+</style>
+</head>
+<body>
+
+<header class="test-header">
+  <div class="header-inner">
+    <div>
+      <div class="brand-name">Upfront Idiomas</div>
+      <div class="brand-sub">English Course — Evaluation · Classes 40–45</div>
+    </div>
+    <div class="header-badge">Test 7 · Classes 40–45</div>
+  </div>
+</header>
+<div class="progress-wrap">
+  <div class="progress-inner">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="progress-label" id="progressLabel">0 / 30 answered</div>
+  </div>
+</div>
+
+<div class="page-wrap">
+
+<div class="result-card" id="resultCard">
+  <div style="font-size:13px;font-weight:600;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;">Your Score</div>
+  <div class="result-score" id="resultScore">0</div>
+  <div class="result-total">out of 30</div>
+  <div class="result-grade" id="resultGrade"></div>
+  <div class="result-breakdown">
+    <div class="breakdown-item"><div class="breakdown-label">Grammar P1</div><div class="breakdown-score" id="br1">0</div><div class="breakdown-max">/ 15</div></div>
+    <div class="breakdown-item"><div class="breakdown-label">Listening</div><div class="breakdown-score" id="br2">0</div><div class="breakdown-max">/ 5</div></div>
+    <div class="breakdown-item"><div class="breakdown-label">Reading</div><div class="breakdown-score" id="br3">0</div><div class="breakdown-max">/ 5</div></div>
+    <div class="breakdown-item"><div class="breakdown-label">Grammar P4</div><div class="breakdown-score" id="br4">0</div><div class="breakdown-max">/ 5</div></div>
+  </div>
+  <button class="print-btn" id="printBtn" onclick="window.print()">Print / Save PDF</button>
+</div>
+
+<!-- PART 1: Grammar -->
+<div class="section-card">
+  <div class="section-header">
+    <div class="section-number">1</div>
+    <div>
+      <div class="section-title">Grammar — Part 1</div>
+      <div class="section-sub">Questions 1–15 · Classes 40–45</div>
+    </div>
+  </div>
+
+  <div class="q-block">
+    <div class="q-meta"><span class="q-tag">Q 01</span></div>
+    <div class="q-text">She worked really hard and finally _____ getting the promotion she deserved.</div>
+    <div class="options" data-q="1" data-ans="A">
+      <div class="opt" data-v="A"><span class="opt-letter">A</span> succeeded in</div>
+      <div class="opt" data-v="B"><span class="opt-letter">B</span> succeeded to</div>
+      <div class="opt" data-v="C"><span class="opt-letter">C</span> succeeded at</div>
+      <div class="opt" data-v="D"><span class="opt-letter">D</span> success in</div>
+    </div>
+  </div>
+
+  <div class="q-block">
+    <div class="q-meta"><span class="q-tag">Q 02</span></div>
+    <div class="q-text">Many new managers _____ communicate clearly with their teams in the beginning.</div>
+    <div class="options" data-q="2" data-ans="C">
+      <div class="opt" data-v="A"><span class="opt-letter">A</span> struggle for</div>
+      <div class="opt" data-v="B"><span class="opt-letter">B</span> struggle at</div>
+      <div class="opt" data-v="C"><span class="opt-letter">C</span> struggle to</div>
+      <div class="opt" data-v="D"><span class="opt-letter">D</span> struggling to</div>
+    </div>
+  </div>
+
+  <div class="q-block">
+    <div class="q-meta"><span class="q-tag">Q 03</span></div>
+    <div class="q-text">After the product launch _____, the entire team felt embarrassed and discouraged.</div>
+    <div class="options" data-q="3" data-ans="A">
+      <div class="opt" data-v="A"><span class="opt-letter">A</span> failed</div>
+      <div class="opt" data-v="B"><span class="opt-letter">B</span> improved</div>
+      <div class="opt" data-v="C"><span class="opt-letter">C</span> succeeded</div>
+      <div class="opt" data-v="D"><span class="opt-letter">D</span> blushed</div>
+    </div>
+  </div>
+
+  <div class="q-block">
+    <div class="q-meta"><span class="q-tag">Q 04</span></div>
+    <div class="q-text">_____ breaks the rules will have to face the consequences.</div>
+    <div class="options" data-q="4" data-ans="C">
+      <div class="opt" data-v="A"><span class="opt-letter">A</span> Whatever</div>
+      <div class="opt" data-v="B"><span class="opt-letter">B</span> Whenever</div>
+      <div class="opt" data-v="C"><span class="opt-letter">C</span> Whoever</div>
+      <div class="opt" data-v="D"><span class="opt-letter">D</span> Wherever</div>
+    </div>
+  </div>
+
+  <div class="q-block">
+    <div class="q-meta"><span class="q-tag">Q 05</span></div>
+    <div class="q-text">The exam wasn't difficult at all — for her, it was _____ because she had studied so much.</div>
+    <div class="options" data-q="5" data-ans="B">
+      <div class="opt" data-v="A"><span class="opt-letter">A</span> brand new</div>
+      <div class="opt" data-v="B"><span class="opt-letter">B</span> a piece of cake</div>
+      <div class="opt" data-v="C"><span class="opt-letter">C</span> out of order</div>
+      <div class="opt" data-v="D"><span class="opt-letter">D</span> a daily chore</div>
+    </div>
+  </div>
+
+  <div class="q-block">
+    <div class="q-meta"><span class="q-tag">Q 06</span></div>
+    <div class="q-text">The kitchen floor _____ before the guests arrive tonight.</div>
+    <div class="options" data-q="6" data-ans="A">
+      <div class="opt" data-v="A"><span class="opt-letter">A</span> needs sweeping</div>
+      <div class="opt" data-v="B"><span class="opt-letter">B</span> need to sweep</div>
+      <div class="opt" data-v="C"><span class="opt-letter">C</span> is needing swept</div>
+      <div class="opt" data-v="D"><span class="opt-letter">D</span> needs be swept</div>
+    </div>
+  </div>
+
+  <div class="q-block">
+    <div class="q-meta"><span class="q-tag">Q 07</span></div>
+    <div class="q-text">Which sentence correctly uses the causative structure (have something done)?</div>
+    <div class="options" data-q="7" data-ans="A">
+      <div class="opt" data-v="A"><span class="opt-letter">A</span> We had the roof repaired last month.</div>
+      <div class="opt" data-v="B"><span class="opt-letter">B</span> We had the roof repairing last month.</div>
+      <div class="opt" data-v="C"><span class="opt-letter">C</span> We made the roof to repair last month.</div>
+      <div class="opt" data-v="D"><span class="opt-letter">D</span> The roof repaired by us last month.</div>
+    </div>
+  </div>
+
+  <div class="q-block">
+    <div class="q-meta"><span class="q-tag">Q 08</span></div>
+    <div class="q-text">The elevator is _____ — please use the stairs until it is fixed.</div>
+    <div class="options" data-q="8" data-ans="C">
+      <div class="opt" data-v="A"><span class="opt-letter">A</span> in need of cleaning</div>
+      <div class="opt" data-v="B"><span class="opt-letter">B</span> being swept</div>
+      <div class="opt" data-v="C"><span class="opt-letter">C</span> out of order</div>
+      <div class="opt" data-v="D"><span class="opt-letter">D</span> a daily chore</div>
+    </div>
+  </div>
+
+  <div class="q-block">
+    <div class="q-meta"><span class="q-tag">Q 09</span></div>
+    <div class="q-text">She _____ not to hear the gossip during the meeting, but she clearly did.</div>
+    <div class="options" data-q="9" data-ans="B">
+      <div class="opt" data-v="A"><span class="opt-letter">A</span> faked</div>
+      <div class="opt" data-v="B"><span class="opt-letter">B</span> pretended</div>
+      <div class="opt" data-v="C"><span class="opt-letter">C</span> assumed</div>
+      <div class="opt" data-v="D"><span class="opt-letter">D</span> supposed</div>
+    </div>
+  </div>
+
+  <div class="q-block">
+    <div class="q-meta"><span class="q-tag">Q 10</span></div>
+    <div class="q-text">If you _____ the documents today, we will miss the deadline.</div>
+    <div class="options" data-q="10" data-ans="A">
+      <div class="opt" data-v="A"><span class="opt-letter">A</span> don't send</div>
+      <div class="opt" data-v="B"><span class="opt-letter">B</span> didn't send</div>
+      <div class="opt" data-v="C"><span class="opt-letter">C</span> won't send</div>
+      <div class="opt" data-v="D"><span class="opt-letter">D</span> hadn't sent</div>
+    </div>
+  </div>
+
+  <div class="q-block">
+    <div class="q-meta"><span class="q-tag">Q 11</span></div>
+    <div class="q-text">If I _____ the manager, I would handle this situation completely differently.</div>
+    <div class="options" data-q="11" data-ans="C">
+      <div class="opt" data-v="A"><span class="opt-letter">A</span> am</div>
+      <div class="opt" data-v="B"><span class="opt-letter">B</span> was</div>
+      <div class="opt" data-v="C"><span class="opt-letter">C</span> were</div>
+      <div class="opt" data-v="D"><span class="opt-letter">D</span> will be</div>
+    </div>
+  </div>
+
+  <div class="q-block">
+    <div class="q-meta"><span class="q-tag">Q 12</span></div>
+    <div class="q-text">The employee denied _____ the confidential files to a competitor.</div>
+    <div class="options" data-q="12" data-ans="B">
+      <div class="opt" data-v="A"><span class="opt-letter">A</span> to send</div>
+      <div class="opt" data-v="B"><span class="opt-letter">B</span> sending</div>
+      <div class="opt" data-v="C"><span class="opt-letter">C</span> that she sent</div>
+      <div class="opt" data-v="D"><span class="opt-letter">D</span> send</div>
+    </div>
+  </div>
+
+  <div class="q-block">
+    <div class="q-meta"><span class="q-tag">Q 13</span></div>
+    <div class="q-text">He was caught cheating _____ the final exam and lost his scholarship.</div>
+    <div class="options" data-q="13" data-ans="B">
+      <div class="opt" data-v="A"><span class="opt-letter">A</span> at</div>
+      <div class="opt" data-v="B"><span class="opt-letter">B</span> on</div>
+      <div class="opt" data-v="C"><span class="opt-letter">C</span> in</div>
+      <div class="opt" data-v="D"><span class="opt-letter">D</span> with</div>
+    </div>
+  </div>
+
+  <div class="q-block">
+    <div class="q-meta"><span class="q-tag">Q 14</span></div>
+    <div class="q-text">The criminals _____ the bank and escaped with over $200,000.</div>
+    <div class="options" data-q="14" data-ans="B">
+      <div class="opt" data-v="A"><span class="opt-letter">A</span> stole</div>
+      <div class="opt" data-v="B"><span class="opt-letter">B</span> robbed</div>
+      <div class="opt" data-v="C"><span class="opt-letter">C</span> accused</div>
+      <div class="opt" data-v="D"><span class="opt-letter">D</span> arrested</div>
+    </div>
+  </div>
+
+  <div class="q-block">
+    <div class="q-meta"><span class="q-tag">Q 15</span></div>
+    <div class="q-text">The manager was accused _____ confidential client data to outside partners.</div>
+    <div class="options" data-q="15" data-ans="C">
+      <div class="opt" data-v="A"><span class="opt-letter">A</span> to share</div>
+      <div class="opt" data-v="B"><span class="opt-letter">B</span> for sharing</div>
+      <div class="opt" data-v="C"><span class="opt-letter">C</span> of sharing</div>
+      <div class="opt" data-v="D"><span class="opt-letter">D</span> that he shared</div>
+    </div>
+  </div>
+</div>
+
+<!-- PART 2: Listening -->
+<div class="section-card">
+  <div class="section-header">
+    <div class="section-number">2</div>
+    <div>
+      <div class="section-title">Listening Comprehension</div>
+      <div class="section-sub">Questions 16–20 · Listen to the dialogue and answer</div>
+    </div>
+  </div>
+
+  <div class="listen-box">
+    <div class="listen-label">Audio — Marco &amp; Ana: A Workplace Problem</div>
+    <div class="audio-player-card">
+      <button class="pp-btn" id="ppBtn7" onclick="togglePlay7()">
+        <svg id="icPlay7" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        <svg id="icPause7" viewBox="0 0 24 24" style="display:none"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+      </button>
+      <div class="audio-right">
+        <div class="audio-title-text">Marco &amp; Ana — Workplace Integrity</div>
+        <div class="prog-row">
+          <div class="prog-track" id="progTrack7"><div class="prog-fill" id="progFill7"></div></div>
+          <span class="audio-timer" id="audioTimer7">0:00</span>
+        </div>
+      </div>
+    </div>
+    <audio id="theAudio7" preload="auto">
+      <source src="" type="audio/mpeg">
+    </audio>
+    <div class="audio-note">Press play to listen. You can listen more than once. · Pressione play. Pode ouvir mais de uma vez.</div>
+  </div>
+
+  <div class="q-block">
+    <div class="q-meta"><span class="q-tag">Q 16</span></div>
+    <div class="q-text">What does Marco suspect happened with the sales report?</div>
+    <div class="options" data-q="16" data-ans="B">
+      <div class="opt" data-v="A"><span class="opt-letter">A</span> Someone stole money from the office</div>
+      <div class="opt" data-v="B"><span class="opt-letter">B</span> Someone faked the results</div>
+      <div class="opt" data-v="C"><span class="opt-letter">C</span> Someone lost the report</div>
+      <div class="opt" data-v="D"><span class="opt-letter">D</span> Someone denied writing it</div>
+    </div>
+  </div>
+
+  <div class="q-block">
+    <div class="q-meta"><span class="q-tag">Q 17</span></div>
+    <div class="q-text">What did the suspect do when Marco sent the email about the problem?</div>
+    <div class="options" data-q="17" data-ans="C">
+      <div class="opt" data-v="A"><span class="opt-letter">A</span> They replied immediately</div>
+      <div class="opt" data-v="B"><span class="opt-letter">B</span> They reported it to the manager</div>
+      <div class="opt" data-v="C"><span class="opt-letter">C</span> They denied receiving it</div>
+      <div class="opt" data-v="D"><span class="opt-letter">D</span> They asked for more time</div>
+    </div>
+  </div>
+
+  <div class="q-block">
+    <div class="q-meta"><span class="q-tag">Q 18</span></div>
+    <div class="q-text">What does Ana suggest they should do first?</div>
+    <div class="options" data-q="18" data-ans="C">
+      <div class="opt" data-v="A"><span class="opt-letter">A</span> Call the police immediately</div>
+      <div class="opt" data-v="B"><span class="opt-letter">B</span> Fire the employee right away</div>
+      <div class="opt" data-v="C"><span class="opt-letter">C</span> Give the person a chance to explain</div>
+      <div class="opt" data-v="D"><span class="opt-letter">D</span> Get rid of all the evidence</div>
+    </div>
+  </div>
+
+  <div class="q-block">
+    <div class="q-meta"><span class="q-tag">Q 19</span></div>
+    <div class="q-text">According to Ana, why can't they ignore the situation?</div>
+    <div class="options" data-q="19" data-ans="B">
+      <div class="opt" data-v="A"><span class="opt-letter">A</span> Because the manager will be angry</div>
+      <div class="opt" data-v="B"><span class="opt-letter">B</span> Because they might lose important evidence</div>
+      <div class="opt" data-v="C"><span class="opt-letter">C</span> Because the client will leave</div>
+      <div class="opt" data-v="D"><span class="opt-letter">D</span> Because the project is already delayed</div>
+    </div>
+  </div>
+
+  <div class="q-block">
+    <div class="q-meta"><span class="q-tag">Q 20</span></div>
+    <div class="q-text">What will Ana do next?</div>
+    <div class="options" data-q="20" data-ans="D">
+      <div class="opt" data-v="A"><span class="opt-letter">A</span> Lock up the office</div>
+      <div class="opt" data-v="B"><span class="opt-letter">B</span> Assemble a new team</div>
+      <div class="opt" data-v="C"><span class="opt-letter">C</span> Call the police directly</div>
+      <div class="opt" data-v="D"><span class="opt-letter">D</span> Report everything to the manager</div>
+    </div>
+  </div>
+</div>
+
+<!-- PART 3: Reading -->
+<div class="section-card">
+  <div class="section-header">
+    <div class="section-number">3</div>
+    <div>
+      <div class="section-title">Reading Comprehension</div>
+      <div class="section-sub">Questions 21–25 · Read the text and answer</div>
+    </div>
+  </div>
+
+  <div class="reading-box">
+    <div class="reading-header">The Comeback of BrightPath Solutions</div>
+    <div class="reading-text">
+      <p>Lucas had been working at BrightPath Solutions for five years when the company started to fail. The startup had succeeded in attracting big clients in its early days, but after a series of bad decisions, everything began to fall apart. Sales dropped, key employees were out of a job, and the remaining team struggled to stay motivated.</p>
+      <p>Lucas didn't give up. Ever since he became project manager, he worked tirelessly to figure out a solution. He had the office reorganized, assembled a brand new team of specialists, and carried out a complete strategy revision. It wasn't a piece of cake — there were days when even he felt embarrassed by how far the company had fallen — but step by step, things started to work out.</p>
+      <p>When BrightPath finally made it back to profitability, the CEO called a meeting. "This team deserves recognition," she said. "Whatever challenges came our way, you supported each other and never stopped improving." Lucas blushed — he was never used to receiving praise. But deep inside, he knew they all had a gift for making things work, even when times were tough.</p>
+    </div>
+  </div>
+
+  <div class="q-block">
+    <div class="q-meta"><span class="q-tag">Q 21</span></div>
+    <div class="q-text">Why did BrightPath Solutions start to fail?</div>
+    <div class="options" data-q="21" data-ans="B">
+      <div class="opt" data-v="A"><span class="opt-letter">A</span> Because Lucas became project manager</div>
+      <div class="opt" data-v="B"><span class="opt-letter">B</span> Due to a series of bad decisions</div>
+      <div class="opt" data-v="C"><span class="opt-letter">C</span> Because the office was too small</div>
+      <div class="opt" data-v="D"><span class="opt-letter">D</span> Because they lost their main supplier</div>
+    </div>
+  </div>
+
+  <div class="q-block">
+    <div class="q-meta"><span class="q-tag">Q 22</span></div>
+    <div class="q-text">What did Lucas do after becoming project manager?</div>
+    <div class="options" data-q="22" data-ans="C">
+      <div class="opt" data-v="A"><span class="opt-letter">A</span> He gave up and looked for a new job</div>
+      <div class="opt" data-v="B"><span class="opt-letter">B</span> He ignored the problems and waited</div>
+      <div class="opt" data-v="C"><span class="opt-letter">C</span> He reorganized the office and assembled a new team</div>
+      <div class="opt" data-v="D"><span class="opt-letter">D</span> He fired all the old employees</div>
+    </div>
+  </div>
+
+  <div class="q-block">
+    <div class="q-meta"><span class="q-tag">Q 23</span></div>
+    <div class="q-text">Which expression in the text means "it was not easy"?</div>
+    <div class="options" data-q="23" data-ans="C">
+      <div class="opt" data-v="A"><span class="opt-letter">A</span> "Made it back to profitability"</div>
+      <div class="opt" data-v="B"><span class="opt-letter">B</span> "Things started to work out"</div>
+      <div class="opt" data-v="C"><span class="opt-letter">C</span> "It wasn't a piece of cake"</div>
+      <div class="opt" data-v="D"><span class="opt-letter">D</span> "Had a gift for making things work"</div>
+    </div>
+  </div>
+
+  <div class="q-block">
+    <div class="q-meta"><span class="q-tag">Q 24</span></div>
+    <div class="q-text">What did the CEO say at the meeting?</div>
+    <div class="options" data-q="24" data-ans="C">
+      <div class="opt" data-v="A"><span class="opt-letter">A</span> That the team should give up</div>
+      <div class="opt" data-v="B"><span class="opt-letter">B</span> That the company needed to close</div>
+      <div class="opt" data-v="C"><span class="opt-letter">C</span> That the team deserved recognition</div>
+      <div class="opt" data-v="D"><span class="opt-letter">D</span> That Lucas should be promoted immediately</div>
+    </div>
+  </div>
+
+  <div class="q-block">
+    <div class="q-meta"><span class="q-tag">Q 25</span></div>
+    <div class="q-text">According to the text, what does Lucas's team have a gift for?</div>
+    <div class="options" data-q="25" data-ans="B">
+      <div class="opt" data-v="A"><span class="opt-letter">A</span> Sweeping and cleaning offices</div>
+      <div class="opt" data-v="B"><span class="opt-letter">B</span> Making things work even in tough times</div>
+      <div class="opt" data-v="C"><span class="opt-letter">C</span> Selling products to big clients</div>
+      <div class="opt" data-v="D"><span class="opt-letter">D</span> Carrying out government investigations</div>
+    </div>
+  </div>
+</div>
+
+<!-- PART 4: Grammar Mix -->
+<div class="section-card">
+  <div class="section-header">
+    <div class="section-number">4</div>
+    <div>
+      <div class="section-title">Grammar — Part 2</div>
+      <div class="section-sub">Questions 26–30 · Mixed grammar from Classes 40–45</div>
+    </div>
+  </div>
+
+  <div class="q-block">
+    <div class="q-meta"><span class="q-tag">Q 26</span></div>
+    <div class="q-text">Which sentence correctly uses the causative structure?</div>
+    <div class="options" data-q="26" data-ans="A">
+      <div class="opt" data-v="A"><span class="opt-letter">A</span> I will have my car washed at the garage this weekend.</div>
+      <div class="opt" data-v="B"><span class="opt-letter">B</span> I will have my car washing at the garage this weekend.</div>
+      <div class="opt" data-v="C"><span class="opt-letter">C</span> I will make my car to wash at the garage this weekend.</div>
+      <div class="opt" data-v="D"><span class="opt-letter">D</span> I will do my car washed at the garage this weekend.</div>
+    </div>
+  </div>
+
+  <div class="q-block">
+    <div class="q-meta"><span class="q-tag">Q 27</span></div>
+    <div class="q-text">_____ she joined the company three years ago, productivity has improved significantly.</div>
+    <div class="options" data-q="27" data-ans="B">
+      <div class="opt" data-v="A"><span class="opt-letter">A</span> As long as</div>
+      <div class="opt" data-v="B"><span class="opt-letter">B</span> Ever since</div>
+      <div class="opt" data-v="C"><span class="opt-letter">C</span> Even though</div>
+      <div class="opt" data-v="D"><span class="opt-letter">D</span> Unless</div>
+    </div>
+  </div>
+
+  <div class="q-block">
+    <div class="q-meta"><span class="q-tag">Q 28</span></div>
+    <div class="q-text">Don't forget to _____ the office before you leave tonight — it's already 9 pm.</div>
+    <div class="options" data-q="28" data-ans="C">
+      <div class="opt" data-v="A"><span class="opt-letter">A</span> figure out</div>
+      <div class="opt" data-v="B"><span class="opt-letter">B</span> take after</div>
+      <div class="opt" data-v="C"><span class="opt-letter">C</span> lock up</div>
+      <div class="opt" data-v="D"><span class="opt-letter">D</span> get over</div>
+    </div>
+  </div>
+
+  <div class="q-block">
+    <div class="q-meta"><span class="q-tag">Q 29</span></div>
+    <div class="q-text">The police gathered enough _____ to arrest the suspect for the fraud.</div>
+    <div class="options" data-q="29" data-ans="B">
+      <div class="opt" data-v="A"><span class="opt-letter">A</span> witness</div>
+      <div class="opt" data-v="B"><span class="opt-letter">B</span> evidence</div>
+      <div class="opt" data-v="C"><span class="opt-letter">C</span> thief</div>
+      <div class="opt" data-v="D"><span class="opt-letter">D</span> guilty</div>
+    </div>
+  </div>
+
+  <div class="q-block">
+    <div class="q-meta"><span class="q-tag">Q 30</span></div>
+    <div class="q-text">We will not proceed with the project _____ the client confirms the order by Friday.</div>
+    <div class="options" data-q="30" data-ans="B">
+      <div class="opt" data-v="A"><span class="opt-letter">A</span> even if</div>
+      <div class="opt" data-v="B"><span class="opt-letter">B</span> unless</div>
+      <div class="opt" data-v="C"><span class="opt-letter">C</span> in that case</div>
+      <div class="opt" data-v="D"><span class="opt-letter">D</span> what if</div>
+    </div>
+  </div>
+</div>
+
+<div class="submit-wrap">
+  <button class="submit-btn" id="submitBtn" onclick="submitTest()">Submit Test</button>
+</div>
+
+</div><!-- /page-wrap -->
+
+<script>
+const TOTAL = 30;
+const answers = {};
+const correct = {1:'A',2:'C',3:'A',4:'C',5:'B',6:'A',7:'A',8:'C',9:'B',10:'A',11:'C',12:'B',13:'B',14:'B',15:'C',16:'B',17:'C',18:'C',19:'B',20:'D',21:'B',22:'C',23:'C',24:'C',25:'B',26:'A',27:'B',28:'C',29:'B',30:'B'};
+
+document.querySelectorAll('.options').forEach(function(group) {
+  group.querySelectorAll('.opt').forEach(function(opt) {
+    opt.addEventListener('click', function() {
+      if (group.dataset.locked) return;
+      var q = parseInt(group.dataset.q);
+      var v = opt.dataset.v;
+      group.querySelectorAll('.opt').forEach(function(o) { o.classList.remove('selected'); });
+      opt.classList.add('selected');
+      answers[q] = v;
+      updateProgress();
+    });
+  });
+});
+
+function updateProgress() {
+  var n = Object.keys(answers).length;
+  document.getElementById('progressFill').style.width = (n/TOTAL*100)+'%';
+  document.getElementById('progressLabel').textContent = n+' / '+TOTAL+' answered';
+}
+
+function submitTest() {
+  var score = 0, p1=0, p2=0, p3=0, p4=0;
+  document.querySelectorAll('.options').forEach(function(group) {
+    var q = parseInt(group.dataset.q);
+    var ans = group.dataset.ans;
+    var sel = answers[q];
+    group.dataset.locked = '1';
+    group.querySelectorAll('.opt').forEach(function(opt) {
+      var v = opt.dataset.v;
+      if (v === ans) opt.classList.add('correct');
+      else if (v === sel && v !== ans) opt.classList.add('wrong');
+      opt.classList.remove('selected');
+    });
+    if (sel === ans) {
+      score++;
+      if (q<=15) p1++; else if (q<=20) p2++; else if (q<=25) p3++; else p4++;
+    }
+  });
+  document.getElementById('resultScore').textContent = score;
+  document.getElementById('br1').textContent = p1;
+  document.getElementById('br2').textContent = p2;
+  document.getElementById('br3').textContent = p3;
+  document.getElementById('br4').textContent = p4;
+  var pct = score/TOTAL*100;
+  var gc = document.getElementById('resultGrade');
+  if (pct>=90){gc.textContent='Excellent';gc.style.background='#e6f4ed';gc.style.color='#1a5c35';}
+  else if (pct>=70){gc.textContent='Good';gc.style.background='#e0f2f2';gc.style.color='#2E7D7D';}
+  else if (pct>=50){gc.textContent='Pass';gc.style.background='#fff8ec';gc.style.color='#b85c00';}
+  else{gc.textContent='Keep Studying';gc.style.background='#fdeaea';gc.style.color='#8B1A1A';}
+  document.getElementById('resultCard').style.display='block';
+  document.getElementById('printBtn').style.display='inline-block';
+  document.getElementById('submitBtn').style.display='none';
+  document.getElementById('resultCard').scrollIntoView({behavior:'smooth'});
+}
+
+(function() {
+  var au = document.getElementById('theAudio7');
+  var btn = document.getElementById('ppBtn7');
+  var ip = document.getElementById('icPlay7');
+  var ipa = document.getElementById('icPause7');
+  var pf = document.getElementById('progFill7');
+  var timer = document.getElementById('audioTimer7');
+  var pt = document.getElementById('progTrack7');
+  function fmt(s){var m=Math.floor(s/60);var sc=Math.floor(s%60);return m+':'+(sc<10?'0':'')+sc;}
+  window.togglePlay7 = function() {
+    if (!au.src || (!au.src.startsWith('data:') && au.src === window.location.href)) return;
+    if (au.paused) { au.play(); ip.style.display='none'; ipa.style.display='block'; btn.style.background='var(--teal)'; }
+    else { au.pause(); ip.style.display='block'; ipa.style.display='none'; btn.style.background='var(--blue)'; }
+  };
+  au.addEventListener('timeupdate', function() { if(au.duration){pf.style.width=(au.currentTime/au.duration*100)+'%'; timer.textContent=fmt(au.currentTime);} });
+  au.addEventListener('ended', function() { ip.style.display='block'; ipa.style.display='none'; btn.style.background='var(--blue)'; pf.style.width='0%'; au.currentTime=0; });
+  pt.addEventListener('click', function(e) { if(!au.duration)return; au.currentTime=(e.offsetX/pt.offsetWidth)*au.duration; });
+})();
+</script>
+</body>
+</html>
