@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Upfront Idiomas — Prova Oral Modelo C · Classes 34–39 · Professor</title>
+<title>Upfront Idiomas — Prova Oral Modelo C · Classes 27–33 · Professor</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -85,14 +85,14 @@
 </head>
 <body>
 
-<div class="teacher-banner">DOCUMENTO CONFIDENCIAL — SOMENTE PROFESSOR · PROVA ORAL · CLASSES 34–39</div>
+<div class="teacher-banner">DOCUMENTO CONFIDENCIAL — SOMENTE PROFESSOR · PROVA ORAL · CLASSES 27–33</div>
 <header class="test-header">
   <div class="header-inner">
     <div>
       <div class="brand-name">Upfront Idiomas</div>
-      <div class="brand-sub">Prova Oral Modelo C · Classes 34–39</div>
+      <div class="brand-sub">Prova Oral Modelo C · Classes 27–33</div>
     </div>
-    <div class="header-badge">Classes 34–39 · Professor</div>
+    <div class="header-badge">Classes 27–33 · Professor</div>
   </div>
 </header>
 
@@ -108,11 +108,11 @@
       </div>
     </div>
     <div class="section-body">
-      <div class="writing-topic">Topic: A Trip I Would Like to Take</div>
-      <div class="writing-prompt-t">Write 6–8 sentences about a trip you would like to take. Use the Second Conditional and travel vocabulary.</div>
-      <div class="teacher-note"><strong>Instrucao ao professor:</strong> Peca ao aluno que leia o texto escrito em voz alta. Observe pronuncia, fluencia e uso das estruturas: Second Conditional (If I had... I would...), Passive Voice, Modals, Relative Clauses e vocabulario de viagem.</div>
+      <div class="writing-topic">Topic: My Cooking Experience &amp; Recent Activities</div>
+      <div class="writing-prompt-t">Write 6–8 sentences about your experience with cooking. Use Present Perfect and Past Simple.</div>
+      <div class="teacher-note"><strong>Instrucao ao professor:</strong> Peca ao aluno que leia o texto escrito em voz alta. Observe pronuncia, fluencia e uso das estruturas: Present Perfect, Simple Past, such a / so, would you mind, personality adjectives.</div>
       <label class="info-label" style="display:block; margin-bottom:6px;">Observacoes sobre a producao escrita</label>
-      <textarea class="notes-area" id="writingNotes" placeholder="Anote aqui pronuncia, fluencia e uso das estruturas..."></textarea>
+      <textarea class="notes-area" id="writingNotes" placeholder="Anote aqui pronuncia, fluencia e uso das estruturas..." style="min-height:80px;"></textarea>
       <div style="margin-top:12px;">
         <div class="eval-criterion" style="margin-bottom:8px;">Nota da escrita</div>
         <div class="eval-stars">
@@ -221,15 +221,30 @@
 <div class="save-toast" id="toast"></div>
 
 <script>
-const STORAGE_KEY = 'upfront_eval_6';
+const STORAGE_KEY = 'upfront_eval_5';
+
+// EDIT ME after deploying api/ to your Hostinger hosting (see api/DEPLOY.md)
+var API_BASE = 'https://upfrontidiomas.com.br/api/portal.php';
+var API_KEY  = 'Upfrontisgonnabeamazing123';
+
+function saveEvalToCloud(data) {
+  const name = (data.studentName || 'Aluno').trim() || 'Aluno';
+  const docId = 'uf_oral_eval_test5_' + name.toLowerCase().replace(/[^a-z0-9]+/g,'_');
+  const payload = Object.assign({groupIdx:'test5', groupLabel:'Classes 27–33', savedAt: new Date().toISOString()}, data);
+  fetch(API_BASE + '?action=upsert&key=' + encodeURIComponent(API_KEY), {
+    method: 'POST',
+    headers: {'Content-Type':'application/json','X-API-Key':API_KEY},
+    body: JSON.stringify({doc_id: docId, v: JSON.stringify(payload), ts: Date.now()})
+  }).catch(function(){});
+}
 
 const QUESTIONS = [
-  { n: 'Pergunta 1', text: 'If you could travel anywhere in the world, where would you go and why?', hint: 'Estruturas esperadas: If I could go to... I would visit... / If I had the chance, I would... / Second Conditional.' },
-  { n: 'Pergunta 2', text: 'How do you think hotels should be booked? Online or in person? Why?', hint: 'Estruturas esperadas: I think hotels should be booked... / They can be found online... / Passive Voice + Modals.' },
-  { n: 'Pergunta 3', text: 'Tell me about a place that you think is beautiful or interesting. What is it like?', hint: 'Estruturas esperadas: a place that / a city which / It is a place where... / Relative Clauses.' },
-  { n: 'Pergunta 4', text: 'If you went on a trip tomorrow, what would you pack and what would you leave at home?', hint: 'Estruturas esperadas: I would bring my... / I would leave... / If I went, I would pack... / Second Conditional.' },
-  { n: 'Pergunta 5', text: 'What do you think travel teaches us? Give me an example from your life or someone you know.', hint: 'Estruturas esperadas: Travel teaches us to... / I think people should... / My friend told me that... / Reported Speech.' },
-  { n: 'Pergunta 6 — Producao Livre', text: 'If you could plan your dream trip with a friend or family member, what would you do together? Describe the trip.', hint: 'Observar: fluencia, uso de Second Conditional, Passive Voice, Relative Clauses, vocabulario de viagem das aulas 34-39.' },
+  { n: 'Pergunta 1', text: 'Have you ever tried to cook something? What did you make?', hint: 'Estruturas esperadas: I have cooked / I tried to make... / I used a frying pan / I chopped...' },
+  { n: 'Pergunta 2', text: 'What personality adjective describes you best? Are you reliable, honest, or hardworking?', hint: 'Estruturas esperadas: I am such a reliable person / I try to be honest / He is kind of stubborn...' },
+  { n: 'Pergunta 3', text: 'How long have you been studying English? What have you learned recently?', hint: 'Estruturas esperadas: I have been studying for... / I have learned... / I have been practicing since...' },
+  { n: 'Pergunta 4', text: 'Can you make a promise about something you will do this week?', hint: 'Estruturas esperadas: I promise I will... / I will keep my word / It is about time I...' },
+  { n: 'Pergunta 5', text: 'If you had a day off, what would you rather do?', hint: 'Estruturas esperadas: I would rather stay home / I would mind going out / I intend to...' },
+  { n: 'Pergunta 6 — Producao Livre', text: 'Tell me about something new you have learned or started doing recently. How has it been going?', hint: 'Observar: fluencia, uso de Present Perfect, vocabulary das aulas 27-33, expressoes: so far so good, in a row, run out of.' },
 ];
 
 const scores = {};
@@ -313,7 +328,8 @@ function saveEval() {
     if (el) data.questionNotes[key] = el.value;
   });
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  showToast('Avaliacao salva!');
+  saveEvalToCloud(data);
+  showToast('Avaliacao salva e enviada para a nuvem!');
 }
 
 function loadEval() {

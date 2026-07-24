@@ -1,0 +1,7 @@
+-- Import this once via hPanel -> Databases -> phpMyAdmin -> (select your DB) -> Import tab.
+CREATE TABLE IF NOT EXISTS `portal` (
+  `doc_id` VARCHAR(190) NOT NULL,
+  `v`      LONGTEXT     NOT NULL,
+  `ts`     BIGINT       NOT NULL,
+  PRIMARY KEY (`doc_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

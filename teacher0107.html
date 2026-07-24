@@ -1,3 +1,168 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8">
-<script>localStorage.setItem('uf_oral_group','1');location.href='test_teacher_model_c.html';</script>
-</head><body></body></html>
+# Passo a passo completo — subir tudo para o seu domínio
+
+Este guia cobre: (1) o backend que substitui o Firebase, (2) todas as
+páginas que precisam apontar para esse backend, (3) o novo curso
+"English for Job Interviews" nos Cursos Extras, e (4) as páginas de
+teste (test1.html a test7.html) que agora são hospedadas no seu
+domínio em vez do GitHub Pages.
+
+---
+
+## Parte 1 — Backend (PHP + MySQL)
+
+### 1.1 Criar o banco de dados
+hPanel → **Bancos de Dados → Bancos de Dados MySQL** → criar um banco
+novo e um usuário novo. Anote **nome do banco**, **usuário** e
+**senha**. O host é quase sempre `localhost`.
+
+### 1.2 Criar a tabela
+hPanel → **Bancos de Dados → phpMyAdmin** → selecione o banco criado →
+aba **Importar** → escolha o arquivo `api/schema.sql` → **Executar**.
+
+### 1.3 Enviar os arquivos do backend
+Pelo **Gerenciador de Arquivos** (ou FTP), envie a pasta `api/`
+inteira para dentro de `public_html/`, de forma que fique:
+`public_html/api/portal.php`, `public_html/api/db.php`,
+`public_html/api/config.php`.
+
+### 1.4 Editar `api/config.php`
+Abra pelo editor do Gerenciador de Arquivos e preencha com os dados do
+passo 1.1, e invente uma `api_key` longa e aleatória:
+
+```php
+return [
+    'db_host' => 'localhost',
+    'db_name' => 'SEU_BANCO_AQUI',
+    'db_user' => 'SEU_USUARIO_AQUI',
+    'db_pass' => 'SUA_SENHA_AQUI',
+    'api_key' => 'INVENTE_UMA_CHAVE_LONGA_E_ALEATORIA',
+];
+```
+
+### 1.5 Testar o backend
+No navegador, acesse (trocando `<dominio>` e `<sua_chave>`):
+```
+https://<dominio>/api/portal.php?action=pull_all&key=<sua_chave>
+```
+Esperado: `{"ok":true,"docs":{}}`. Se der erro, o JSON vai dizer
+exatamente o que está errado (geralmente senha/nome do banco errado em
+`config.php`).
+
+---
+
+## Parte 2 — Editar e enviar as 16 páginas HTML
+
+Todas essas páginas têm, perto do topo do `<script>`, estas duas
+linhas que precisam ser editadas (mesma chave do passo 1.4):
+
+```js
+var API_BASE = 'https://SEUDOMINIO.com.br/api/portal.php'; // troque pelo seu domínio
+var API_KEY  = 'REPLACE_WITH_YOUR_API_KEY';                // mesma chave do config.php
+```
+
+Lista completa dos 16 arquivos que precisam dessa edição:
+
+- `upfront_portal_v7.html` (o portal principal)
+- `test_student_writing.html`
+- `test1_parte_b.html` / `test1_parte_c.html`
+- `test2_parte_b.html` / `test2_parte_c.html`
+- `test3_parte_b.html` / `test3_parte_c.html`
+- `test4_parte_b.html` / `test4_parte_c.html`
+- `test5_parte_b.html` / `test5_parte_c.html`
+- `test6_parte_b.html` / `test6_parte_c.html`
+- `test7_parte_b.html` / `test7_parte_c.html`
+
+Depois de editar cada um, envie-os para `public_html/` (raiz do site),
+substituindo os arquivos antigos com o mesmo nome.
+
+**Dica:** como as 16 páginas usam exatamente a mesma chave, você pode
+editar uma, copiar as duas linhas e colar nas outras 15 — só cuidado
+para não mexer em mais nada.
+
+---
+
+## Parte 3 — Novo curso "English for Job Interviews"
+
+Esse curso já foi adicionado à lista de **Cursos Extras** dentro do
+`upfront_portal_v7.html` (então já está incluído no envio da Parte 2).
+Falta só:
+
+### 3.1 Enviar o arquivo do curso
+Envie `jobinterviews.html` para a pasta `cursos/` do seu site, de
+forma que o link fique `https://upfrontidiomas.com.br/cursos/jobinterviews.html`
+— mesmo padrão dos outros cursos (`travelcourse.html`,
+`supplychain.html`, etc., que já devem estar nessa pasta).
+
+### 3.2 Foto de capa do curso
+Escolhi uma foto do seu Google Drive (a do "JOB APPLICATION" na
+máquina de escrever), redimensionei/comprimi para a web (33 KB) e
+**embuti ela diretamente no HTML** (`photo:` da entrada
+`jobinterviews` agora é uma imagem embutida, não um link) — não
+precisa enviar nenhum arquivo de imagem separado nem criar pasta
+`images/`. Já funciona assim que você reenviar o `upfront_portal_v7.html`
+atualizado. Se um dia quiser trocar a foto, é só substituir o valor do
+campo `photo:` por uma URL comum (como as dos outros cursos).
+
+### 3.3 Confirmar o endpoint de progresso do curso
+Esse curso já vem com sua própria sincronização de progresso entre
+dispositivos, apontando para:
+```
+https://upfrontidiomas.com.br/rh-api/progress.php
+```
+Isso é **separado** do backend da Parte 1 (`api/portal.php`) — não
+precisei criar nada aqui porque você disse que não precisa de tarefas
+para esse curso. Só confirme que esse endereço `rh-api/progress.php`
+já existe no seu servidor (provavelmente já está lá, usado pelos
+outros cursos extras). Se não estiver, o curso funciona normalmente
+mesmo assim — só o progresso não vai sincronizar entre aparelhos
+diferentes, ficando salvo apenas no navegador de cada aluno.
+
+Não precisa de nenhuma edição de `API_BASE`/`API_KEY` no
+`jobinterviews.html` — ele usa esse outro endpoint próprio, não o que
+criamos na Parte 1.
+
+### 3.4 Tela de login dos Cursos Extras
+Já adicionei um 5º card "Job Interviews" na tela inicial do "Upfront
+Cursos" (a mesma tela com os cards de Travel/Supply Chain/HR/Business
+Academy), no mesmo estilo dos outros. Isso já está dentro do
+`upfront_portal_v7.html` — nenhuma ação extra necessária além de
+reenviar esse arquivo (Parte 2).
+
+---
+
+## Parte 4 — Páginas de teste (test1.html a test7.html)
+
+Essas páginas eram hospedadas no GitHub Pages, mas como o push pro
+GitHub está bloqueado (o mesmo erro 403 de sempre), o portal agora
+aponta pra elas no seu próprio domínio. Envie os 7 arquivos abaixo
+para `public_html/` (raiz do site, mesmo lugar de `upfront_portal_v7.html`):
+
+- `test1.html` (novo — antes esse grupo de aulas não tinha teste próprio)
+- `test2.html`, `test3.html`, `test4.html`, `test5.html` (atualizados)
+- `test6.html`, `test7.html` (sem mudanças — não precisa reenviar se já
+  estiverem lá, mas não tem problema reenviar também)
+
+Todos os 7 já têm o áudio de Listening embutido no próprio arquivo
+(nenhum precisa de upload manual de áudio pelo professor).
+
+Além disso, as aulas 1-7, 8-13, 14-20 e 21-26 agora abrem a Prova Oral e
+a Prova Escrita direto em `test1_parte_c.html`/`test1_parte_b.html`
+(e equivalentes 2/3/4), no mesmo padrão que já valia pras aulas 27-33
+em diante. Os arquivos antigos `teacher0107.html`, `writing0107.html`
+etc. não são mais usados pelo portal (pode deixá-los no servidor sem
+problema, ou remover — não afeta nada).
+
+---
+
+## Checklist final
+
+- [ ] Banco de dados criado e tabela importada
+- [ ] `api/` enviado e `config.php` editado
+- [ ] Teste do backend retornou `{"ok":true,"docs":{}}`
+- [ ] As 16 páginas HTML editadas (API_BASE/API_KEY) e reenviadas
+- [ ] `jobinterviews.html` enviado para `cursos/`
+- [ ] `test1.html` a `test7.html` enviados para a raiz do site
+- [ ] Testado no navegador: login, editar usuário, liberar aula,
+      abrir uma Prova Oral e uma Prova Escrita de cada grupo (1-7 até
+      40-45), enviar prova escrita, abrir o curso Job Interviews em
+      "Cursos Extras"

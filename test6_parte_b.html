@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Upfront Idiomas — Writing Task · Classes 34–39</title>
+<title>Upfront Idiomas — Writing Task · Classes 27–33</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -63,7 +63,7 @@
   <div class="header-inner">
     <div>
       <div class="brand-name">Upfront Idiomas</div>
-      <div class="brand-sub">English Course — Writing Task · Classes 34–39</div>
+      <div class="brand-sub">English Course — Writing Task · Classes 27–33</div>
     </div>
     <div class="header-badge">Parte B · Aluno</div>
   </div>
@@ -78,16 +78,16 @@
       </div>
     </div>
     <div class="section-body">
-      <div class="writing-topic">Topic: A Trip I Would Like to Take</div>
-      <div class="writing-prompt">Write 6–8 sentences about a trip you would like to take. Where would you go? What would you do there? If you could go anywhere in the world, where would it be and why? Use the Second Conditional and travel vocabulary.</div>
+      <div class="writing-topic">Topic: My Cooking Experience &amp; Recent Activities</div>
+      <div class="writing-prompt">Write 6-8 sentences about your experience with cooking. Have you cooked anything recently? What did you make? Did anything go wrong? Also mention something you have been doing a lot lately. Use the Present Perfect and Past Simple.</div>
       <div class="hints-box">
         <div class="hints-title">Estruturas esperadas</div>
         <ul>
-          <li><strong>Second Conditional</strong> — If I had enough money, I would... / If I could travel anywhere, I would go to...</li>
-          <li><strong>Passive Voice</strong> — The castle was built in... / The food is made fresh every day...</li>
-          <li><strong>Modals</strong> — I should visit... / I might go to... / I could stay at a hotel...</li>
-          <li><strong>Relative Clauses</strong> — a place that / a city which / the people who...</li>
-          <li><strong>Travel Vocabulary</strong> — suitcase, book (a hotel), tourist, flight, castle, restaurant...</li>
+          <li><strong>Present Perfect</strong> — I have cooked / I have been learning / I haven't tried yet...</li>
+          <li><strong>Simple Past</strong> — I made / I forgot / I burned / It tasted...</li>
+          <li><strong>Such a / So</strong> — It was such a great experience / The food smelled so good...</li>
+          <li><strong>Would you mind / I'd rather</strong> — I'd rather cook at home / Would you mind helping me?</li>
+          <li><strong>Personality adjectives</strong> — I'm reliable / I try to be honest and organized...</li>
         </ul>
       </div>
       <div class="student-info">
@@ -114,7 +114,33 @@
 </div>
 <div class="save-toast" id="toast"></div>
 <script>
-const STORAGE_KEY = 'upfront_writing_6';
+const STORAGE_KEY = 'upfront_writing_5';
+
+// EDIT ME after deploying api/ to your Hostinger hosting (see api/DEPLOY.md)
+var API_BASE = 'https://upfrontidiomas.com.br/api/portal.php';
+var API_KEY  = 'Upfrontisgonnabeamazing123';
+
+// Pulls the shared writing-submissions list from the cloud, appends this
+// submission, and pushes the merged list back (so this page and the other
+// writing-task pages can all add to the same list without one overwriting
+// another's pending submission).
+function submitWritingToCloud(sub) {
+  fetch(API_BASE + '?action=get_one&doc_id=uf_writing_subs&key=' + encodeURIComponent(API_KEY))
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      var subs = [];
+      try { if (data && data.doc && data.doc.v) subs = JSON.parse(data.doc.v); } catch(e) {}
+      if (!Array.isArray(subs)) subs = [];
+      subs.push(sub);
+      return fetch(API_BASE + '?action=upsert&key=' + encodeURIComponent(API_KEY), {
+        method: 'POST',
+        headers: {'Content-Type':'application/json','X-API-Key':API_KEY},
+        body: JSON.stringify({doc_id:'uf_writing_subs', v: JSON.stringify(subs), ts: Date.now()})
+      });
+    })
+    .catch(function(){});
+}
+
 window.addEventListener('DOMContentLoaded', function() {
   document.getElementById('studentDate').value = new Date().toISOString().split('T')[0];
   const saved = localStorage.getItem(STORAGE_KEY);
@@ -142,10 +168,15 @@ function downloadText() {
   const date=document.getElementById('studentDate').value||new Date().toISOString().split('T')[0];
   const text=document.getElementById('writingArea').value.trim();
   if(!text){showToast('Escreva algo antes de baixar.');return;}
-  const content='Upfront Idiomas - Writing Task - Classes 34-39\nTopic: A Trip I Would Like to Take\nAluno: '+name+'\nData: '+date+'\n\n'+text;
+  const content='Upfront Idiomas - Writing Task - Classes 27-33\nTopic: My Cooking Experience & Recent Activities\nAluno: '+name+'\nData: '+date+'\n\n'+text;
   const blob=new Blob([content],{type:'text/plain;charset=utf-8'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='escrita_'+name.replace(/\s+/g,'_')+'_classes34-39.txt';a.click();
-  showToast('Arquivo baixado!');
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='escrita_'+name.replace(/\s+/g,'_')+'_classes27-33.txt';a.click();
+  submitWritingToCloud({
+    name: name, text: text, date: date,
+    topic: 'My Cooking Experience & Recent Activities', groupLabel: 'Classes 27–33', groupIdx: 'test5',
+    sentAt: new Date().toISOString()
+  });
+  showToast('Arquivo baixado e enviado ao professor!');
 }
 function clearText() {
   if(confirm('Tem certeza que deseja limpar o texto?')){document.getElementById('writingArea').value='';updateCount();localStorage.removeItem(STORAGE_KEY);showToast('Texto limpo.');}

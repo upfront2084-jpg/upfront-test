@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Upfront Idiomas — Parte B · Aluno · Classes 21–26</title>
+<title>Upfront Idiomas — Parte B · Aluno · Classes 01–07</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -59,12 +59,12 @@ textarea#studentText:focus{border-color:var(--teal)}
 
 <!-- MAIN CONTENT -->
 <div id="mainContent">
-  <div class="student-banner">✏️ PROVA ORAL · PARTE B — PRODUÇÃO ESCRITA · CLASSES 21–26</div>
+  <div class="student-banner">✏️ PROVA ORAL · PARTE B — PRODUÇÃO ESCRITA · CLASSES 01–07</div>
   <header class="test-header">
     <div class="header-inner">
       <div>
         <div class="brand-name">Upfront Idiomas</div>
-        <div class="brand-sub">English Course — Prova Oral · Parte B · Classes 21–26</div>
+        <div class="brand-sub">English Course — Prova Oral · Parte B · Classes 01–07</div>
       </div>
       <div class="header-badge">Parte B · Aluno</div>
     </div>
@@ -96,11 +96,11 @@ textarea#studentText:focus{border-color:var(--teal)}
         <div class="card-title">Writing Task — Produção Escrita</div>
       </div>
       <div class="card-body">
-        <div class="topic-box">✏️ Topic: Comparing Things & Life Changes</div>
-        <div class="prompt">Write 5–8 sentences comparing two things (places, people, objects) or talking about changes in your life. Include what things used to be like and how they are now.</div>
+        <div class="topic-box">✏️ Topic: My Daily Routine</div>
+        <div class="prompt">Write 5–8 sentences about your daily routine. Include: what time you wake up, how you go to work/school, what you usually eat, and what you do after work.</div>
         <div class="hints-box">
           <div class="hints-title">Estruturas para usar</div>
-          <ul><li><strong>Comparatives</strong> — My new job is better than my old one…</li><li><strong>Superlatives</strong> — It's the most expensive city in Brazil…</li><li><strong>USED TO + verb</strong> — I used to live downtown, but now…</li><li><strong>SHOULD / SHOULDN'T</strong> — You should pay attention to your health…</li><li><strong>FORTUNATELY / UNFORTUNATELY</strong> — Unfortunately, I was short of cash…</li></ul>
+          <ul><li><strong>AT + time</strong> — I wake up at 7am…</li><li><strong>BY car / ON foot / BY bus</strong> — I go to work by car…</li><li><strong>UNTIL</strong> — I work until 6pm…</li><li><strong>BEFORE / AFTER + -ing</strong> — After working, I…</li><li><strong>USUALLY / ALREADY / STILL</strong> — I usually have lunch at noon…</li></ul>
         </div>
         <div class="textarea-wrap">
           <textarea id="studentText" placeholder="Write your text here… / Escreva seu texto aqui…"></textarea>
@@ -120,9 +120,9 @@ var API_BASE = 'https://upfrontidiomas.com.br/api/portal.php';
 var API_KEY  = 'Upfrontisgonnabeamazing123';
 
 // Pulls the shared writing-submissions list from the cloud, appends this
-// submission, and pushes the merged list back (so this page and the other
-// writing-task pages can all add to the same list without one overwriting
-// another's pending submission).
+// submission, and pushes the merged list back (so this page, test2_parte_b.html
+// and test_student_writing.html can all add to the same list without one
+// overwriting another's pending submission).
 function submitWritingToCloud(sub) {
   fetch(API_BASE + '?action=get_one&doc_id=uf_writing_subs&key=' + encodeURIComponent(API_KEY))
     .then(function(r){ return r.json(); })
@@ -156,15 +156,15 @@ function saveText() {
   const date = document.getElementById('studentDate').value || '';
   const text = document.getElementById('studentText').value.trim();
   if (!text) { alert('Por favor, escreva seu texto antes de salvar.'); return; }
-  const content = `Upfront Idiomas — Prova Oral · Parte B · Classes 21–26\nAluno: ${name}\nData: ${date}\n\nTopic: Comparing Things & Life Changes\n\n${text}`;
+  const content = `Upfront Idiomas — Prova Oral · Parte B · Classes 01–07\nAluno: ${name}\nData: ${date}\n\nTopic: My Daily Routine\n\n${text}`;
   const blob = new Blob([content], {type: 'text/plain;charset=utf-8'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = `PartB_4_${name.replace(/\s+/g,'_')}.txt`;
+  a.download = `PartB_1_${name.replace(/\s+/g,'_')}.txt`;
   a.click();
   submitWritingToCloud({
     name: name, text: text, date: date,
-    topic: 'Comparing Things & Life Changes', groupLabel: 'Classes 21–26', groupIdx: 'test4',
+    topic: 'My Daily Routine', groupLabel: 'Classes 01–07', groupIdx: 'test1',
     sentAt: new Date().toISOString()
   });
   document.getElementById('successMsg').style.display = 'block';

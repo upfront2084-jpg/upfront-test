@@ -1,3 +1,298 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8">
-<script>localStorage.setItem('uf_writing_group','2');location.href='test_student_writing.html';</script>
-</head><body></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Upfront Idiomas — Oral Evaluation · Classes 40–45 · PROFESSOR</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --navy: #1A1A2E; --blue: #1F3A5F; --teal: #2E7D7D; --teal-l: #e0f2f2;
+    --red: #b91c1c; --red-l: #fff0f0; --red-b: #fca5a5;
+    --light: #F5F7FA; --white: #ffffff; --border: #d0d5dd;
+    --text: #1A1A2E; --muted: #6b7280; --star-on: #f59e0b; --star-off: #d1d5db;
+  }
+  body { font-family: 'Inter', sans-serif; background: #eef1f6; color: var(--text); min-height: 100vh; padding-bottom: 60px; }
+  .conf-banner { background: var(--red); color: #fff; text-align: center; font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 9px 16px; }
+  .test-header { background: var(--navy); padding: 0; box-shadow: 0 2px 12px rgba(0,0,0,.3); }
+  .header-inner { max-width: 860px; margin: 0 auto; padding: 18px 32px; display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .brand-name { font-family: 'Sora', sans-serif; font-size: 22px; font-weight: 800; color: #fff; letter-spacing: -.02em; }
+  .brand-sub { font-size: 11px; color: #8892aa; font-weight: 400; letter-spacing: .08em; text-transform: uppercase; margin-top: 2px; }
+  .header-badge { background: var(--red); color: #fff; font-size: 11px; font-weight: 600; padding: 6px 14px; border-radius: 20px; letter-spacing: .06em; text-transform: uppercase; }
+  .page-wrap { max-width: 860px; margin: 0 auto; padding: 32px 24px; }
+  .student-card { background: var(--white); border-radius: 12px; padding: 20px 24px; margin-bottom: 24px; box-shadow: 0 1px 4px rgba(0,0,0,.08); display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .info-field { display: flex; flex-direction: column; gap: 5px; }
+  .info-label { font-size: 11px; font-weight: 700; color: var(--blue); text-transform: uppercase; letter-spacing: .06em; }
+  .info-input { padding: 9px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 14px; font-family: inherit; outline: none; transition: border-color .2s; }
+  .info-input:focus { border-color: var(--teal); }
+  .section-card { background: var(--white); border-radius: 12px; overflow: hidden; margin-bottom: 20px; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+  .section-header { background: var(--blue); padding: 13px 24px; display: flex; align-items: center; gap: 12px; }
+  .section-number { background: var(--teal); color: #fff; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+  .section-title { color: #fff; font-size: 14px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+  .section-sub { color: #a8c4cc; font-size: 12px; margin-top: 1px; }
+  .section-body { padding: 20px 24px; }
+  .q-block { margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #eee; }
+  .q-block:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+  .q-label { font-size: 11px; font-weight: 700; color: var(--teal); letter-spacing: .08em; text-transform: uppercase; margin-bottom: 6px; }
+  .q-text { font-size: 15px; font-weight: 600; color: var(--navy); margin-bottom: 6px; line-height: 1.5; }
+  .q-focus { font-size: 12px; color: var(--muted); font-style: italic; margin-bottom: 10px; }
+  .notes-area { width: 100%; min-height: 60px; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 13px; line-height: 1.6; resize: vertical; outline: none; transition: border-color .2s; color: var(--text); }
+  .notes-area:focus { border-color: var(--teal); }
+  .rubric-card { background: var(--white); border-radius: 12px; overflow: hidden; margin-bottom: 24px; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+  .rubric-header { background: var(--blue); padding: 13px 24px; }
+  .rubric-title { color: #fff; font-size: 14px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+  .rubric-body { padding: 20px 24px; }
+  .criteria-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 0; border-bottom: 1px solid #eee; flex-wrap: wrap; }
+  .criteria-row:last-child { border-bottom: none; }
+  .criteria-name { font-size: 14px; font-weight: 600; color: var(--navy); min-width: 130px; }
+  .stars { display: flex; gap: 6px; }
+  .star { font-size: 26px; cursor: pointer; color: var(--star-off); transition: color .15s, transform .1s; user-select: none; }
+  .star:hover, .star.on { color: var(--star-on); }
+  .star:hover { transform: scale(1.15); }
+  .score-badge { background: var(--teal-l); border: 1.5px solid var(--teal); border-radius: 20px; padding: 4px 14px; font-size: 13px; font-weight: 700; color: var(--teal); min-width: 60px; text-align: center; }
+  .total-bar { background: var(--navy); border-radius: 10px; padding: 16px 24px; margin-top: 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+  .total-label { color: #a8c4cc; font-size: 13px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
+  .total-value { color: #fff; font-size: 26px; font-weight: 800; font-family: 'Sora', sans-serif; }
+  .writing-score-row { display: flex; align-items: center; gap: 16px; margin-top: 16px; flex-wrap: wrap; }
+  .writing-score-label { font-size: 14px; font-weight: 600; color: var(--navy); }
+  .writing-score-input { width: 70px; padding: 8px 10px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 16px; font-weight: 700; font-family: inherit; outline: none; text-align: center; transition: border-color .2s; }
+  .writing-score-input:focus { border-color: var(--teal); }
+  .writing-score-max { font-size: 14px; color: var(--muted); }
+  .action-bar { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 24px; }
+  .btn { padding: 11px 22px; border-radius: 8px; font-size: 14px; font-weight: 600; font-family: inherit; cursor: pointer; border: none; transition: all .2s; }
+  .btn-save { background: var(--teal); color: #fff; }
+  .btn-save:hover { background: #265f5f; }
+  .btn-print { background: var(--blue); color: #fff; }
+  .btn-print:hover { background: #162d4a; }
+  .btn-clear { background: var(--red-l); color: var(--red); border: 1.5px solid var(--red-b); }
+  .btn-clear:hover { background: #fee2e2; }
+  .save-toast { display: none; position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--teal); color: #fff; padding: 12px 24px; border-radius: 30px; font-size: 14px; font-weight: 600; box-shadow: 0 4px 20px rgba(0,0,0,.2); z-index: 100; white-space: nowrap; }
+  @media (max-width: 600px) { .student-card { grid-template-columns: 1fr; } .header-inner { padding: 14px 18px; } .page-wrap { padding: 20px 14px; } .criteria-row { flex-direction: column; align-items: flex-start; } }
+  @media print { .action-bar, .conf-banner { display: none !important; } .section-card, .rubric-card, .student-card { box-shadow: none; border: 1px solid #ccc; } }
+</style>
+</head>
+<body>
+<div class="conf-banner">DOCUMENTO CONFIDENCIAL — SOMENTE PROFESSOR &nbsp;·&nbsp; PROVA ORAL &nbsp;·&nbsp; CLASSES 40–45</div>
+<header class="test-header">
+  <div class="header-inner">
+    <div>
+      <div class="brand-name">Upfront Idiomas</div>
+      <div class="brand-sub">English Course — Oral Evaluation · Classes 40–45</div>
+    </div>
+    <div class="header-badge">Parte C · Professor</div>
+  </div>
+</header>
+<div class="page-wrap">
+
+  <div class="student-card">
+    <div class="info-field">
+      <span class="info-label">Nome do aluno</span>
+      <input class="info-input" type="text" id="studentName" placeholder="Nome completo">
+    </div>
+    <div class="info-field">
+      <span class="info-label">Data</span>
+      <input class="info-input" type="date" id="studentDate">
+    </div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-number">C</div>
+      <div>
+        <div class="section-title">Oral Questions — Perguntas para a Prova Oral</div>
+        <div class="section-sub">Faça as perguntas ao aluno e anote observacoes no campo abaixo de cada uma</div>
+      </div>
+    </div>
+    <div class="section-body">
+
+      <div class="q-block">
+        <div class="q-label">Pergunta 1 — Class 40 · Struggle &amp; Perseverance</div>
+        <div class="q-text">Have you ever struggled to succeed at something difficult? Did you give up or did you keep going? What helped you make it in the end?</div>
+        <div class="q-focus">Foco: struggle, give up, make it, ever since, have a gift for — verbos de progresso pessoal</div>
+        <textarea class="notes-area" id="n1" placeholder="Observacoes do professor..."></textarea>
+      </div>
+
+      <div class="q-block">
+        <div class="q-label">Pergunta 2 — Class 41 · Expressions</div>
+        <div class="q-text">Is there something you do that seems hard to others but is a piece of cake for you? Have you ever carried out a project that turned out better than you expected?</div>
+        <div class="q-focus">Foco: piece of cake, carry out, work out, as well as, whatever / wherever — whatever-compounds</div>
+        <textarea class="notes-area" id="n2" placeholder="Observacoes do professor..."></textarea>
+      </div>
+
+      <div class="q-block">
+        <div class="q-label">Pergunta 3 — Class 42 · Causative &amp; Needs</div>
+        <div class="q-text">Is there anything in your home or workplace that is out of order or needs fixing? Have you had it repaired recently, or are you still figuring out what to do?</div>
+        <div class="q-focus">Foco: have something done (causative), needs + v-ing, out of order, figure out, in need of repair</div>
+        <textarea class="notes-area" id="n3" placeholder="Observacoes do professor..."></textarea>
+      </div>
+
+      <div class="q-block">
+        <div class="q-label">Pergunta 4 — Class 43 · Conditionals &amp; Reporting Verbs</div>
+        <div class="q-text">Can you describe a situation where you assumed something and were completely wrong? What would you do differently if you could go back? Use "if" in your answer.</div>
+        <div class="q-focus">Foco: assume / suppose / pretend + First &amp; Second Conditional, as far as I know, in that case, unless</div>
+        <textarea class="notes-area" id="n4" placeholder="Observacoes do professor..."></textarea>
+      </div>
+
+      <div class="q-block">
+        <div class="q-label">Pergunta 5 — Class 44 · Deny &amp; Chance</div>
+        <div class="q-text">Have you ever had to give someone a second chance after they denied making a mistake? How did you decide whether to trust them again?</div>
+        <div class="q-focus">Foco: deny + v-ing, cheat, give a chance / take the chance / miss the chance, hang up, lock up</div>
+        <textarea class="notes-area" id="n5" placeholder="Observacoes do professor..."></textarea>
+      </div>
+
+      <div class="q-block">
+        <div class="q-label">Pergunta 6 — Class 45 · Crime &amp; Free Production</div>
+        <div class="q-text">Do you think evidence is always enough to accuse someone of a crime? What does it mean to catch someone red-handed? Tell me about a time when you had to keep an eye on something important.</div>
+        <div class="q-focus">Foco: accuse of, evidence, guilty / innocent, catch red-handed, get away with, keep an eye on, watch out for</div>
+        <textarea class="notes-area" id="n6" placeholder="Observacoes do professor..."></textarea>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="rubric-card">
+    <div class="rubric-header">
+      <div class="rubric-title">Avaliacao Oral — Nota /20</div>
+    </div>
+    <div class="rubric-body">
+      <div class="criteria-row">
+        <div class="criteria-name">Pronuncia</div>
+        <div class="stars" id="stars-p" data-key="p"></div>
+        <div class="score-badge" id="badge-p">0 / 5</div>
+      </div>
+      <div class="criteria-row">
+        <div class="criteria-name">Fluencia</div>
+        <div class="stars" id="stars-f" data-key="f"></div>
+        <div class="score-badge" id="badge-f">0 / 5</div>
+      </div>
+      <div class="criteria-row">
+        <div class="criteria-name">Vocabulario</div>
+        <div class="stars" id="stars-v" data-key="v"></div>
+        <div class="score-badge" id="badge-v">0 / 5</div>
+      </div>
+      <div class="criteria-row">
+        <div class="criteria-name">Gramatica</div>
+        <div class="stars" id="stars-g" data-key="g"></div>
+        <div class="score-badge" id="badge-g">0 / 5</div>
+      </div>
+
+      <div class="writing-score-row">
+        <div class="writing-score-label">Nota Escrita (Parte B)</div>
+        <input class="writing-score-input" type="number" id="writingScore" min="0" max="5" placeholder="0">
+        <div class="writing-score-max">/ 5</div>
+      </div>
+
+      <div class="total-bar">
+        <div class="total-label">Total Oral + Escrita</div>
+        <div class="total-value" id="totalScore">0 / 25</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="action-bar">
+    <button class="btn btn-save" onclick="saveEval()">Salvar avaliacao</button>
+    <button class="btn btn-print" onclick="window.print()">Imprimir</button>
+    <button class="btn btn-clear" onclick="clearEval()">Limpar tudo</button>
+  </div>
+</div>
+<div class="save-toast" id="toast"></div>
+<script>
+const STORAGE_KEY = 'upfront_eval_7';
+const ratings = { p: 0, f: 0, v: 0, g: 0 };
+const keys = ['p','f','v','g'];
+
+// EDIT ME after deploying api/ to your Hostinger hosting (see api/DEPLOY.md)
+var API_BASE = 'https://upfrontidiomas.com.br/api/portal.php';
+var API_KEY  = 'Upfrontisgonnabeamazing123';
+
+function saveEvalToCloud(data) {
+  const name = (data.name || 'Aluno').trim() || 'Aluno';
+  const docId = 'uf_oral_eval_test7_' + name.toLowerCase().replace(/[^a-z0-9]+/g,'_');
+  const payload = Object.assign({groupIdx:'test7', groupLabel:'Classes 40–45', savedAt: new Date().toISOString()}, data);
+  fetch(API_BASE + '?action=upsert&key=' + encodeURIComponent(API_KEY), {
+    method: 'POST',
+    headers: {'Content-Type':'application/json','X-API-Key':API_KEY},
+    body: JSON.stringify({doc_id: docId, v: JSON.stringify(payload), ts: Date.now()})
+  }).catch(function(){});
+}
+
+function buildStars(key) {
+  const container = document.getElementById('stars-'+key);
+  container.innerHTML = '';
+  for (let i = 1; i <= 5; i++) {
+    const s = document.createElement('span');
+    s.className = 'star' + (i <= ratings[key] ? ' on' : '');
+    s.textContent = '★';
+    s.dataset.val = i;
+    s.addEventListener('click', function() { setRating(key, +this.dataset.val); });
+    container.appendChild(s);
+  }
+}
+
+function setRating(key, val) {
+  ratings[key] = val;
+  buildStars(key);
+  document.getElementById('badge-'+key).textContent = val + ' / 5';
+  updateTotal();
+}
+
+function updateTotal() {
+  const oral = keys.reduce((a,k) => a + ratings[k], 0);
+  const writing = parseInt(document.getElementById('writingScore').value) || 0;
+  document.getElementById('totalScore').textContent = (oral + writing) + ' / 25';
+}
+
+document.getElementById('writingScore').addEventListener('input', updateTotal);
+
+function saveEval() {
+  const data = {
+    name: document.getElementById('studentName').value,
+    date: document.getElementById('studentDate').value,
+    ratings: {...ratings},
+    writing: document.getElementById('writingScore').value,
+    notes: {}
+  };
+  for (let i = 1; i <= 6; i++) data.notes['n'+i] = document.getElementById('n'+i).value;
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  saveEvalToCloud(data);
+  showToast('Avaliacao salva e enviada para a nuvem!');
+}
+
+function clearEval() {
+  if (!confirm('Limpar toda a avaliacao?')) return;
+  keys.forEach(k => setRating(k, 0));
+  document.getElementById('writingScore').value = '';
+  document.getElementById('studentName').value = '';
+  document.getElementById('totalScore').textContent = '0 / 25';
+  for (let i = 1; i <= 6; i++) document.getElementById('n'+i).value = '';
+  localStorage.removeItem(STORAGE_KEY);
+  showToast('Avaliacao limpa.');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.style.display = 'block';
+  clearTimeout(t._timer); t._timer = setTimeout(() => { t.style.display = 'none'; }, 2500);
+}
+
+window.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('studentDate').value = new Date().toISOString().split('T')[0];
+  keys.forEach(k => buildStars(k));
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (saved) {
+    try {
+      const d = JSON.parse(saved);
+      if (d.name) document.getElementById('studentName').value = d.name;
+      if (d.date) document.getElementById('studentDate').value = d.date;
+      if (d.ratings) { keys.forEach(k => { if (d.ratings[k]) setRating(k, d.ratings[k]); }); }
+      if (d.writing) document.getElementById('writingScore').value = d.writing;
+      if (d.notes) { for (let i = 1; i <= 6; i++) { if (d.notes['n'+i]) document.getElementById('n'+i).value = d.notes['n'+i]; } }
+      updateTotal();
+    } catch(e) {}
+  }
+});
+</script>
+</body>
+</html>

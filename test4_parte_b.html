@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Upfront Idiomas — Parte B · Aluno · Classes 21–26</title>
+<title>Upfront Idiomas — Parte B · Aluno · Classes 14–20</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -59,12 +59,12 @@ textarea#studentText:focus{border-color:var(--teal)}
 
 <!-- MAIN CONTENT -->
 <div id="mainContent">
-  <div class="student-banner">✏️ PROVA ORAL · PARTE B — PRODUÇÃO ESCRITA · CLASSES 21–26</div>
+  <div class="student-banner">✏️ PROVA ORAL · PARTE B — PRODUÇÃO ESCRITA · CLASSES 14–20</div>
   <header class="test-header">
     <div class="header-inner">
       <div>
         <div class="brand-name">Upfront Idiomas</div>
-        <div class="brand-sub">English Course — Prova Oral · Parte B · Classes 21–26</div>
+        <div class="brand-sub">English Course — Prova Oral · Parte B · Classes 14–20</div>
       </div>
       <div class="header-badge">Parte B · Aluno</div>
     </div>
@@ -96,11 +96,11 @@ textarea#studentText:focus{border-color:var(--teal)}
         <div class="card-title">Writing Task — Produção Escrita</div>
       </div>
       <div class="card-body">
-        <div class="topic-box">✏️ Topic: Comparing Things & Life Changes</div>
-        <div class="prompt">Write 5–8 sentences comparing two things (places, people, objects) or talking about changes in your life. Include what things used to be like and how they are now.</div>
+        <div class="topic-box">✏️ Topic: Describe a Person You Know Well</div>
+        <div class="prompt">Write 5–8 sentences describing a person you know well — a friend, family member, or colleague. Include their appearance, personality, and what they do.</div>
         <div class="hints-box">
           <div class="hints-title">Estruturas para usar</div>
-          <ul><li><strong>Comparatives</strong> — My new job is better than my old one…</li><li><strong>Superlatives</strong> — It's the most expensive city in Brazil…</li><li><strong>USED TO + verb</strong> — I used to live downtown, but now…</li><li><strong>SHOULD / SHOULDN'T</strong> — You should pay attention to your health…</li><li><strong>FORTUNATELY / UNFORTUNATELY</strong> — Unfortunately, I was short of cash…</li></ul>
+          <ul><li><strong>HE/SHE HAS + noun</strong> — She has long brown hair…</li><li><strong>HE/SHE IS + adjective</strong> — He is very friendly and hard-working…</li><li><strong>WORKS AS / IS A</strong> — She works as a teacher…</li><li><strong>LIKES / LOVES / HATES + -ing</strong> — He loves playing football…</li><li><strong>BOTH / NEITHER / EITHER</strong> — We both like traveling…</li></ul>
         </div>
         <div class="textarea-wrap">
           <textarea id="studentText" placeholder="Write your text here… / Escreva seu texto aqui…"></textarea>
@@ -156,15 +156,15 @@ function saveText() {
   const date = document.getElementById('studentDate').value || '';
   const text = document.getElementById('studentText').value.trim();
   if (!text) { alert('Por favor, escreva seu texto antes de salvar.'); return; }
-  const content = `Upfront Idiomas — Prova Oral · Parte B · Classes 21–26\nAluno: ${name}\nData: ${date}\n\nTopic: Comparing Things & Life Changes\n\n${text}`;
+  const content = `Upfront Idiomas — Prova Oral · Parte B · Classes 14–20\nAluno: ${name}\nData: ${date}\n\nTopic: Describe a Person You Know Well\n\n${text}`;
   const blob = new Blob([content], {type: 'text/plain;charset=utf-8'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = `PartB_4_${name.replace(/\s+/g,'_')}.txt`;
+  a.download = `PartB_3_${name.replace(/\s+/g,'_')}.txt`;
   a.click();
   submitWritingToCloud({
     name: name, text: text, date: date,
-    topic: 'Comparing Things & Life Changes', groupLabel: 'Classes 21–26', groupIdx: 'test4',
+    topic: 'Describe a Person You Know Well', groupLabel: 'Classes 14–20', groupIdx: 'test3',
     sentAt: new Date().toISOString()
   });
   document.getElementById('successMsg').style.display = 'block';
