@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Upfront Idiomas — Fale inglês com confiança</title>
+<meta name="description" content="Aprenda inglês de verdade com a Upfront Idiomas: método prático, professores dedicados e foco total em conversação.">
+<style>
+  :root{
+    --blue:#3646C9; --blue-dark:#1C2568; --blue-soft:#EEF0FD;
+    --red:#FF4B55; --gold:#FFB020; --ink:#101433; --muted:#5B6180; --line:#E7E8F5;
+    --bg:#FFFFFF; --bg-alt:#F6F7FD; --whats:#25D366;
+    --radius:20px; --shadow:0 24px 50px -22px rgba(16,20,51,.20);
+    --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--font);color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased;}
+  img{max-width:100%;display:block;}
+  a{color:inherit;text-decoration:none;}
+  ul{list-style:none;}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 24px;}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:15px 28px;border-radius:999px;
+    font-weight:800;font-size:15px;border:none;cursor:pointer;transition:transform .15s ease;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn-primary{background:var(--red);color:#fff;box-shadow:0 16px 30px -10px rgba(255,75,85,.55);}
+  .btn-ghost{background:rgba(255,255,255,.12);color:#fff;border:2px solid rgba(255,255,255,.4);}
+  .btn-whats{background:var(--whats);color:#fff;box-shadow:0 16px 30px -10px rgba(37,211,102,.55);}
+  .tag{display:inline-block;font-size:12.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--blue);background:var(--blue-soft);padding:7px 16px;border-radius:999px;margin-bottom:18px;}
+  .section{padding:96px 0;}
+  .head{max-width:620px;margin:0 auto 52px;text-align:center;}
+  .head h2{font-size:36px;letter-spacing:-.02em;margin-bottom:14px;}
+  .head p{color:var(--muted);font-size:16.5px;line-height:1.6;}
+
+  header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.94);backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);}
+  .nav{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;max-width:1180px;margin:0 auto;}
+  .logo{display:flex;align-items:center;gap:10px;}
+  .logo-badge{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--blue-dark));
+    display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:14px;}
+  .logo-name{font-size:16px;font-weight:800;letter-spacing:-.01em;}
+  .logo-name span{color:var(--red);}
+  nav.links{display:flex;gap:32px;}
+  nav.links a{font-size:14.5px;font-weight:700;color:var(--muted);}
+  nav.links a:hover{color:var(--blue);}
+  .burger{display:none;background:none;border:none;font-size:26px;cursor:pointer;}
+  @media (max-width:900px){
+    nav.links{position:absolute;top:100%;left:0;right:0;background:#fff;flex-direction:column;padding:18px 24px;
+      gap:16px;border-bottom:1px solid var(--line);display:none;}
+    nav.links.open{display:flex;}
+    .burger{display:block;}
+  }
+
+  /* HERO */
+  .hero{position:relative;overflow:hidden;background:radial-gradient(120% 120% at 15% 0%,#4A5AE0 0%,var(--blue-dark) 60%);
+    color:#fff;padding:100px 0 0;}
+  .hero .wrap{position:relative;text-align:center;max-width:820px;padding-bottom:60px;}
+  .hero h1{font-size:52px;line-height:1.1;letter-spacing:-.03em;margin-bottom:20px;}
+  .hero h1 .accent{color:var(--gold);}
+  .hero p{font-size:18px;color:rgba(255,255,255,.85);max-width:600px;margin:0 auto 34px;line-height:1.6;}
+  .hero .actions{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;margin-bottom:44px;}
+  .hero-proof{display:flex;justify-content:center;gap:44px;flex-wrap:wrap;padding-bottom:0;}
+  .hero-proof div b{display:block;font-size:26px;}
+  .hero-proof div span{font-size:12.5px;color:rgba(255,255,255,.7);}
+  .hero-shot{position:relative;margin-top:50px;}
+  .hero-shot img{width:100%;border-radius:24px 24px 0 0;box-shadow:0 -20px 60px -20px rgba(0,0,0,.4);
+    aspect-ratio:21/9;object-fit:cover;object-position:top;}
+
+  /* LOGOS/PROOF STRIP */
+  .strip{background:var(--bg-alt);padding:26px 0;border-bottom:1px solid var(--line);}
+  .strip .wrap{display:flex;justify-content:space-around;flex-wrap:wrap;gap:20px;color:var(--muted);
+    font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;}
+
+  /* COMO FUNCIONA - steps */
+  .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;counter-reset:step;}
+  .step{position:relative;padding:28px 22px;border-radius:var(--radius);background:var(--bg-alt);}
+  .step .num{width:38px;height:38px;border-radius:50%;background:var(--blue);color:#fff;font-weight:800;
+    display:flex;align-items:center;justify-content:center;margin-bottom:16px;font-size:15px;}
+  .step h3{font-size:16.5px;margin-bottom:8px;}
+  .step p{font-size:13.8px;color:var(--muted);line-height:1.55;}
+
+  /* DIFERENCIAIS split */
+  .diff .wrap{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;}
+  .diff img{border-radius:24px;box-shadow:var(--shadow);aspect-ratio:4/3;object-fit:cover;}
+  .diff-grid{display:grid;gap:20px;}
+  .diff-item{display:flex;gap:16px;}
+  .diff-item .ico{flex:0 0 46px;width:46px;height:46px;border-radius:12px;background:var(--blue-soft);
+    color:var(--blue);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;}
+  .diff-item h4{font-size:16px;margin-bottom:5px;}
+  .diff-item p{font-size:14px;color:var(--muted);line-height:1.55;}
+
+  /* DEPOIMENTOS */
+  .testis{background:var(--blue-dark);color:#fff;}
+  .testis .head h2, .testis .head p{color:#fff;}
+  .testis .head p{color:rgba(255,255,255,.7);}
+  .testi-row{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
+  .testi-card{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:var(--radius);padding:26px;}
+  .testi-card .stars{color:var(--gold);margin-bottom:14px;letter-spacing:2px;}
+  .testi-card p{font-size:14.5px;line-height:1.65;margin-bottom:18px;color:rgba(255,255,255,.92);}
+  .testi-card .who{font-size:13px;font-weight:700;color:rgba(255,255,255,.8);}
+
+  /* PLANOS teaser */
+  .plans-row{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+  .plan{border:1px solid var(--line);border-radius:var(--radius);padding:32px 26px;background:#fff;box-shadow:var(--shadow);
+    display:flex;flex-direction:column;}
+  .plan.highlight{border:2px solid var(--red);position:relative;}
+  .plan.highlight::before{content:"Mais escolhido";position:absolute;top:-13px;left:50%;transform:translateX(-50%);
+    background:var(--red);color:#fff;font-size:11px;font-weight:800;padding:5px 14px;border-radius:999px;}
+  .plan h3{font-size:18px;margin-bottom:6px;}
+  .plan .price{font-size:13.5px;color:var(--muted);margin-bottom:20px;}
+  .plan ul{display:grid;gap:10px;margin-bottom:24px;flex:1;}
+  .plan li{font-size:14px;display:flex;gap:8px;align-items:flex-start;}
+  .plan li::before{content:"✓";color:var(--blue);font-weight:900;}
+
+  /* FAQ */
+  .faq-list{max-width:760px;margin:0 auto;display:grid;gap:12px;}
+  .faq-item{background:var(--bg-alt);border-radius:14px;overflow:hidden;}
+  .faq-q{width:100%;text-align:left;padding:20px 24px;background:none;border:none;cursor:pointer;
+    font-size:15.5px;font-weight:700;display:flex;justify-content:space-between;align-items:center;color:var(--ink);}
+  .faq-q .plus{font-size:20px;color:var(--blue);transition:transform .2s;}
+  .faq-item.open .plus{transform:rotate(45deg);}
+  .faq-a{max-height:0;overflow:hidden;transition:max-height .25s ease;padding:0 24px;}
+  .faq-item.open .faq-a{max-height:240px;padding-bottom:20px;}
+  .faq-a p{color:var(--muted);font-size:14.5px;line-height:1.65;}
+
+  /* CTA FINAL */
+  .cta-final{background:linear-gradient(135deg,var(--red),#D8323C);color:#fff;text-align:center;border-radius:28px;
+    padding:70px 32px;margin:0 24px;}
+  .cta-final h2{font-size:32px;margin-bottom:14px;}
+  .cta-final p{color:rgba(255,255,255,.9);margin-bottom:30px;font-size:16.5px;}
+
+  footer{background:var(--ink);color:rgba(255,255,255,.7);padding:60px 0 30px;margin-top:80px;}
+  .foot-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:40px;margin-bottom:40px;}
+  .foot-grid h4{color:#fff;font-size:14px;margin-bottom:16px;letter-spacing:.04em;text-transform:uppercase;}
+  .foot-grid li{margin-bottom:10px;font-size:14px;}
+  .foot-grid li a:hover{color:#fff;}
+  .foot-bottom{border-top:1px solid rgba(255,255,255,.12);padding-top:22px;display:flex;justify-content:space-between;
+    font-size:12.5px;flex-wrap:wrap;gap:10px;}
+
+  .whats-float{position:fixed;bottom:24px;right:24px;width:58px;height:58px;border-radius:50%;background:var(--whats);
+    display:flex;align-items:center;justify-content:center;box-shadow:0 14px 30px -8px rgba(37,211,102,.6);z-index:60;
+    font-size:28px;color:#fff;}
+
+  .placeholder-note{font-size:12px;color:var(--muted);background:#FFF6E0;border:1px dashed #E4C97A;
+    border-radius:10px;padding:8px 12px;display:inline-block;margin-bottom:20px;}
+
+  @media (max-width:940px){
+    .steps{grid-template-columns:1fr 1fr;}
+    .diff .wrap{grid-template-columns:1fr;}
+    .testi-row, .plans-row{grid-template-columns:1fr;}
+    .foot-grid{grid-template-columns:1fr 1fr;}
+    .hero h1{font-size:38px;}
+  }
+  @media (max-width:640px){
+    .steps, .foot-grid{grid-template-columns:1fr;}
+    .section{padding:64px 0;}
+    .cta-final{margin:0 16px;padding:48px 22px;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav">
+    <a href="#home" class="logo">
+      <div class="logo-badge">UF</div>
+      <div class="logo-name">Upfront<span>.</span></div>
+    </a>
+    <nav class="links" id="navLinks">
+      <a href="#como-funciona">Como funciona</a>
+      <a href="#diferenciais">Diferenciais</a>
+      <a href="#depoimentos">Depoimentos</a>
+      <a href="#planos">Planos</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <a href="https://wa.me/5500000000000" class="btn btn-primary" style="padding:11px 22px;font-size:13.5px;">Começar agora</a>
+      <button class="burger" id="burgerBtn">☰</button>
+    </div>
+  </div>
+</header>
+
+<section class="hero" id="home">
+  <div class="wrap">
+    <span class="placeholder-note" style="background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.3);color:#fff;">Versão 2 — copy e estrutura totalmente novas (exemplo)</span>
+    <h1>Fale inglês com <span class="accent">confiança real</span>, não só na teoria</h1>
+    <p>A Upfront Idiomas junta método prático, professores dedicados e conversação desde a primeira aula — para você sair do "eu entendo mas não falo" de vez.</p>
+    <div class="actions">
+      <a href="https://wa.me/5500000000000" class="btn btn-primary">Quero começar agora</a>
+      <a href="#como-funciona" class="btn btn-ghost">Ver como funciona</a>
+    </div>
+    <div class="hero-proof">
+      <div><b>+500</b><span>alunos formados</span></div>
+      <div><b>4.9★</b><span>avaliação média</span></div>
+      <div><b>90 dias</b><span>para primeiros resultados</span></div>
+    </div>
+  </div>
+  <div class="wrap hero-shot">
+    <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3GamqkEO9aRrJqNj031ffEhlmRR/hf_20260729_172543_6292aa8c-339b-4c16-882c-953b7cf70a5f.png" alt="Aluno feliz estudando inglês com o laptop">
+  </div>
+</section>
+
+<div class="strip">
+  <div class="wrap">
+    <span>Turmas ao vivo</span>
+    <span>Professores certificados</span>
+    <span>Foco em conversação</span>
+    <span>Suporte contínuo</span>
+    <span>Satisfação 4.9/5</span>
+  </div>
+</div>
+
+<section class="section" id="como-funciona">
+  <div class="wrap">
+    <div class="head">
+      <span class="tag">Como funciona</span>
+      <h2>Do primeiro "hello" à fluência, em 4 passos</h2>
+      <p>Um caminho simples e acompanhado de perto do início ao fim.</p>
+    </div>
+    <div class="steps">
+      <div class="step"><div class="num">1</div><h3>Diagnóstico gratuito</h3><p>Descobrimos seu nível e seu objetivo real com o inglês.</p></div>
+      <div class="step"><div class="num">2</div><h3>Plano sob medida</h3><p>Montamos uma trilha de aulas de acordo com o seu ritmo.</p></div>
+      <div class="step"><div class="num">3</div><h3>Aulas ao vivo</h3><p>Conversação guiada com professor, sem enrolação.</p></div>
+      <div class="step"><div class="num">4</div><h3>Evolução acompanhada</h3><p>Feedback constante e ajustes no plano conforme você avança.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section diff" id="diferenciais" style="background:var(--bg-alt);">
+  <div class="wrap">
+    <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3GamqkEO9aRrJqNj031ffEhlmRR/hf_20260729_172536_3dae8b6e-3064-4f8d-90a4-b6b2f77e5282.png" alt="Aula de inglês online ao vivo">
+    <div>
+      <span class="tag">Diferenciais</span>
+      <h2 style="font-size:30px;margin-bottom:20px;letter-spacing:-.02em;">Por que alunos escolhem a Upfront</h2>
+      <div class="diff-grid">
+        <div class="diff-item"><div class="ico">✓</div><div><h4>Conversação desde a aula 1</h4><p>Você pratica inglês falado desde o início, não só no fim do curso.</p></div></div>
+        <div class="diff-item"><div class="ico">✓</div><div><h4>Turmas pequenas</h4><p>Mais espaço para você falar e ser corrigido em tempo real.</p></div></div>
+        <div class="diff-item"><div class="ico">✓</div><div><h4>Professores dedicados</h4><p>Acompanhamento próximo, com feedback contínuo entre as aulas.</p></div></div>
+        <div class="diff-item"><div class="ico">✓</div><div><h4>Conteúdo aplicado</h4><p>Trabalho, viagem, entrevistas — o inglês que você realmente vai usar.</p></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section testis" id="depoimentos">
+  <div class="wrap">
+    <div class="head">
+      <span class="tag" style="background:rgba(255,255,255,.12);color:#fff;">Depoimentos</span>
+      <h2>Histórias de quem já destravou o inglês</h2>
+      <p class="placeholder-note" style="background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.25);color:rgba(255,255,255,.8);">Depoimentos de exemplo — substituir pelos reais</p>
+    </div>
+    <div class="testi-row">
+      <div class="testi-card"><div class="stars">★★★★★</div><p>"Consegui fazer minha primeira apresentação em inglês no trabalho depois de 3 meses de curso."</p><div class="who">Aluno Exemplo — Turma Business</div></div>
+      <div class="testi-card"><div class="stars">★★★★★</div><p>"O foco em conversação fez toda a diferença. Parei de traduzir na cabeça e comecei a pensar em inglês."</p><div class="who">Aluna Exemplo — Turma Intermediário</div></div>
+      <div class="testi-card"><div class="stars">★★★★★</div><p>"Professores atenciosos e conteúdo muito bem estruturado. Recomendo demais."</p><div class="who">Aluno Exemplo — Turma Avançado</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="planos">
+  <div class="wrap">
+    <div class="head">
+      <span class="tag">Planos</span>
+      <h2>Escolha o ritmo ideal para você</h2>
+      <p class="placeholder-note">Planos e valores de exemplo — ajustar com a oferta real</p>
+    </div>
+    <div class="plans-row">
+      <div class="plan"><h3>Essencial</h3><div class="price">A partir de R$ XXX/mês</div>
+        <ul><li>2 aulas em grupo por semana</li><li>Material didático digital</li><li>Suporte via WhatsApp</li></ul>
+        <a href="https://wa.me/5500000000000" class="btn" style="border:2px solid var(--blue);color:var(--blue);">Escolher plano</a></div>
+      <div class="plan highlight"><h3>Intensivo</h3><div class="price">A partir de R$ XXX/mês</div>
+        <ul><li>3 aulas em grupo por semana</li><li>Simulações de conversação</li><li>Acompanhamento de progresso</li><li>Suporte prioritário</li></ul>
+        <a href="https://wa.me/5500000000000" class="btn btn-primary">Escolher plano</a></div>
+      <div class="plan"><h3>Individual</h3><div class="price">A partir de R$ XXX/mês</div>
+        <ul><li>Aulas particulares 1:1</li><li>Plano 100% personalizado</li><li>Horários flexíveis</li></ul>
+        <a href="https://wa.me/5500000000000" class="btn" style="border:2px solid var(--blue);color:var(--blue);">Escolher plano</a></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="faq" style="background:var(--bg-alt);">
+  <div class="wrap">
+    <div class="head">
+      <span class="tag">Perguntas Frequentes</span>
+      <h2>Tire suas dúvidas</h2>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item open">
+        <button class="faq-q">Preciso já saber inglês para começar? <span class="plus">+</span></button>
+        <div class="faq-a"><p>Não. Fazemos um diagnóstico gratuito e montamos um plano para o seu nível, do zero ao avançado.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">Quanto tempo leva para ver resultado? <span class="plus">+</span></button>
+        <div class="faq-a"><p>Muitos alunos já notam evolução na conversação nos primeiros 90 dias, mantendo a constância nas aulas.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">As aulas são online ou presenciais? <span class="plus">+</span></button>
+        <div class="faq-a"><p>As aulas são ao vivo e online, com interação direta com o professor e a turma.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">Posso cancelar quando quiser? <span class="plus">+</span></button>
+        <div class="faq-a"><p>Sim, fale com nosso time pelo WhatsApp para entender as condições do seu plano.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="cta-final">
+    <h2>Chega de entender inglês e travar na hora de falar</h2>
+    <p>Fale agora com a nossa equipe e comece sua jornada hoje.</p>
+    <a href="https://wa.me/5500000000000" class="btn" style="background:#fff;color:var(--red);">Quero falar inglês com confiança</a>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="logo" style="margin-bottom:14px;">
+          <div class="logo-badge">UF</div>
+          <div class="logo-name" style="color:#fff;">Upfront<span>.</span></div>
+        </div>
+        <p style="font-size:13.5px;line-height:1.6;max-width:280px;">Método prático, conversação desde a primeira aula e acompanhamento de perto.</p>
+      </div>
+      <div><h4>Navegação</h4><ul><li><a href="#como-funciona">Como funciona</a></li><li><a href="#diferenciais">Diferenciais</a></li><li><a href="#depoimentos">Depoimentos</a></li><li><a href="#planos">Planos</a></li></ul></div>
+      <div><h4>Suporte</h4><ul><li><a href="#faq">FAQ</a></li><li><a href="https://wa.me/5500000000000">WhatsApp</a></li><li><a href="mailto:contato@upfrontidiomas.com.br">contato@upfrontidiomas.com.br</a></li></ul></div>
+      <div><h4>Redes</h4><ul><li><a href="#">Instagram</a></li><li><a href="#">YouTube</a></li><li><a href="#">LinkedIn</a></li></ul></div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 Upfront Idiomas. Todos os direitos reservados.</span>
+      <span>upfrontidiomas.com.br</span>
+    </div>
+  </div>
+</footer>
+
+<a href="https://wa.me/5500000000000" class="whats-float" aria-label="WhatsApp">💬</a>
+
+<script>
+  document.getElementById('burgerBtn').addEventListener('click',function(){
+    document.getElementById('navLinks').classList.toggle('open');
+  });
+  document.querySelectorAll('.faq-q').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var item = btn.closest('.faq-item');
+      var wasOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item').forEach(function(i){ i.classList.remove('open'); });
+      if(!wasOpen) item.classList.add('open');
+    });
+  });
+</script>
+</body>
+</html>

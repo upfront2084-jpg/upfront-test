@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Upfront Idiomas — Aprenda inglês com confiança</title>
+<meta name="description" content="Upfront Idiomas: aulas de inglês simples, práticas e feitas para o seu ritmo. Conheça nosso método, professores e histórias de alunos.">
+<style>
+  :root{
+    --blue:#3646C9; --blue-dark:#232E8E; --blue-soft:#EEF0FD;
+    --red:#FF4B55; --ink:#12173A; --muted:#5B6180; --line:#E4E6F3;
+    --bg:#FAFAFE; --card:#FFFFFF; --whats:#25D366;
+    --radius:18px; --shadow:0 20px 45px -20px rgba(18,23,58,.18);
+    --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--font);color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased;}
+  img{max-width:100%;display:block;}
+  a{color:inherit;text-decoration:none;}
+  ul{list-style:none;}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 24px;}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:14px 26px;border-radius:999px;
+    font-weight:700;font-size:15px;border:none;cursor:pointer;transition:transform .15s ease,box-shadow .15s ease;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn-primary{background:var(--red);color:#fff;box-shadow:0 14px 28px -10px rgba(255,75,85,.55);}
+  .btn-outline{background:#fff;color:var(--blue);border:2px solid var(--blue);}
+  .btn-whats{background:var(--whats);color:#fff;box-shadow:0 14px 28px -10px rgba(37,211,102,.55);}
+  .eyebrow{display:inline-block;font-size:12.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;
+    color:var(--blue);background:var(--blue-soft);padding:6px 14px;border-radius:999px;margin-bottom:16px;}
+  .section{padding:88px 0;}
+  .section-head{max-width:640px;margin:0 auto 48px;text-align:center;}
+  .section-head h2{font-size:34px;letter-spacing:-.02em;margin-bottom:14px;}
+  .section-head p{color:var(--muted);font-size:16.5px;line-height:1.6;}
+  .placeholder-note{font-size:12px;color:var(--muted);background:#FFF6E0;border:1px dashed #E4C97A;
+    border-radius:10px;padding:8px 12px;margin-top:10px;display:inline-block;}
+
+  /* HEADER */
+  header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);}
+  .nav{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;max-width:1180px;margin:0 auto;}
+  .logo{display:flex;align-items:center;gap:10px;}
+  .logo-badge{width:46px;height:46px;border-radius:50%;border:2px solid var(--blue);display:flex;
+    flex-direction:column;align-items:center;justify-content:center;line-height:1;font-weight:900;}
+  .logo-badge .up{color:var(--red);font-size:11px;letter-spacing:.03em;}
+  .logo-badge .front{color:var(--blue);font-size:10px;letter-spacing:.02em;}
+  .logo-text{font-size:12px;font-weight:800;letter-spacing:.14em;color:var(--ink);text-transform:uppercase;}
+  .logo-text span{display:block;font-size:9.5px;font-weight:700;color:var(--muted);letter-spacing:.18em;}
+  nav.links{display:flex;gap:30px;}
+  nav.links a{font-size:14.5px;font-weight:600;color:var(--muted);transition:color .15s;}
+  nav.links a:hover, nav.links a.active{color:var(--blue);}
+  .nav-cta{display:flex;align-items:center;gap:12px;}
+  .burger{display:none;background:none;border:none;font-size:26px;cursor:pointer;color:var(--ink);}
+  @media (max-width:900px){
+    nav.links{position:absolute;top:100%;left:0;right:0;background:#fff;flex-direction:column;padding:18px 24px;
+      gap:16px;border-bottom:1px solid var(--line);display:none;}
+    nav.links.open{display:flex;}
+    .burger{display:block;}
+    .nav-cta .btn-outline{display:none;}
+  }
+
+  /* HERO */
+  .hero{position:relative;overflow:hidden;background:linear-gradient(135deg,var(--blue) 0%,var(--blue-dark) 100%);
+    color:#fff;padding:90px 0 110px;}
+  .hero::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 80% 10%,rgba(255,255,255,.16),transparent 55%);}
+  .hero .wrap{position:relative;display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center;}
+  .hero-eyebrow{display:inline-block;font-size:12.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;
+    color:#fff;background:rgba(255,255,255,.16);padding:6px 14px;border-radius:999px;margin-bottom:20px;}
+  .hero h1{font-size:44px;line-height:1.12;letter-spacing:-.02em;margin-bottom:18px;}
+  .hero h1 em{font-style:normal;color:#FFD86B;}
+  .hero p{font-size:17.5px;line-height:1.65;color:rgba(255,255,255,.86);max-width:520px;margin-bottom:32px;}
+  .hero .actions{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:34px;}
+  .hero .btn-outline{background:transparent;border-color:rgba(255,255,255,.55);color:#fff;}
+  .hero-stats{display:flex;gap:34px;flex-wrap:wrap;}
+  .hero-stats div b{display:block;font-size:24px;}
+  .hero-stats div span{font-size:12.5px;color:rgba(255,255,255,.7);}
+  .hero-media{position:relative;border-radius:24px;overflow:hidden;box-shadow:0 30px 60px -20px rgba(0,0,0,.45);}
+  .hero-media img{width:100%;height:100%;object-fit:cover;aspect-ratio:16/10;}
+  .hero-badge{position:absolute;bottom:18px;left:18px;background:#fff;color:var(--ink);border-radius:14px;
+    padding:12px 16px;box-shadow:var(--shadow);display:flex;align-items:center;gap:10px;font-size:13px;font-weight:700;}
+  .hero-badge .dot{width:10px;height:10px;border-radius:50%;background:#22C55E;}
+
+  /* QUEM SOMOS */
+  .about .wrap{display:grid;grid-template-columns:.9fr 1.1fr;gap:56px;align-items:center;}
+  .about img{border-radius:22px;box-shadow:var(--shadow);aspect-ratio:4/3;object-fit:cover;}
+  .about h2{font-size:32px;letter-spacing:-.02em;margin-bottom:16px;}
+  .about p{color:var(--muted);font-size:16px;line-height:1.7;margin-bottom:16px;}
+  .about-list{display:grid;gap:12px;margin-top:20px;}
+  .about-list li{display:flex;gap:10px;align-items:flex-start;font-size:15px;color:var(--ink);font-weight:600;}
+  .check{flex:0 0 22px;width:22px;height:22px;border-radius:50%;background:var(--blue-soft);color:var(--blue);
+    display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;}
+
+  /* CARDS GRID (metodologia) */
+  .cards{background:var(--card);}
+  .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+  .card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:30px 26px;box-shadow:var(--shadow);}
+  .card .icon{width:52px;height:52px;border-radius:14px;background:var(--blue-soft);color:var(--blue);
+    display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:18px;}
+  .card h3{font-size:18.5px;margin-bottom:10px;}
+  .card p{color:var(--muted);font-size:14.5px;line-height:1.6;}
+
+  /* FEEDBACKS */
+  .feedbacks{background:var(--blue-soft);}
+  .grid-testi{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
+  .testi{background:#fff;border-radius:var(--radius);padding:26px;box-shadow:var(--shadow);}
+  .testi .stars{color:#FFB020;font-size:15px;margin-bottom:12px;letter-spacing:2px;}
+  .testi p{font-size:14.5px;line-height:1.65;color:var(--ink);margin-bottom:18px;}
+  .testi .who{display:flex;align-items:center;gap:12px;}
+  .avatar{width:42px;height:42px;border-radius:50%;background:var(--blue);color:#fff;display:flex;
+    align-items:center;justify-content:center;font-weight:800;font-size:15px;}
+  .who strong{display:block;font-size:14px;}
+  .who span{font-size:12.5px;color:var(--muted);}
+
+  /* PROFESSORES */
+  .grid-team{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+  .team-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);}
+  .team-card img{width:100%;aspect-ratio:4/3.4;object-fit:cover;}
+  .team-card .info{padding:22px;}
+  .team-card h3{font-size:17px;margin-bottom:4px;}
+  .team-card .role{color:var(--blue);font-size:12.5px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;}
+  .team-card p{color:var(--muted);font-size:14px;line-height:1.6;}
+
+  /* FAQ */
+  .faq-list{max-width:760px;margin:0 auto;display:grid;gap:12px;}
+  .faq-item{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;}
+  .faq-q{width:100%;text-align:left;padding:20px 24px;background:none;border:none;cursor:pointer;
+    font-size:15.5px;font-weight:700;display:flex;justify-content:space-between;align-items:center;color:var(--ink);}
+  .faq-q .plus{font-size:20px;color:var(--blue);transition:transform .2s;}
+  .faq-item.open .plus{transform:rotate(45deg);}
+  .faq-a{max-height:0;overflow:hidden;transition:max-height .25s ease;padding:0 24px;}
+  .faq-item.open .faq-a{max-height:240px;padding-bottom:20px;}
+  .faq-a p{color:var(--muted);font-size:14.5px;line-height:1.65;}
+
+  /* CTA FINAL */
+  .cta-final{background:linear-gradient(135deg,var(--blue-dark),var(--blue));color:#fff;text-align:center;border-radius:28px;
+    padding:64px 32px;margin:0 24px;}
+  .cta-final h2{font-size:30px;margin-bottom:14px;}
+  .cta-final p{color:rgba(255,255,255,.85);margin-bottom:28px;font-size:16px;}
+  .cta-final .actions{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;}
+
+  /* FOOTER */
+  footer{background:var(--ink);color:rgba(255,255,255,.7);padding:60px 0 30px;margin-top:80px;}
+  .foot-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:40px;margin-bottom:40px;}
+  .foot-grid h4{color:#fff;font-size:14px;margin-bottom:16px;letter-spacing:.04em;text-transform:uppercase;}
+  .foot-grid li{margin-bottom:10px;font-size:14px;}
+  .foot-grid li a:hover{color:#fff;}
+  .foot-bottom{border-top:1px solid rgba(255,255,255,.12);padding-top:22px;display:flex;justify-content:space-between;
+    font-size:12.5px;flex-wrap:wrap;gap:10px;}
+
+  /* WHATSAPP FLOAT */
+  .whats-float{position:fixed;bottom:24px;right:24px;width:58px;height:58px;border-radius:50%;background:var(--whats);
+    display:flex;align-items:center;justify-content:center;box-shadow:0 14px 30px -8px rgba(37,211,102,.6);z-index:60;
+    font-size:28px;color:#fff;}
+
+  @media (max-width:940px){
+    .hero .wrap, .about .wrap{grid-template-columns:1fr;}
+    .grid-3, .grid-testi, .grid-team{grid-template-columns:1fr 1fr;}
+    .foot-grid{grid-template-columns:1fr 1fr;}
+    .hero h1{font-size:34px;}
+  }
+  @media (max-width:640px){
+    .grid-3, .grid-testi, .grid-team, .foot-grid{grid-template-columns:1fr;}
+    .section{padding:60px 0;}
+    .cta-final{margin:0 16px;padding:44px 22px;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav">
+    <a href="#home" class="logo">
+      <div class="logo-badge"><span class="up">UP</span><span class="front">FRONT</span></div>
+      <div class="logo-text">Upfront<span>Idiomas</span></div>
+    </a>
+    <nav class="links" id="navLinks">
+      <a href="#home" class="active">Home</a>
+      <a href="#quem-somos">Quem Somos</a>
+      <a href="#feedbacks">Feedbacks</a>
+      <a href="#professores">Professores</a>
+      <a href="#faq">Perguntas Frequentes</a>
+    </nav>
+    <div class="nav-cta">
+      <a href="#faq" class="btn btn-outline">Dúvidas</a>
+      <a href="https://wa.me/5500000000000" class="btn btn-whats">WhatsApp</a>
+      <button class="burger" id="burgerBtn">☰</button>
+    </div>
+  </div>
+</header>
+
+<section class="hero" id="home">
+  <div class="wrap">
+    <div>
+      <span class="hero-eyebrow">Curso Upfront Idiomas</span>
+      <h1>Quer aprender inglês de forma <em>simples</em> e sem enrolação?</h1>
+      <p>O curso da Upfront Idiomas foi feito para quem quer aprender rápido e de maneira prática. Descubra como nossos alunos estão se comunicando em inglês com total confiança.</p>
+      <div class="actions">
+        <a href="https://wa.me/5500000000000" class="btn btn-primary">Falar com um consultor</a>
+        <a href="#quem-somos" class="btn btn-outline">Conhecer o método</a>
+      </div>
+      <div class="hero-stats">
+        <div><b>+500</b><span>alunos formados</span></div>
+        <div><b>4.9/5</b><span>avaliação média</span></div>
+        <div><b>100%</b><span>aulas práticas</span></div>
+      </div>
+    </div>
+    <div class="hero-media">
+      <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3GamqkEO9aRrJqNj031ffEhlmRR/hf_20260729_172536_3dae8b6e-3064-4f8d-90a4-b6b2f77e5282.png" alt="Aluna fazendo aula de inglês online pelo laptop">
+      <div class="hero-badge"><span class="dot"></span> Aula ao vivo agora</div>
+    </div>
+  </div>
+</section>
+
+<section class="section about" id="quem-somos">
+  <div class="wrap">
+    <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3GamqkEO9aRrJqNj031ffEhlmRR/hf_20260729_172540_3e21c024-48dc-43d0-8f86-54a08f4b463c.png" alt="Equipe de professores da Upfront Idiomas">
+    <div>
+      <span class="eyebrow">Quem Somos</span>
+      <h2>Ensino de inglês pensado para o seu dia a dia</h2>
+      <p>[Texto placeholder — substitua pelo conteúdo real da página institucional] A Upfront Idiomas nasceu para tirar o inglês do papel e colocar na sua rotina. Unimos metodologia prática, professores dedicados e acompanhamento próximo para que você fale com confiança, sem depender de decoreba.</p>
+      <ul class="about-list">
+        <li><span class="check">✓</span> Turmas reduzidas e conteúdo personalizado</li>
+        <li><span class="check">✓</span> Professores nativos e bilíngues certificados</li>
+        <li><span class="check">✓</span> Aulas 100% focadas em conversação real</li>
+        <li><span class="check">✓</span> Suporte contínuo entre as aulas</li>
+      </ul>
+      <span class="placeholder-note">Conteúdo de exemplo — trocar pelo texto real de /institucional</span>
+    </div>
+  </div>
+</section>
+
+<section class="section cards">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Metodologia</span>
+      <h2>Como funciona o método Upfront</h2>
+      <p>Um caminho claro, do primeiro "hello" até a fluência no dia a dia.</p>
+    </div>
+    <div class="grid-3">
+      <div class="card"><div class="icon">1</div><h3>Diagnóstico</h3><p>Avaliamos seu nível atual e montamos um plano de estudos sob medida.</p></div>
+      <div class="card"><div class="icon">2</div><h3>Prática guiada</h3><p>Aulas ao vivo focadas em conversação, com correção e feedback constante.</p></div>
+      <div class="card"><div class="icon">3</div><h3>Evolução real</h3><p>Acompanhamento de progresso e simulações práticas do seu contexto.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section feedbacks" id="feedbacks">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Feedbacks</span>
+      <h2>O que dizem nossos alunos</h2>
+      <p class="placeholder-note">Depoimentos de exemplo — substituir pelos feedbacks reais dos alunos</p>
+    </div>
+    <div class="grid-testi">
+      <div class="testi"><div class="stars">★★★★★</div><p>"Em poucos meses já conseguia participar de reuniões em inglês sem travar. O método é bem direto ao ponto."</p><div class="who"><div class="avatar">A</div><div><strong>Aluno Exemplo</strong><span>Turma Business</span></div></div></div>
+      <div class="testi"><div class="stars">★★★★★</div><p>"As aulas são leves e práticas. Nunca tinha estudado inglês com tanta constância antes."</p><div class="who"><div class="avatar">B</div><div><strong>Aluna Exemplo</strong><span>Turma Intermediário</span></div></div></div>
+      <div class="testi"><div class="stars">★★★★★</div><p>"Professores super atenciosos e conteúdo aplicável no dia a dia de verdade."</p><div class="who"><div class="avatar">C</div><div><strong>Aluno Exemplo</strong><span>Turma Avançado</span></div></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="professores">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Professores</span>
+      <h2>Quem vai te acompanhar na jornada</h2>
+      <p class="placeholder-note">Fotos e bios de exemplo — substituir pela equipe real</p>
+    </div>
+    <div class="grid-team">
+      <div class="team-card">
+        <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3GamqkEO9aRrJqNj031ffEhlmRR/hf_20260729_172540_3e21c024-48dc-43d0-8f86-54a08f4b463c.png" alt="Professor exemplo 1">
+        <div class="info"><h3>Professor(a) Exemplo</h3><div class="role">Conversação &amp; Business English</div><p>10+ anos ensinando inglês para profissionais, com foco em fluência prática.</p></div>
+      </div>
+      <div class="team-card">
+        <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3GamqkEO9aRrJqNj031ffEhlmRR/hf_20260729_172540_3e21c024-48dc-43d0-8f86-54a08f4b463c.png" alt="Professor exemplo 2">
+        <div class="info"><h3>Professor(a) Exemplo</h3><div class="role">Inglês para viagem</div><p>Especialista em preparar alunos para intercâmbio e viagens internacionais.</p></div>
+      </div>
+      <div class="team-card">
+        <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3GamqkEO9aRrJqNj031ffEhlmRR/hf_20260729_172540_3e21c024-48dc-43d0-8f86-54a08f4b463c.png" alt="Professor exemplo 3">
+        <div class="info"><h3>Professor(a) Exemplo</h3><div class="role">Preparação para entrevistas</div><p>Ajuda alunos a se prepararem para entrevistas de emprego em inglês.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="faq">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Perguntas Frequentes</span>
+      <h2>Ainda tem dúvidas?</h2>
+      <p class="placeholder-note">Perguntas de exemplo — substituir pelas FAQs reais</p>
+    </div>
+    <div class="faq-list" id="faqList">
+      <div class="faq-item open">
+        <button class="faq-q">Preciso já saber inglês para começar? <span class="plus">+</span></button>
+        <div class="faq-a"><p>Não. Temos turmas para todos os níveis, do básico ao avançado, com diagnóstico inicial gratuito.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">As aulas são ao vivo ou gravadas? <span class="plus">+</span></button>
+        <div class="faq-a"><p>As aulas são ao vivo, com professor, e ficam disponíveis para revisão depois.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">Qual a duração do curso? <span class="plus">+</span></button>
+        <div class="faq-a"><p>Varia conforme o seu ponto de partida e objetivo — isso é definido no diagnóstico inicial.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">Como falo com um consultor? <span class="plus">+</span></button>
+        <div class="faq-a"><p>Basta clicar no botão do WhatsApp em qualquer parte do site.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="cta-final">
+    <h2>Pronto para falar inglês com confiança?</h2>
+    <p>Fale agora com a nossa equipe e comece hoje mesmo.</p>
+    <div class="actions">
+      <a href="https://wa.me/5500000000000" class="btn btn-whats">Chamar no WhatsApp</a>
+      <a href="#professores" class="btn btn-outline" style="background:transparent;border-color:rgba(255,255,255,.6);color:#fff;">Conhecer os professores</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="logo" style="margin-bottom:14px;">
+          <div class="logo-badge" style="border-color:#fff;"><span class="up">UP</span><span class="front" style="color:#fff;">FRONT</span></div>
+          <div class="logo-text" style="color:#fff;">Upfront<span style="color:rgba(255,255,255,.6);">Idiomas</span></div>
+        </div>
+        <p style="font-size:13.5px;line-height:1.6;max-width:280px;">Inglês simples, prático e sem enrolação — para você se comunicar com confiança.</p>
+      </div>
+      <div><h4>Navegação</h4><ul><li><a href="#home">Home</a></li><li><a href="#quem-somos">Quem Somos</a></li><li><a href="#feedbacks">Feedbacks</a></li><li><a href="#professores">Professores</a></li></ul></div>
+      <div><h4>Suporte</h4><ul><li><a href="#faq">Perguntas Frequentes</a></li><li><a href="https://wa.me/5500000000000">WhatsApp</a></li><li><a href="mailto:contato@upfrontidiomas.com.br">contato@upfrontidiomas.com.br</a></li></ul></div>
+      <div><h4>Redes</h4><ul><li><a href="#">Instagram</a></li><li><a href="#">YouTube</a></li><li><a href="#">LinkedIn</a></li></ul></div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 Upfront Idiomas. Todos os direitos reservados.</span>
+      <span>upfrontidiomas.com.br</span>
+    </div>
+  </div>
+</footer>
+
+<a href="https://wa.me/5500000000000" class="whats-float" aria-label="WhatsApp">💬</a>
+
+<script>
+  document.getElementById('burgerBtn').addEventListener('click',function(){
+    document.getElementById('navLinks').classList.toggle('open');
+  });
+  document.querySelectorAll('.faq-q').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var item = btn.closest('.faq-item');
+      var wasOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item').forEach(function(i){ i.classList.remove('open'); });
+      if(!wasOpen) item.classList.add('open');
+    });
+  });
+</script>
+</body>
+</html>
