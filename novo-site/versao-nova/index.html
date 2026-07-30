@@ -124,6 +124,9 @@
   .testis{background:var(--blue-dark);color:#fff;}
   .testis .head h2, .testis .head p{color:#fff;}
   .testis .head p{color:rgba(255,255,255,.7);}
+  .testis-photo{margin:0 auto 44px;max-width:920px;border-radius:22px;overflow:hidden;
+    box-shadow:0 30px 60px -24px rgba(0,0,0,.55);}
+  .testis-photo img{width:100%;aspect-ratio:16/8;object-fit:cover;object-position:center 32%;}
   .testi-row{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
   .testi-card{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:var(--radius);padding:26px;}
   .testi-card .stars{color:var(--gold);margin-bottom:14px;letter-spacing:2px;}
@@ -187,9 +190,25 @@
     .section{padding:64px 0;}
     .cta-final{margin:0 16px;padding:48px 22px;}
   }
+
+  /* INTRO SPLASH */
+  #introSplash{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;
+    background:radial-gradient(120% 120% at 15% 0%,#4A5AE0 0%,var(--blue-dark) 60%,#0B1240 100%);
+    cursor:pointer;transition:opacity .6s ease;}
+  #introSplash.hide{opacity:0;pointer-events:none;}
+  #introSplash video{width:min(360px,60vw);border-radius:28px;box-shadow:0 30px 70px -20px rgba(0,0,0,.55);
+    background:#0B1240;}
+  #introSplash .skip{position:absolute;bottom:26px;left:0;right:0;text-align:center;font-size:12.5px;
+    color:rgba(255,255,255,.55);letter-spacing:.04em;}
+  body.intro-lock{overflow:hidden;}
 </style>
 </head>
-<body>
+<body class="intro-lock">
+
+<div id="introSplash" aria-hidden="true">
+  <video src="assets/logo-intro.mp4" autoplay muted playsinline></video>
+  <span class="skip">toque para continuar</span>
+</div>
 
 <header>
   <div class="nav">
@@ -298,6 +317,9 @@
       <h2>Histórias de quem já destravou o inglês</h2>
       <p class="placeholder-note" style="background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.25);color:rgba(255,255,255,.8);">Depoimentos de exemplo — substituir pelos reais</p>
     </div>
+    <div class="testis-photo">
+      <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3GamqkEO9aRrJqNj031ffEhlmRR/hf_20260730_131259_dd477b95-d126-4882-81b1-98ff5c917580.png" alt="Aluna fazendo aula de inglês por videochamada">
+    </div>
     <div class="testi-row">
       <div class="testi-card"><div class="stars">★★★★★</div><p>"Consegui fazer minha primeira apresentação em inglês no trabalho depois de 3 meses de curso."</p><div class="who">Aluno Exemplo — Turma Business</div></div>
       <div class="testi-card"><div class="stars">★★★★★</div><p>"O foco em conversação fez toda a diferença. Parei de traduzir na cabeça e comecei a pensar em inglês."</p><div class="who">Aluna Exemplo — Turma Intermediário</div></div>
@@ -392,6 +414,29 @@
 <a href="https://wa.me/5500000000000" class="whats-float" aria-label="WhatsApp">💬</a>
 
 <script>
+  (function(){
+    var splash = document.getElementById('introSplash');
+    var video = splash.querySelector('video');
+    var closed = false;
+    function closeSplash(){
+      if(closed) return;
+      closed = true;
+      splash.classList.add('hide');
+      document.body.classList.remove('intro-lock');
+      setTimeout(function(){ splash.remove(); }, 650);
+    }
+    if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+      closeSplash();
+    } else {
+      video.addEventListener('ended', closeSplash);
+      splash.addEventListener('click', closeSplash);
+      // Safety net in case autoplay is blocked or the video fails to load.
+      setTimeout(closeSplash, 6000);
+      var playPromise = video.play();
+      if(playPromise && playPromise.catch){ playPromise.catch(function(){ setTimeout(closeSplash, 400); }); }
+    }
+  })();
+
   document.getElementById('burgerBtn').addEventListener('click',function(){
     document.getElementById('navLinks').classList.toggle('open');
   });
