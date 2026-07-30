@@ -191,35 +191,16 @@
     .cta-final{margin:0 16px;padding:48px 22px;}
   }
 
-  /* INTRO SPLASH */
-  #introSplash{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;
-    background:radial-gradient(120% 120% at 15% 0%,#4A5AE0 0%,var(--blue-dark) 60%,#0B1240 100%);
-    cursor:pointer;transition:opacity .6s ease;}
-  #introSplash.hide{opacity:0;pointer-events:none;}
-  #introSplash video{width:min(360px,60vw);border-radius:28px;box-shadow:0 30px 70px -20px rgba(0,0,0,.55);
-    background:#0B1240;}
-  #introSplash .skip{position:absolute;bottom:26px;left:0;right:0;text-align:center;font-size:12.5px;
-    color:rgba(255,255,255,.55);letter-spacing:.04em;}
-  body.intro-lock{overflow:hidden;}
+  .logo-video{width:44px;height:44px;border-radius:50%;object-fit:cover;flex:0 0 44px;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 8px 16px -6px rgba(28,37,104,.55);background:var(--blue-dark);}
 </style>
 </head>
-<body class="intro-lock">
-
-<div id="introSplash" aria-hidden="true">
-  <video src="assets/logo-intro.mp4" autoplay muted playsinline></video>
-  <span class="skip">toque para continuar</span>
-</div>
+<body>
 
 <header>
   <div class="nav">
     <a href="#home" class="logo">
-      <span class="logo-badge" aria-hidden="true">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-          <path d="M4 20 L18 6" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>
-          <path d="M11 6 H18 V13" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-          <circle cx="18" cy="6" r="2.2" fill="#FF6A3D"/>
-        </svg>
-      </span>
+      <video class="logo-video" src="assets/logo-intro.mp4" autoplay muted loop playsinline aria-hidden="true"></video>
       <span class="logo-name">Upfront Idiomas</span>
     </a>
     <nav class="links" id="navLinks">
