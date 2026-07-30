@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <linearGradient id="ringNavy" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2B3AA8"/>
+      <stop offset="55%" stop-color="#16205E"/>
+      <stop offset="100%" stop-color="#0D1440"/>
+    </linearGradient>
+    <linearGradient id="ringOrange" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF8A4C"/>
+      <stop offset="100%" stop-color="#FF4B2E"/>
+    </linearGradient>
+    <linearGradient id="streak" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FF6A3D"/>
+      <stop offset="55%" stop-color="#4C63E0"/>
+      <stop offset="100%" stop-color="#1C2568"/>
+    </linearGradient>
+    <linearGradient id="upFill" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#FFE9DE"/>
+    </linearGradient>
+    <linearGradient id="frontFill" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#DCE2FA"/>
+    </linearGradient>
+    <filter id="softShadow" x="-40%" y="-40%" width="180%" height="180%">
+      <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#0D1440" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <circle cx="100" cy="100" r="96" fill="url(#ringNavy)"/>
+  <circle cx="100" cy="100" r="86" fill="none" stroke="url(#ringOrange)" stroke-width="3"/>
+  <circle cx="100" cy="100" r="80" fill="#FFFFFF"/>
+
+  <g filter="url(#softShadow)">
+    <line x1="46" y1="150" x2="150" y2="52" stroke="url(#streak)" stroke-width="4" stroke-linecap="round"/>
+    <circle cx="150" cy="52" r="4.5" fill="#FF6A3D"/>
+  </g>
+
+  <text x="100" y="92" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="900"
+        font-size="42" letter-spacing="1" fill="url(#upFill)" stroke="#FF4B2E" stroke-width="1.6"
+        paint-order="stroke">UP</text>
+  <text x="100" y="140" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="900"
+        font-size="34" letter-spacing="0.5" fill="url(#frontFill)" stroke="#1C2568" stroke-width="1.6"
+        paint-order="stroke">FRONT</text>
+
+  <text x="100" y="160" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="800"
+        font-size="12" letter-spacing="3.5" fill="#16205E">IDIOMAS</text>
+</svg>
