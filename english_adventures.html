@@ -178,7 +178,13 @@ img{max-width:100%;display:block;}
 .vocab-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:10px;margin-bottom:16px;}
 .vocab-card{background:#fff;border-radius:16px;padding:14px 8px;text-align:center;box-shadow:0 4px 12px rgba(20,60,120,.1);border:2px solid transparent;}
 .vocab-card.heard{border-color:#BFE6C9;}
-.vocab-card .em{font-size:34px;margin-bottom:6px;}
+.vocab-card .em{font-size:34px;margin-bottom:6px;display:flex;justify-content:center;}
+.vocab-face{width:56px;height:56px;border-radius:50%;object-fit:cover;border:2px solid var(--line);}
+.vocab-face-emoji{font-size:34px;}
+.chip-face{width:42px;height:42px;border-radius:50%;object-fit:cover;border:2px solid var(--line);}
+.chip-face-emoji{font-size:26px;}
+.opt-face{width:24px;height:24px;border-radius:50%;object-fit:cover;vertical-align:middle;border:1.5px solid var(--line);}
+.opt-face-emoji{font-size:16px;vertical-align:middle;}
 .vocab-card .wd{font-weight:800;color:var(--navy);font-size:13.5px;margin-bottom:6px;}
 .audio-btn{width:32px;height:32px;border-radius:50%;border:none;background:var(--blue);color:#fff;font-size:14px;cursor:pointer;box-shadow:0 3px 0 var(--blue-d);}
 .audio-btn:active{transform:translateY(2px);box-shadow:none;}
@@ -573,22 +579,22 @@ var ORDER_COLORS = ['#22C55E','#3B82F6','#F59E0B','#EC4899','#8B5CF6'];
 var LESSONS = [
   { num:1, title:'Hello!', badgeHint:'Vocabulary Master',
     welcome:{ line:"Hi, Explorer! Welcome back! Are you ready?", cta:"Yes, I am!" },
-    vocab:[ {word:'Hello', emoji:'👋'}, {word:'Hi', emoji:'🙋'}, {word:'Goodbye', emoji:'🙋‍♀️'} ],
+    vocab:[ {word:'Hello', face:'leo'}, {word:'Hi', face:'mia'}, {word:'Goodbye', face:'buddy'} ],
     game1:{ type:'match', instruction:'Match each word to the correct picture.',
-      pairs:[ {id:'hello', word:'Hello', pic:'🙋‍♂️'}, {id:'hi', word:'Hi', pic:'🙋‍♀️'}, {id:'bye', word:'Goodbye', pic:'🐻'} ] },
+      pairs:[ {id:'hello', word:'Hello', face:'leo'}, {id:'hi', word:'Hi', face:'mia'}, {id:'bye', word:'Goodbye', face:'buddy'} ] },
     step4:{ type:'listen', instruction:'Listen and choose the correct picture.', audioText:'Goodbye',
-      options:[ {id:'a', emoji:'🙋‍♂️', label:'Hello'}, {id:'b', emoji:'🙋‍♀️', label:'Hi'}, {id:'c', emoji:'🐻', label:'Goodbye'} ], correctId:'c' },
+      options:[ {id:'a', face:'leo', label:'Hello'}, {id:'b', face:'mia', label:'Hi'}, {id:'c', face:'buddy', label:'Goodbye'} ], correctId:'c' },
     speak:{ type:'repeat', prompt:'Repeat after me!', phrase:'Hello!' },
     reward:{ stars:20, learned:['3 words','3 expressions','new song'] } },
 
   { num:2, title:"What's Your Name?", badgeHint:'Speaking Star',
     welcome:{ line:"Let's learn something new today!", cta:"Let's go!" },
-    vocab:[ {word:"What's your name?", emoji:'❓'}, {word:'My name is...', emoji:'🙋'} ],
+    vocab:[ {word:"What's your name?", emoji:'❓'}, {word:'My name is...', face:'leo'} ],
     game1:{ type:'choose', instruction:'Choose the correct answer.', question:"What's your name?",
       options:[ {label:"I'm fine.", correct:false}, {label:'My name is Leo.', correct:true},
                 {label:'Nice to meet you.', correct:false}, {label:'Goodbye.', correct:false} ] },
     step4:{ type:'listen', instruction:'Listen and choose.', audioText:'My name is...',
-      options:[ {id:'a', emoji:'❓', label:"What's your name?"}, {id:'b', emoji:'🙋', label:'My name is...'} ], correctId:'b' },
+      options:[ {id:'a', emoji:'❓', label:"What's your name?"}, {id:'b', face:'leo', label:'My name is...'} ], correctId:'b' },
     speak:{ type:'name', prompt:'Introduce yourself!' },
     reward:{ stars:20, learned:['2 expressions','Talk to Buddy unlocked'] } },
 
@@ -777,10 +783,14 @@ function renderWelcome(L){
   return '<div class="buddy-row"><img src="'+IMG.buddy+'"><div class="buddy-bubble">'+esc(L.welcome.line)+'</div></div>'+
     '<div class="stage-footer"><button class="btn btn-green btn-block" onclick="advanceStep()">'+esc(L.welcome.cta)+'</button></div>';
 }
+function faceOrEmoji(item, cls){
+  if(item.face) return '<img class="'+cls+'" src="'+IMG[item.face]+'" alt="'+esc(item.face)+'">';
+  return '<span class="'+cls+'-emoji">'+(item.emoji||item.pic||'')+'</span>';
+}
 function renderVocab(L){
   var cards='';
   L.vocab.forEach(function(v,i){
-    cards += '<div class="vocab-card" id="vcard'+i+'"><div class="em">'+v.emoji+'</div><div class="wd">'+esc(v.word)+'</div>'+
+    cards += '<div class="vocab-card" id="vcard'+i+'"><div class="em">'+faceOrEmoji(v,'vocab-face')+'</div><div class="wd">'+esc(v.word)+'</div>'+
       '<button class="audio-btn" onclick="hearVocab('+i+',\''+jsStr(v.word)+'\')">🔊</button></div>';
   });
   return '<div class="stage-kicker">Vocabulary</div><div class="stage-instruction">Tap 🔊 to listen, then repeat!</div>'+
@@ -798,11 +808,11 @@ function renderGame1(L){
   var body='';
   if(g.type==='match'){
     var words = g.pairs.map(function(p){return {id:p.id,label:p.word};});
-    var pics = shuffle(g.pairs.map(function(p){return {id:p.id,label:p.pic};}));
+    var pics = shuffle(g.pairs.map(function(p){return {id:p.id,face:p.face,pic:p.pic};}));
     body += '<div class="match-cols"><div class="match-col" id="matchWords">';
     words.forEach(function(w){ body += '<div class="match-chip" data-id="'+w.id+'" onclick="matchPick(this,\'word\')">'+esc(w.label)+'</div>'; });
     body += '</div><div class="match-col" id="matchPics">';
-    pics.forEach(function(p){ body += '<div class="match-chip pic" data-id="'+p.id+'" onclick="matchPick(this,\'pic\')">'+p.label+'</div>'; });
+    pics.forEach(function(p){ body += '<div class="match-chip pic" data-id="'+p.id+'" onclick="matchPick(this,\'pic\')">'+faceOrEmoji(p,'chip-face')+'</div>'; });
     body += '</div></div>';
   } else if(g.type==='choose'){
     body += '<div class="stage-instruction" style="font-weight:800;color:var(--navy);font-size:14px">'+esc(g.question)+'</div><div class="choice-list">';
@@ -872,7 +882,7 @@ function renderStep4(L){
   if(s.type==='listen'){
     body += '<div class="stage-footer" style="margin:0 0 14px"><button class="spk-btn" style="margin:0 auto" onclick="speakText(\''+jsStr(s.audioText)+'\')">🔊</button></div>';
     body += '<div class="choice-list">';
-    s.options.forEach(function(o){ body += '<button class="choice-btn" data-correct="'+(o.id===s.correctId)+'" onclick="choosePick(this)">'+o.emoji+' &nbsp;'+esc(o.label)+'</button>'; });
+    s.options.forEach(function(o){ body += '<button class="choice-btn" data-correct="'+(o.id===s.correctId)+'" onclick="choosePick(this)">'+faceOrEmoji(o,'opt-face')+' &nbsp;'+esc(o.label)+'</button>'; });
     body += '</div>';
   } else if(s.type==='count'){
     var apples=''; for(var i=0;i<s.count;i++){ apples += '🍎'; }
