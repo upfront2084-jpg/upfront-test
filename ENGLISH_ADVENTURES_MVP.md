@@ -6,6 +6,30 @@ Protótipo interativo: `english_adventures.html` (curso completo, funcional, no 
 padrão de arquivo único usado pelos outros cursos deste portal). Já está registrado
 no catálogo de "Cursos Extras" em `portal_convidado.html` (id `englishadventures`).
 
+**Atualização (15/08):** a Home voltou a ser 100% funcional — a tela de abertura em
+full-bleed (arte de referência com os botões MAPA/AULAS/PERSONAGENS/LOJA recortados)
+agora abre de verdade o Mapa, a lista de aulas, os personagens e a loja (antes disso
+mostrava só um toast "em construção"). Todo o motor de aulas 1–5, mapa, progresso,
+recompensas, Talk to Buddy e Área dos Pais está de volta e funcionando, mais estes
+itens novos pedidos no briefing:
+- **Daily Missions + Baú de Recompensas** (tela Rewards): 4 missões diárias com
+  progresso real (aula concluída, 20 estrelas, prática de fala, 2 jogos); ao concluir
+  todas no dia, o baú desbloqueia +50 ⭐ +10 💎 uma vez por dia.
+- **Loja + personalização do Buddy**: 4 visuais (Classic/Astronaut/Surfer/Ninja)
+  desbloqueados por progressão (estrelas), sem dinheiro real; equipar troca o visual
+  do Buddy de verdade (filtro de cor + acessório) em toda a experiência.
+- **Feedback nunca negativo**: respostas erradas mostram "Try again!/Almost!/You can
+  do it!" (nunca "Wrong"), e acertos mostram "Great job!/Awesome!/Fantastic!" via toast.
+- Pequenas animações: Buddy com respiração/idle bounce, cartões de vocabulário e
+  personagens entrando com fade/pop escalonado, hover states nos botões (desktop),
+  tela de loading breve ("Getting ready for your adventure…") ao entrar no Mapa/Aulas.
+- Correção de robustez: se o reconhecimento de voz não responder (mic sem permissão
+  concedida, navegador sem diálogo), a criança não fica travada — depois de 6s cai
+  automaticamente no fallback "✅ I said it!".
+- Testado ponta a ponta num navegador headless: Home → Mapa → Aulas → Lesson 1
+  completo (6 passos) → certificado → Lesson 2 destravada → Progress/Rewards/
+  Characters/Shop/Área dos Pais, sem erros de console.
+
 Assets visuais usados no protótipo foram extraídos dos boards de referência que você
 enviou pelo Google Drive (pasta "English Adventures" — 6 imagens `ChatGPT Image...png`,
 que já mostravam o storyboard quase completo de 34 telas). Deles eu recortei:
