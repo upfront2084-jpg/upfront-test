@@ -137,6 +137,17 @@ Estrutura fixa (igual à do briefing) usada nas 5 aulas:
 
 ---
 
+## 2b. Prompts pendentes — leva 2 (Mapa, Loja, Baú, Certificado, Personagens, Badges)
+
+Tentei gerar essa leva automaticamente (Higgsfield/nano-banana-pro), mas o
+workspace está com 0 créditos, então ficou só na fila. Em vez de travar nisso,
+os 17 prompts prontos (com nome de arquivo sugerido para cada um) ficaram em
+`image_prompts_batch2.md` — gere no ChatGPT (ou onde preferir) e me manda os
+arquivos que eu recorto/otimizo e plugo nas telas: Mapa dos Mundos, fundo do
+Welcome Forest, fundo da Loja, baú fechado/aberto, moldura do certificado,
+retratos de Leo/Mia/Luna, 3 skins do Buddy (Astronauta/Surfista/Ninja) e os 5
+badges.
+
 ## 3. Prompts de imagem para a versão final (World 1, Lessons 1–5)
 
 O protótipo hoje usa recortes dos boards de referência que você já gerou (suficiente
