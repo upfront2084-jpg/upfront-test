@@ -6,6 +6,30 @@ Protótipo interativo: `english_adventures.html` (curso completo, funcional, no 
 padrão de arquivo único usado pelos outros cursos deste portal). Já está registrado
 no catálogo de "Cursos Extras" em `portal_convidado.html` (id `englishadventures`).
 
+**Atualização (15/08, tarde) — reconstrução 100% a partir das imagens de
+referência:** a pedido, o app deixou de usar componentes CSS genéricos (topbar,
+bottom nav, cards) e passou a ser construído *só* com as telas reais do board de
+referência que você enviou (`ChatGPT Image 14 de ago...png`, 26 telas numeradas).
+Cada tela do app agora É a imagem recortada dessa referência (Mapa dos Mundos,
+Seleção da Aula, Missão da Aula, Welcome, Vocabulary, Game-Match, Listen & Choose,
+Let's Speak, Reward, Daily Missions, Baú, Loja, Badges, Personagens, Área dos Pais,
+Parent Dashboard, Certificado), com botões invisíveis posicionados exatamente sobre
+os elementos desenhados (mesma técnica já usada na Home). Os poucos números que
+precisam refletir progresso real (estrelas, cadeados, missões, nome no certificado)
+são pequenos remendos brancos desenhados por cima, no lugar exato do valor
+estático da arte — o resto da tela é 100% a imagem original, sem CSS inventado.
+O motor por trás (estado salvo, TTS, reconhecimento de voz, progressão, daily
+missions) continua o mesmo, só a camada visual foi trocada. Testado ponta a ponta
+(Mapa → Aulas → Missão → Welcome → Vocabulary → Match → Listen&Choose → Speak →
+Reward → Certificado → Lesson 2 destravada) sem erros de console. Simplificações
+feitas para caber no que a arte de referência realmente mostra: "Talk to Buddy"
+(chat) foi removido (não existe tela dele no board); os 3 tipos de "Speak" viraram
+um só (repetir a frase, que é o único padrão mostrado); a Loja usa a arte real de
+cada Buddy (Classic/Astronaut/Surfer/Ninja) em vez do filtro de CSS da versão
+anterior. Alinhamento de alguns remendos (ex. certificado, missões diárias) ainda
+pode ficar mais fino numa próxima passada, mas está funcional e legível em todas
+as telas testadas.
+
 **Atualização (15/08):** a Home voltou a ser 100% funcional — a tela de abertura em
 full-bleed (arte de referência com os botões MAPA/AULAS/PERSONAGENS/LOJA recortados)
 agora abre de verdade o Mapa, a lista de aulas, os personagens e a loja (antes disso
