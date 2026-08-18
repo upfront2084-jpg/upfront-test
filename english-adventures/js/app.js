@@ -110,7 +110,6 @@ document.addEventListener('DOMContentLoaded', () => {
     showScreen('map');
   });
   document.getElementById('map-back').addEventListener('click', () => showScreen('home'));
-  document.getElementById('map-settings').addEventListener('click', () => { renderPlaceholder('Settings'); showScreen('placeholder'); });
   document.getElementById('world-back').addEventListener('click', () => { renderMap(); showScreen('map'); });
   document.getElementById('lesson-back').addEventListener('click', () => {
     const l = currentLesson;
@@ -128,29 +127,6 @@ function renderPlaceholder(label) {
 
 // ---------- MAP ----------
 function renderMap() {
-  document.querySelectorAll('.map-hud-stat').forEach((el, i) => {
-    el.lastChild.textContent = ' ' + (i === 0 ? state.stars : state.gems);
-  });
-
-  const navGrid = document.getElementById('map-nav-grid');
-  navGrid.innerHTML = '';
-  NAV_GRID_HOTSPOTS.forEach(spot => {
-    const item = NAV_ITEMS.find(n => n.key === spot.key);
-    const btn = document.createElement('button');
-    btn.className = 'nav-grid-hotspot';
-    btn.style.left = spot.x + '%';
-    btn.style.top = spot.y + '%';
-    btn.style.width = spot.w + '%';
-    btn.style.height = spot.h + '%';
-    btn.title = item.label;
-    btn.addEventListener('click', () => {
-      if (item.screen === 'map') return;
-      renderPlaceholder(item.label);
-      showScreen('placeholder');
-    });
-    navGrid.appendChild(btn);
-  });
-
   const wrap = document.getElementById('map-nodes');
   wrap.innerHTML = '';
   WORLDS.forEach(world => {

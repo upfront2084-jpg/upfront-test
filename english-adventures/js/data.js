@@ -34,26 +34,14 @@ const LESSONS = [
 ];
 
 const NAV_ITEMS = [
-  { key: 'map',        label: 'Map',        icon: 'ui/navigation/nav-pill-map.png',        screen: 'map' },
-  { key: 'lessons',    label: 'Lessons',    icon: 'ui/navigation/nav-pill-lessons.png',    screen: 'map' },
-  { key: 'characters', label: 'Characters', icon: 'ui/navigation/nav-pill-characters.png', screen: 'placeholder' },
-  { key: 'shop',       label: 'Shop',       icon: 'ui/navigation/nav-pill-shop.png',       screen: 'placeholder' },
-  { key: 'rewards',    label: 'Rewards',    icon: 'ui/navigation/nav-pill-rewards.png',    screen: 'placeholder' },
-  { key: 'progress',   label: 'My Progress',icon: 'ui/navigation/nav-pill-progress.png',   screen: 'placeholder' },
-  { key: 'parents',    label: 'Parents',    icon: 'ui/navigation/nav-pill-parents.png',    screen: 'placeholder' },
-  { key: 'settings',   label: 'Settings',   icon: 'ui/navigation/nav-pill-settings.png',   screen: 'placeholder' },
-];
-
-// Click-through regions (% of nav-grid-full.png) for the map sidebar's grid image.
-const NAV_GRID_HOTSPOTS = [
-  { key: 'map',        x: 0,     y: 0,    w: 33.3, h: 33.3 },
-  { key: 'lessons',    x: 33.3,  y: 0,    w: 33.3, h: 33.3 },
-  { key: 'characters', x: 66.6,  y: 0,    w: 33.4, h: 33.3 },
-  { key: 'shop',       x: 0,     y: 33.3, w: 33.3, h: 33.3 },
-  { key: 'rewards',    x: 33.3,  y: 33.3, w: 33.3, h: 33.3 },
-  { key: 'progress',   x: 66.6,  y: 33.3, w: 33.4, h: 33.3 },
-  { key: 'parents',    x: 0,     y: 66.6, w: 33.3, h: 33.4 },
-  { key: 'settings',   x: 33.3,  y: 66.6, w: 33.3, h: 33.4 },
+  { key: 'map',        label: 'Map',        icon: 'ui/navigation/nav-map.png',        screen: 'map' },
+  { key: 'lessons',    label: 'Lessons',    icon: 'ui/navigation/nav-lessons.png',    screen: 'map' },
+  { key: 'characters', label: 'Characters', icon: 'ui/navigation/nav-characters.png', screen: 'placeholder' },
+  { key: 'shop',       label: 'Shop',       icon: 'ui/navigation/nav-shop.png',       screen: 'placeholder' },
+  { key: 'rewards',    label: 'Rewards',    icon: 'ui/navigation/nav-rewards.png',    screen: 'placeholder' },
+  { key: 'progress',   label: 'My Progress',icon: 'ui/navigation/nav-progress.png',   screen: 'placeholder' },
+  { key: 'parents',    label: 'Parents',    icon: 'ui/navigation/nav-parents.png',    screen: 'placeholder' },
+  { key: 'settings',   label: 'Settings',   icon: 'ui/navigation/nav-settings.png',   screen: 'placeholder' },
 ];
 
 const ENCOURAGEMENT = ['Great job!', 'Awesome!', 'Fantastic!'];
