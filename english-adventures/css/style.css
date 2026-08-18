@@ -2,7 +2,6 @@
   --wood: #6b4423;
   --ink: #4a2f12;
   --cream: #fff8ec;
-  --body-color: #1f6fb2;
 }
 
 * { box-sizing: border-box; }
@@ -16,14 +15,14 @@ html, body {
   background: #000;
 }
 
-h1, h2, .dialog-title, .stage-heading, .lesson-card-title, .reward-title,
-.vocab-word, .match-word, .listen-word, .speak-word, .memory-face-back,
-.memory-face-front, .world-header h1, .lesson-header h1, .complete-note,
-.empty-note, .toast {
+h1, h2, .dialog-title, .dialog-body, .stage-heading, .lesson-card-title,
+.lesson-card-num, .reward-title, .vocab-word, .match-word, .listen-word,
+.speak-word, .memory-face-back, .memory-face-front, .world-header h1,
+.lesson-header h1, .complete-note, .empty-note, .toast {
   font-family: 'Luckiest Guy', 'Impact', 'Arial Black', sans-serif;
 }
 
-/* ---------- "ENGLISH ADVENTURES" sign style — used for every title/heading ----------
+/* ---------- "ENGLISH ADVENTURES" sign style — used for every title/label ----------
    Extremely bold rounded cartoon lettering, dark navy outline, layered 3D
    extrusion, bright saturated gold->orange fill, soft drop shadow.
    NOTE: on this font, a plain text-shadow paints a full solid copy of the
@@ -31,30 +30,44 @@ h1, h2, .dialog-title, .stage-heading, .lesson-card-title, .reward-title,
    offset shadow ends up covering the whole letter instead of just outlining
    it. filter:drop-shadow() does not have that problem (it shadows the
    final rendered/alpha-masked shape), so it's what creates both the
-   extrusion steps and the soft shadow here. */
+   extrusion steps and the soft shadow here.
+   Three size tiers because a fixed stroke width that looks right on a big
+   headline swallows the fill entirely on smaller text — the thinner the
+   glyphs, the thinner the stroke/extrusion has to be. */
 .game-title,
-.dialog-title, .world-header h1, .lesson-header h1, .stage-heading,
-.reward-title, .lesson-card-title {
+.dialog-title, .dialog-body, .world-header h1, .lesson-header h1,
+.stage-heading, .reward-title, .lesson-card-title, .lesson-card-num,
+.complete-note, .empty-note {
   font-family: 'Luckiest Guy', 'Impact', 'Arial Black', sans-serif;
   font-weight: 400;
-  letter-spacing: -1px;
   color: #ffb020;
   background: linear-gradient(180deg, #fff6c8 0%, #ffcc3d 32%, #ff8a1e 75%, #ff6a00 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  -webkit-text-stroke: 2px #0c1a3a;
   paint-order: stroke fill;
+}
+/* large — main headlines (26-56px) */
+.dialog-title, .world-header h1, .lesson-header h1, .stage-heading, .reward-title {
+  letter-spacing: -1px;
+  -webkit-text-stroke: 2px #0c1a3a;
   filter:
     drop-shadow(1.2px 1.2px 0 #1a3568)
     drop-shadow(2.4px 2.4px 0 #1a3568)
     drop-shadow(3.6px 3.6px 0 #1a3568)
     drop-shadow(2.5px 6px 7px rgba(0,0,0,0.45));
 }
-/* smaller text needs a thinner stroke or the outline swallows the fill */
-.lesson-card-num {
-  font-family: 'Luckiest Guy', 'Impact', 'Arial Black', sans-serif;
+/* medium — card/section titles (20-28px) */
+.lesson-card-title {
   letter-spacing: -0.5px;
+  -webkit-text-stroke: 1.2px #0c1a3a;
+  filter: drop-shadow(0.8px 0.8px 0 #1a3568) drop-shadow(1.6px 1.6px 0 #1a3568) drop-shadow(1.5px 3px 4px rgba(0,0,0,0.4));
+}
+/* small — body copy and labels (13-26px) */
+.dialog-body, .lesson-card-num, .complete-note, .empty-note {
+  letter-spacing: -0.3px;
+  -webkit-text-stroke: 0.7px #0c1a3a;
+  filter: drop-shadow(0.5px 0.5px 0 #1a3568) drop-shadow(1px 1px 0 #1a3568) drop-shadow(1px 2px 3px rgba(0,0,0,0.4));
 }
 
 #app {
@@ -163,10 +176,7 @@ img { max-width: 100%; display: block; }
 .dialog-body {
   margin: 0;
   font-size: clamp(16px, 1.9vw, 24px);
-  font-weight: 800;
-  color: var(--body-color);
-  line-height: 1.3;
-  font-family: 'Nunito', sans-serif;
+  line-height: 1.35;
 }
 
 /* ---------- map ---------- */
@@ -217,7 +227,7 @@ img { max-width: 100%; display: block; }
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   gap: 4px; padding: 8%;
 }
-.lesson-card-num { font-size: clamp(13px, 1.2vw, 16px); color: var(--ink); font-weight: 700; opacity: 0.75; }
+.lesson-card-num { font-size: clamp(13px, 1.2vw, 16px); opacity: 0.85; }
 .lesson-card-title {
   font-size: clamp(20px, 2.2vw, 28px);
   -webkit-text-stroke: 1.2px #0c1a3a;
@@ -226,7 +236,7 @@ img { max-width: 100%; display: block; }
 .lesson-card-star { position: absolute; top: 6%; right: 8%; width: 16%; }
 .lesson-card.locked { filter: grayscale(0.8) drop-shadow(0 5px 8px rgba(0,0,0,0.25)); cursor: not-allowed; }
 .lesson-card.locked .lock-badge { position: absolute; width: 22%; top: 50%; left: 50%; transform: translate(-50%,-50%); }
-.empty-note { color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.6); font-size: clamp(18px,2vw,24px); text-align: center; }
+.empty-note { font-size: clamp(18px,2vw,24px); text-align: center; }
 
 /* ---------- lesson screen ---------- */
 .lesson-header {
@@ -245,12 +255,19 @@ img { max-width: 100%; display: block; }
 }
 .stage-center { display: flex; flex-direction: column; align-items: center; gap: 10px; }
 .stage-heading { text-align: center; margin: 0 0 26px; font-size: clamp(26px,3.2vw,42px); }
-.complete-note { color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.6); font-weight: 700; font-size: clamp(18px,2vw,26px); }
+.complete-note { font-size: clamp(18px,2vw,26px); }
 
 /* vocabulary — doubled */
-.vocab-grid { display: flex; gap: 40px; flex-wrap: wrap; justify-content: center; }
+.vocab-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 28px;
+  width: 100%;
+  max-width: 1300px;
+  align-items: start;
+}
 .vocab-card {
-  width: min(48vw, 480px); background: var(--cream); border: 8px solid var(--wood); border-radius: 32px;
+  width: 100%; background: var(--cream); border: 8px solid var(--wood); border-radius: 32px;
   padding: 20px; cursor: pointer; transition: transform 0.15s ease;
 }
 .vocab-card:hover { transform: translateY(-6px) scale(1.02); }
