@@ -46,11 +46,17 @@ Todos os PNGs de personagem foram recortados de pranchas com 6-7 poses por perso
 - `performance-star-filled/empty.png` e `performance-milestone-bar.png` — o arquivo enviado não era um indicador 1/2/3 estrelas como esperado; nomeei pelo conteúdo real (estrela grande cheia/vazia + barra de marco). Revisar se serve ao propósito ou se precisa de um indicador de estrelas por lição.
 - `progress-bar-{25,50,75}.png` — a prancha trouxe 5 estágios de preenchimento em vez de só vazio/cheio; mantive todos.
 
-## Faltando — Prioridade 2
+## Prioridade 2 — backgrounds dos mundos ✅
 
-- assets/worlds/world-02-color-valley/background.png … world-10-english-champions/background.png (9 arquivos, mesmo estilo do world-01; o mapa já mostra a ilha de referência de cada um)
+`assets/worlds/world-02-color-valley/background.png` até `world-09-around-the-world/background.png` — todos ok, batem com o tema de cada mundo no mapa.
+
+⚠️ **`world-10-english-champions/background.png`** — o arquivo enviado é uma cena de "Storybook Kingdom" (castelo, dragão, feira medieval), não bate com o tema "English Champions" (troféu/estádio) que aparece no mapa. Precisa reenviar o arquivo certo para esse mundo.
+
+## Ainda faltando
+
 - assets/certificate/certificate-template.png
 - assets/shop/ — itens de personalização do Buddy (fones, mochilas, chapéus, roupas)
 - assets/activities/{listening,memory,drag-drop,counting,quiz,speaking}/ — conforme as aulas forem sendo criadas
+- Vocabulário das Lessons 2-5 (What's Your Name?, How Are You?, My Age, Numbers 1-5) — mesmo formato dos cards hello/hi/goodbye
 
 New files can be added without changing this package structure.

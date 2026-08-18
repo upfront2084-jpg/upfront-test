@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>English Adventures</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div id="app">
+
+  <!-- HOME -->
+  <section id="screen-home" class="screen">
+    <div class="bg-layer" style="background-image:url('../assets/backgrounds/home-background.png')"></div>
+
+    <nav class="nav-bar" id="home-nav"></nav>
+
+    <div class="buddy-guide" id="home-buddy">
+      <img src="../assets/characters/buddy/welcome.png" alt="Buddy">
+    </div>
+
+    <div class="dialog-bubble" id="home-dialog">
+      <img class="dialog-bg" src="../assets/ui/panels/panel-dialog.png" alt="">
+      <div class="dialog-text">
+        <p class="dialog-title" id="home-dialog-title">Hi, Explorer!</p>
+        <p class="dialog-body" id="home-dialog-body">Are you ready for today's adventure?</p>
+      </div>
+    </div>
+
+    <button class="btn-image btn-lets-go" id="btn-lets-go">
+      <img src="../assets/ui/buttons/button-lets-go.png" alt="Let's Go!">
+    </button>
+  </section>
+
+  <!-- WORLD MAP -->
+  <section id="screen-map" class="screen">
+    <div class="bg-layer" style="background-image:url('../assets/worlds/map/map-background.png')"></div>
+    <button class="btn-back" id="map-back">
+      <img src="../assets/ui/buttons/button-back.png" alt="Back">
+    </button>
+    <div class="map-nodes" id="map-nodes"></div>
+  </section>
+
+  <!-- WORLD SCREEN -->
+  <section id="screen-world" class="screen">
+    <div class="bg-layer" id="world-bg"></div>
+    <button class="btn-back" id="world-back">
+      <img src="../assets/ui/buttons/button-back.png" alt="Back">
+    </button>
+
+    <div class="world-header">
+      <h1 id="world-title"></h1>
+      <div class="progress-track">
+        <img src="../assets/ui/progress/progress-bar-empty.png" class="progress-empty" alt="">
+        <img src="../assets/ui/progress/progress-bar-fill.png" class="progress-fill" id="world-progress-fill" alt="">
+      </div>
+    </div>
+
+    <div class="buddy-guide buddy-guide--small">
+      <img src="../assets/characters/buddy/pointing.png" alt="Buddy">
+    </div>
+
+    <div class="lesson-list" id="lesson-list"></div>
+  </section>
+
+  <!-- LESSON SCREEN -->
+  <section id="screen-lesson" class="screen">
+    <div class="bg-layer bg-layer--soft" id="lesson-bg"></div>
+    <button class="btn-back" id="lesson-back">
+      <img src="../assets/ui/buttons/button-back.png" alt="Back">
+    </button>
+
+    <div class="lesson-header">
+      <h1 id="lesson-title"></h1>
+      <div class="step-dots" id="lesson-step-dots"></div>
+    </div>
+
+    <div class="lesson-stage" id="lesson-stage"></div>
+  </section>
+
+  <!-- PLACEHOLDER (coming soon) -->
+  <section id="screen-placeholder" class="screen">
+    <div class="bg-layer" style="background-image:url('../assets/backgrounds/home-background.png')"></div>
+    <button class="btn-back" id="placeholder-back">
+      <img src="../assets/ui/buttons/button-back.png" alt="Back">
+    </button>
+    <div class="buddy-guide">
+      <img src="../assets/characters/buddy/thinking.png" alt="Buddy">
+    </div>
+    <div class="dialog-bubble">
+      <img class="dialog-bg" src="../assets/ui/panels/panel-dialog.png" alt="">
+      <div class="dialog-text">
+        <p class="dialog-title" id="placeholder-title">Coming soon!</p>
+        <p class="dialog-body">This part of the adventure is still being built. Check back soon!</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="toast" id="toast"></div>
+  <div class="confetti-layer" id="confetti-layer"></div>
+</div>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
