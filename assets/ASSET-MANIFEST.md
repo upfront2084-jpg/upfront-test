@@ -52,11 +52,34 @@ Todos os PNGs de personagem foram recortados de pranchas com 6-7 poses por perso
 
 ⚠️ **`world-10-english-champions/background.png`** — o arquivo enviado é uma cena de "Storybook Kingdom" (castelo, dragão, feira medieval), não bate com o tema "English Champions" (troféu/estádio) que aparece no mapa. Precisa reenviar o arquivo certo para esse mundo.
 
-## Ainda faltando
+## Dashboard restyle ✅ (recortado das pranchas de referência do Drive)
 
-- assets/certificate/certificate-template.png
-- assets/shop/ — itens de personalização do Buddy (fones, mochilas, chapéus, roupas)
-- assets/activities/{listening,memory,drag-drop,counting,quiz,speaking}/ — conforme as aulas forem sendo criadas
-- Vocabulário das Lessons 2-5 (What's Your Name?, How Are You?, My Age, Numbers 1-5) — mesmo formato dos cards hello/hi/goodbye
+| Asset | Local |
+|---|---|
+| Logo "English Adventures" | assets/ui/logo-english-adventures.png |
+| Lineup dos 4 personagens juntos | assets/characters/group-lineup.png |
+| Avatares circulares | assets/characters/{buddy,leo,mia,luna}/avatar-round.png |
+| Buddy — joinha | assets/characters/buddy/thumbsup.png |
+| Navegação estilo pílula (8) | assets/ui/navigation/nav-pill-*.png |
+| Navegação estilo grade quadrada (8) | assets/ui/navigation/nav-grid-*.png |
+| Botões novos | assets/ui/buttons/button-{lets-go-pill,sound,music,fullscreen,next,back-pill,home,settings-round}.png |
+| Ícones extras | assets/ui/icons/icon-{chest-small,trophy-small,trophy-alt,star-small,gem-small,compass,scroll-map,lock-small}.png |
+| Banner de mundo desbloqueado | assets/ui/banner-new-world-unlocked.png |
+| Miniaturas de mundo (mapa) | assets/worlds/thumbnails/world-{01,02,03,10,locked}-thumb.png |
+
+Duas variações de navegação foram recortadas (pílula e grade) — vou escolher uma como padrão ao remontar as telas; a outra fica disponível como alternativa. Fundo não é 100% transparente ainda (pranchas de origem vieram RGB opaco) — funciona bem em cards claros, mas overlays sobre fundos escuros podem precisar de remoção de fundo depois.
+
+## Ainda faltando (fluxo completo de 17 telas)
+
+- `assets/ui/avatar-placeholder.png` — avatar genérico da criança (tela de Progresso)
+- `assets/certificate/banner-lesson-completed.png` — faixa "LESSON COMPLETED!"
+- `assets/ui/icons/icon-song.png` — ícone "new song" nas estatísticas do certificado
+- `assets/rewards/badges/badge-{vocabulary-master,super-listener,speaking-star,game-champion,story-hero}.png` — 5 selos distintos (tela de Badges)
+- `assets/ui/icons/icon-calendar.png`, `icon-checkmark.png`, `icon-participation.png` — relatório para os pais
+- `assets/effects/balloons.png` — balões (tela de comemoração)
+- `assets/certificate/certificate-template.png` — certificado final (não a faixa de lição, o certificado grande de conclusão de mundo)
+- `assets/shop/` — itens de personalização do Buddy
+- Vocabulário das Lessons 2-5 (What's Your Name?, How Are You?, My Age, Numbers 1-5)
+- ⚠️ `world-10-english-champions/background.png` ainda com a imagem errada (Storybook Kingdom)
 
 New files can be added without changing this package structure.
