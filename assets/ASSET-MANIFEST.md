@@ -20,24 +20,31 @@ Prompt mestre completo em `docs/english-adventures/PROMPT-MASTER-V3.1.md`.
 | Welcome Forest (background) | assets/worlds/world-01-welcome-forest/background.png |
 | Welcome Forest (reference) | assets/worlds/world-01-welcome-forest/background-reference.png |
 | Reward screen (reference) | assets/rewards/reward-screen-reference.png |
+| Home background | assets/backgrounds/home-background.png |
+| Botões | assets/ui/buttons/button-{lets-go,continue,play,replay,back}.png |
+| Navegação (8 ícones) | assets/ui/navigation/nav-{map,lessons,characters,shop,rewards,progress,parents,settings}.png |
+| Ícones pequenos | assets/ui/icons/icon-{star,gem,lock,sound-on,sound-off,microphone,speaker}.png |
+| Painel de diálogo do Buddy (+ 3 variantes) | assets/ui/panels/panel-dialog.png, panel-dialog-variant-{2,3,4}.png |
+| Cartão genérico (+ 4 variantes) | assets/ui/panels/panel-card.png, panel-card-variant-{1,2,3,4}.png |
+| Barra de progresso (5 estágios) | assets/ui/progress/progress-bar-{empty,25,50,75,fill}.png |
+| Indicador de desempenho | assets/ui/progress/performance-star-{filled,empty}.png, performance-milestone-bar.png |
+| Estrela cheia/vazia | assets/rewards/stars/star-{filled,empty}.png |
+| Gema | assets/rewards/gems/gem.png |
+| Badge | assets/rewards/badges/badge-generic.png |
+| Troféu | assets/rewards/trophies/trophy.png |
+| Baú (fechado/brilhando/aberto) | assets/rewards/treasure-chests/chest-{closed,glow,open}.png |
+| Efeitos | assets/effects/confetti.png, sparkle.png |
+| Lesson 1 — vocabulário | assets/activities/matching/{hello,hi,goodbye}.png |
 
-Todos os PNGs de personagem foram recortados de pranchas com 6-7 poses por personagem, geradas pelo usuário; o fundo é um leve vinheta/glow (não é PNG transparente ainda) — funciona bem para telas grandes de personagem, mas ícones pequenos/overlays vão precisar de versão com fundo removido quando chegar a hora.
+Todos os PNGs de personagem foram recortados de pranchas com 6-7 poses por personagem, geradas pelo usuário; o fundo é um leve vinheta/glow (não é PNG transparente ainda) — funciona bem para telas grandes de personagem, mas ícones pequenos/overlays vão precisar de versão com fundo removido quando chegar a hora. Os ícones/botões/rewards da Prioridade 1 já vieram com transparência real (RGBA).
 
-## Faltando — Prioridade 1 (fluxo mínimo Home → Map → World 1 → Lesson 1)
+**Prioridade 1 completa** ✅ — fluxo mínimo Home → Map → World 1 → Lesson 1 já tem todos os assets de UI necessários.
 
-- assets/backgrounds/home-background.png
-- assets/ui/buttons/ — button-lets-go.png, button-primary.png, button-secondary.png, button-replay.png, button-back.png
-- assets/ui/navigation/ — nav-map.png, nav-lessons.png, nav-characters.png, nav-shop.png, nav-rewards.png, nav-progress.png, nav-parents.png, nav-settings.png
-- assets/ui/icons/ — icon-star.png, icon-gem.png, icon-lock.png, icon-sound-on.png, icon-sound-off.png, icon-microphone.png, icon-speaker.png
-- assets/ui/panels/ — panel-dialog.png, panel-card.png
-- assets/ui/progress/ — star-filled.png, star-empty.png (ou barra de progresso)
-- assets/rewards/stars/star-filled.png, star-empty.png
-- assets/rewards/gems/gem.png
-- assets/rewards/badges/badge-generic.png
-- assets/rewards/trophies/trophy.png
-- assets/rewards/treasure-chests/chest-closed.png, chest-glow.png, chest-open.png
-- assets/effects/confetti.png, sparkle.png
-- assets/activities/matching/hello.png, hi.png, goodbye.png (Lesson 1)
+## Pendências menores para revisão humana
+
+- `panel-dialog.png` — a prancha original tinha 4 variantes de posição de "rabinho" do balão; usei a variante 1 (canto inferior esquerdo) como padrão. Confirmar se é a certa.
+- `performance-star-filled/empty.png` e `performance-milestone-bar.png` — o arquivo enviado não era um indicador 1/2/3 estrelas como esperado; nomeei pelo conteúdo real (estrela grande cheia/vazia + barra de marco). Revisar se serve ao propósito ou se precisa de um indicador de estrelas por lição.
+- `progress-bar-{25,50,75}.png` — a prancha trouxe 5 estágios de preenchimento em vez de só vazio/cheio; mantive todos.
 
 ## Faltando — Prioridade 2
 
