@@ -107,7 +107,7 @@ img { max-width: 100%; display: block; }
 .btn-image:active { transform: scale(0.97); }
 .btn-image.disabled { opacity: 0.4; pointer-events: none; filter: grayscale(0.6); }
 
-.btn-lets-go { position: absolute; left: 50%; bottom: 4%; transform: translateX(-50%); width: min(28vw, 340px); }
+.btn-lets-go { position: absolute; left: 50%; bottom: 4%; transform: translateX(-50%); width: min(35vw, 425px); }
 .btn-lets-go img { width: 100%; }
 
 .btn-back {
@@ -130,7 +130,7 @@ img { max-width: 100%; display: block; }
 }
 .nav-icon-btn {
   background: none; border: none; cursor: pointer; padding: 0;
-  width: min(7.4vw, 100px);
+  width: min(9.25vw, 125px);
   filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
   transition: transform 0.12s ease;
 }
@@ -152,9 +152,9 @@ img { max-width: 100%; display: block; }
 
 .dialog-bubble {
   position: absolute;
-  left: 40%;
-  bottom: 30%;
-  width: min(38vw, 480px);
+  left: 38%;
+  bottom: 28%;
+  width: min(47.5vw, 600px);
   z-index: 6;
 }
 .dialog-bubble--stage { position: relative; left: auto; right: auto; bottom: auto; width: min(52vw, 600px); margin: 12px auto 0; }
