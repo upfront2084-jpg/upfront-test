@@ -20,24 +20,41 @@ h1, h2, .dialog-title, .stage-heading, .lesson-card-title, .reward-title,
 .vocab-word, .match-word, .listen-word, .speak-word, .memory-face-back,
 .memory-face-front, .world-header h1, .lesson-header h1, .complete-note,
 .empty-note, .toast {
-  font-family: 'Fredoka One', 'Baloo 2', Arial, sans-serif;
+  font-family: 'Luckiest Guy', 'Impact', 'Arial Black', sans-serif;
 }
 
-/* ---------- "ENGLISH ADVENTURES" sign style — used for every title/heading ---------- */
+/* ---------- "ENGLISH ADVENTURES" sign style — used for every title/heading ----------
+   Extremely bold rounded cartoon lettering, dark navy outline, layered 3D
+   extrusion, bright saturated gold->orange fill, soft drop shadow.
+   NOTE: on this font, a plain text-shadow paints a full solid copy of the
+   glyph behind the (intentionally transparent) gradient fill, so a small
+   offset shadow ends up covering the whole letter instead of just outlining
+   it. filter:drop-shadow() does not have that problem (it shadows the
+   final rendered/alpha-masked shape), so it's what creates both the
+   extrusion steps and the soft shadow here. */
 .game-title,
 .dialog-title, .world-header h1, .lesson-header h1, .stage-heading,
 .reward-title, .lesson-card-title {
-  font-family: 'Fredoka One', 'Baloo 2', Arial, sans-serif;
-  font-weight: 700;
-  color: #ffcf3f;
-  background: linear-gradient(180deg, #fff6c4 0%, #ffd23f 45%, #ff9d1c 100%);
+  font-family: 'Luckiest Guy', 'Impact', 'Arial Black', sans-serif;
+  font-weight: 400;
+  letter-spacing: -1px;
+  color: #ffb020;
+  background: linear-gradient(180deg, #fff6c8 0%, #ffcc3d 32%, #ff8a1e 75%, #ff6a00 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  -webkit-text-stroke: 3px #5a3213;
+  -webkit-text-stroke: 2px #0c1a3a;
   paint-order: stroke fill;
-  text-shadow: 0 4px 0 #5a3213, 0 8px 14px rgba(0,0,0,0.45);
-  letter-spacing: 0.5px;
+  filter:
+    drop-shadow(1.2px 1.2px 0 #1a3568)
+    drop-shadow(2.4px 2.4px 0 #1a3568)
+    drop-shadow(3.6px 3.6px 0 #1a3568)
+    drop-shadow(2.5px 6px 7px rgba(0,0,0,0.45));
+}
+/* smaller text needs a thinner stroke or the outline swallows the fill */
+.lesson-card-num {
+  font-family: 'Luckiest Guy', 'Impact', 'Arial Black', sans-serif;
+  letter-spacing: -0.5px;
 }
 
 #app {
@@ -201,7 +218,11 @@ img { max-width: 100%; display: block; }
   gap: 4px; padding: 8%;
 }
 .lesson-card-num { font-size: clamp(13px, 1.2vw, 16px); color: var(--ink); font-weight: 700; opacity: 0.75; }
-.lesson-card-title { font-size: clamp(20px, 2.2vw, 28px); -webkit-text-stroke: 1.5px #5a3213; }
+.lesson-card-title {
+  font-size: clamp(20px, 2.2vw, 28px);
+  -webkit-text-stroke: 1.2px #0c1a3a;
+  filter: drop-shadow(0.8px 0.8px 0 #1a3568) drop-shadow(1.6px 1.6px 0 #1a3568) drop-shadow(1.5px 3px 4px rgba(0,0,0,0.4));
+}
 .lesson-card-star { position: absolute; top: 6%; right: 8%; width: 16%; }
 .lesson-card.locked { filter: grayscale(0.8) drop-shadow(0 5px 8px rgba(0,0,0,0.25)); cursor: not-allowed; }
 .lesson-card.locked .lock-badge { position: absolute; width: 22%; top: 50%; left: 50%; transform: translate(-50%,-50%); }
