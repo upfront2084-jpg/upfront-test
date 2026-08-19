@@ -232,10 +232,25 @@ function goToStep(delta) {
   renderStep();
 }
 
+const STEP_PANEL_BG = {
+  welcome: 'bg-wood',
+  vocabulary: 'bg-notebook',
+  matching: 'bg-notebook',
+  dragdrop: 'bg-notebook',
+  quiz: 'bg-notebook',
+  listen: 'bg-listen',
+  speak: 'bg-listen',
+  memory: 'bg-listen',
+  capstone: 'bg-reward',
+  reward: 'bg-reward',
+};
+
 function renderStep() {
   const step = currentLesson.activities[currentStepIndex];
   const stage = document.getElementById('lesson-stage');
   stage.innerHTML = '';
+  stage.classList.remove('bg-wood', 'bg-notebook', 'bg-listen', 'bg-reward');
+  stage.classList.add(STEP_PANEL_BG[step] || 'bg-notebook');
   const renderers = {
     welcome: renderStepWelcome,
     vocabulary: renderStepVocabulary,
@@ -283,8 +298,9 @@ function renderStepVocabulary(stage) {
   currentLesson.vocabulary.forEach(item => {
     const card = document.createElement('button');
     card.className = 'vocab-card';
+    const hasVisual = item.img || item.emoji || item.number != null;
     card.innerHTML = `
-      <div class="vocab-visual">${itemVisualHTML(item)}</div>
+      ${hasVisual ? `<div class="vocab-visual">${itemVisualHTML(item)}</div>` : ''}
       <span class="vocab-word">${item.word} <img class="icon-inline" src="${ASSETS}ui/icons/icon-speaker.png" alt=""></span>`;
     card.addEventListener('click', () => {
       speak(item.word);
@@ -325,8 +341,9 @@ function renderStepMatching(stage) {
   const rights = shuffle(pairs);
   const layout = document.createElement('div');
   layout.className = 'match-layout';
+  const wrapClass = pairs.length > 3 ? ' match-col--images' : '';
   const wordsCol = document.createElement('div');
-  wordsCol.className = 'match-col';
+  wordsCol.className = 'match-col' + wrapClass;
   const imgsCol = document.createElement('div');
   imgsCol.className = 'match-col match-col--images';
 
@@ -421,14 +438,14 @@ function renderStepListening(stage) {
 function renderStepSpeaking(stage) {
   stage.innerHTML = `
     <h2 class="stage-heading">Repeat after me!</h2>
-    <div class="buddy-guide buddy-guide--small"><img src="${ASSETS}characters/buddy/speaking.png" alt="Buddy"></div>`;
+    <div class="speak-buddy-icon"><img src="${ASSETS}characters/buddy/speaking.png" alt="Buddy"></div>`;
 
+  const phrases = currentLesson.speakingPhrases || currentLesson.vocabulary.map(v => v.word);
   const list = document.createElement('div');
-  list.className = 'speak-list';
+  list.className = 'speak-list' + (phrases.length > 2 ? ' speak-list--grid' : '');
   const hasRecognition = 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window;
   const hasRecorder = 'MediaRecorder' in window && navigator.mediaDevices;
 
-  const phrases = currentLesson.speakingPhrases || currentLesson.vocabulary.map(v => v.word);
   phrases.forEach(phrase => {
     const row = document.createElement('div');
     row.className = 'speak-row';
@@ -506,6 +523,11 @@ function renderStepMemory(stage) {
   const cards = shuffle(pairs);
   const grid = document.createElement('div');
   grid.className = 'memory-grid';
+  const cols = Math.min(5, Math.max(3, Math.ceil(cards.length / 2)));
+  const cardSize = { 3: 245, 4: 200, 5: 165 }[cols];
+  grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+  grid.style.maxWidth = `${cols * cardSize + (cols - 1) * 22}px`;
+  grid.style.setProperty('--memory-card-size', `${cardSize}px`);
   let first = null, lock = false, matchedCount = 0;
 
   cards.forEach((c, idx) => {
