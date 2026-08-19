@@ -341,11 +341,12 @@ function renderStepMatching(stage) {
   const rights = shuffle(pairs);
   const layout = document.createElement('div');
   layout.className = 'match-layout';
-  const wrapClass = pairs.length > 3 ? ' match-col--images' : '';
+  const tier = pairs.length <= 3 ? 'lg' : pairs.length === 4 ? 'md' : 'sm';
+  layout.classList.add('match-tier-' + tier);
   const wordsCol = document.createElement('div');
-  wordsCol.className = 'match-col' + wrapClass;
+  wordsCol.className = 'match-col';
   const imgsCol = document.createElement('div');
-  imgsCol.className = 'match-col match-col--images';
+  imgsCol.className = 'match-col';
 
   let selectedKey = null;
   const matched = new Set();
@@ -436,13 +437,17 @@ function renderStepListening(stage) {
 }
 
 function renderStepSpeaking(stage) {
-  stage.innerHTML = `
-    <h2 class="stage-heading">Repeat after me!</h2>
-    <div class="speak-buddy-icon"><img src="${ASSETS}characters/buddy/speaking.png" alt="Buddy"></div>`;
+  stage.innerHTML = `<h2 class="stage-heading">Repeat after me!</h2>`;
 
   const phrases = currentLesson.speakingPhrases || currentLesson.vocabulary.map(v => v.word);
+  const tier = phrases.length <= 2 ? 'lg' : phrases.length <= 3 ? 'md' : phrases.length <= 4 ? 'sm' : 'xs';
+
+  const body = document.createElement('div');
+  body.className = 'speak-body';
+  body.innerHTML = `<div class="speak-buddy-icon"><img src="${ASSETS}characters/buddy/speaking.png" alt="Buddy"></div>`;
+
   const list = document.createElement('div');
-  list.className = 'speak-list' + (phrases.length > 2 ? ' speak-list--grid' : '');
+  list.className = 'speak-list speak-tier-' + tier;
   const hasRecognition = 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window;
   const hasRecorder = 'MediaRecorder' in window && navigator.mediaDevices;
 
@@ -469,7 +474,8 @@ function renderStepSpeaking(stage) {
     });
     list.appendChild(row);
   });
-  stage.appendChild(list);
+  body.appendChild(list);
+  stage.appendChild(body);
 }
 
 function maybeShowSpeakingContinue(stage, phrases) {
