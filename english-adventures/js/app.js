@@ -328,7 +328,7 @@ function renderStepMatching(stage) {
   const wordsCol = document.createElement('div');
   wordsCol.className = 'match-col';
   const imgsCol = document.createElement('div');
-  imgsCol.className = 'match-col';
+  imgsCol.className = 'match-col match-col--images';
 
   let selectedKey = null;
   const matched = new Set();
