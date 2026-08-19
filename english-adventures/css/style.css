@@ -111,7 +111,7 @@ img { max-width: 100%; display: block; }
 .btn-lets-go img { width: 100%; }
 
 .btn-back {
-  position: absolute; top: 3%; left: 3%; width: min(10vw, 130px); z-index: 20;
+  position: absolute; top: 3%; left: 3%; width: min(15vw, 190px); z-index: 20;
   background: none; border: none; cursor: pointer; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
 }
 .btn-back img { width: 100%; }
@@ -152,9 +152,9 @@ img { max-width: 100%; display: block; }
 
 .dialog-bubble {
   position: absolute;
-  left: 38%;
-  bottom: 28%;
-  width: min(47.5vw, 600px);
+  left: 32%;
+  bottom: 26%;
+  width: min(55vw, 720px);
   z-index: 6;
 }
 .dialog-bubble--stage { position: relative; left: auto; right: auto; bottom: auto; width: min(52vw, 600px); margin: 12px auto 0; }
@@ -171,11 +171,11 @@ img { max-width: 100%; display: block; }
 }
 .dialog-title {
   margin: 0;
-  font-size: clamp(26px, 3.2vw, 42px);
+  font-size: clamp(34px, 4.2vw, 54px);
 }
 .dialog-body {
   margin: 0;
-  font-size: clamp(16px, 1.9vw, 24px);
+  font-size: clamp(20px, 2.4vw, 30px);
   line-height: 1.35;
 }
 
@@ -213,25 +213,26 @@ img { max-width: 100%; display: block; }
 .progress-fill { position: absolute; top: 0; left: 0; }
 
 .lesson-list {
-  position: absolute; right: 4%; top: 24%; bottom: 6%;
-  display: flex; flex-direction: column; gap: 18px; overflow-y: auto;
-  width: min(34vw, 380px);
+  position: absolute; left: 50%; top: 24%; bottom: 6%; transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 24px; overflow-y: auto;
+  width: min(40vw, 500px);
 }
 .lesson-card {
   position: relative; border: none; background: none; padding: 0; cursor: pointer;
   filter: drop-shadow(0 5px 8px rgba(0,0,0,0.25));
+  width: 100%;
 }
 .lesson-card-bg { width: 100%; }
 .lesson-card-content {
   position: absolute; inset: 0;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 4px; padding: 8%;
+  gap: 10px; padding: 8%;
 }
-.lesson-card-num { font-size: clamp(13px, 1.2vw, 16px); opacity: 0.85; }
+.lesson-card-num { font-size: clamp(30px, 3.6vw, 48px); opacity: 0.85; }
 .lesson-card-title {
-  font-size: clamp(20px, 2.2vw, 28px);
-  -webkit-text-stroke: 1.2px #0c1a3a;
-  filter: drop-shadow(0.8px 0.8px 0 #1a3568) drop-shadow(1.6px 1.6px 0 #1a3568) drop-shadow(1.5px 3px 4px rgba(0,0,0,0.4));
+  font-size: clamp(56px, 8vw, 96px);
+  -webkit-text-stroke: 3px #0c1a3a;
+  filter: drop-shadow(1.5px 1.5px 0 #1a3568) drop-shadow(3px 3px 0 #1a3568) drop-shadow(3px 6px 8px rgba(0,0,0,0.4));
 }
 .lesson-card-star { position: absolute; top: 6%; right: 8%; width: 16%; }
 .lesson-card.locked { filter: grayscale(0.8) drop-shadow(0 5px 8px rgba(0,0,0,0.25)); cursor: not-allowed; }
