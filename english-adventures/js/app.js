@@ -198,13 +198,25 @@ let lessonSession = {}; // per-attempt scratch data (viewed words, scores...)
 function startLesson(lesson) {
   currentLesson = lesson;
   currentStepIndex = 0;
-  lessonSession = { viewedWords: new Set(), game1Correct: 0, listeningCorrect: 0, spokeWords: new Set() };
+  lessonSession = {
+    viewedWords: new Set(), matchingCorrect: 0, listeningCorrect: 0, spokeWords: new Set(),
+    dragdropDone: false, quizCorrectFirstTry: null,
+  };
   const world = WORLDS.find(w => w.id === lesson.world);
   document.getElementById('lesson-bg').style.backgroundImage = `url('${ASSETS}worlds/${world.key}/background.png')`;
   document.getElementById('lesson-title').textContent = `Lesson: ${lesson.title}`;
   renderStepDots();
   renderStep();
   showScreen('lesson');
+}
+
+// ---------- content helpers (a vocabulary/match item can carry an img, an
+// emoji, or just a word — every step below renders whichever is present) ----------
+function itemVisualHTML(item, size = 'normal') {
+  if (item.img) return `<img src="${ASSETS}${item.img}" alt="${item.word || ''}">`;
+  if (item.emoji) return `<span class="emoji-visual ${size === 'small' ? 'emoji-visual--small' : ''}">${item.emoji}</span>`;
+  if (item.number != null) return `<span class="dots-visual">${'●'.repeat(item.number)}</span>`;
+  return `<span class="word-visual">${item.word || item.text || ''}</span>`;
 }
 
 function renderStepDots() {
@@ -227,13 +239,14 @@ function renderStep() {
   const renderers = {
     welcome: renderStepWelcome,
     vocabulary: renderStepVocabulary,
-    game1: renderStepMatching,
-    listening: renderStepListening,
-    speaking: renderStepSpeaking,
-    game2: renderStepMemory,
-    review: renderStepReview,
+    matching: renderStepMatching,
+    listen: renderStepListening,
+    speak: renderStepSpeaking,
+    memory: renderStepMemory,
+    dragdrop: renderStepDragDrop,
+    quiz: renderStepQuiz,
+    capstone: renderStepCapstone,
     reward: renderStepReward,
-    complete: renderStepComplete,
   };
   (renderers[step] || (() => {}))(stage);
 }
@@ -247,19 +260,21 @@ function continueButton(label = 'Continue') {
 }
 
 function renderStepWelcome(stage) {
+  const words = currentLesson.vocabulary.map(v => v.word).join(', ');
+  const line = `Let's go to ${currentLesson.title}! Today we'll learn how to say ${words}.`;
   stage.innerHTML = `
     <div class="stage-center">
       <div class="buddy-guide"><img src="${ASSETS}characters/buddy/welcome.png" alt="Buddy"></div>
       <div class="dialog-bubble dialog-bubble--stage">
         <img class="dialog-bg" src="${ASSETS}ui/panels/panel-dialog.png" alt="">
         <div class="dialog-text">
-          <p class="dialog-title">Let's go to Lesson 1!</p>
-          <p class="dialog-body">Today we'll learn how to say ${currentLesson.vocabulary.map(v => v.word).join(', ')}.</p>
+          <p class="dialog-title">Let's go to ${currentLesson.title}</p>
+          <p class="dialog-body">Today we'll learn how to say ${words}.</p>
         </div>
       </div>
     </div>`;
   stage.appendChild(continueButton("Let's go!"));
-  speak("Let's go to Lesson 1! Today we'll learn how to say " + currentLesson.vocabulary.map(v => v.word).join(', '));
+  speak(line);
 }
 
 function renderStepVocabulary(stage) {
@@ -269,7 +284,7 @@ function renderStepVocabulary(stage) {
     const card = document.createElement('button');
     card.className = 'vocab-card';
     card.innerHTML = `
-      <img class="vocab-img" src="${ASSETS}${item.img}" alt="${item.word}">
+      <div class="vocab-visual">${itemVisualHTML(item)}</div>
       <span class="vocab-word">${item.word} <img class="icon-inline" src="${ASSETS}ui/icons/icon-speaker.png" alt=""></span>`;
     card.addEventListener('click', () => {
       speak(item.word);
@@ -299,8 +314,15 @@ function maybeEnableVocabContinue() {
 
 function renderStepMatching(stage) {
   stage.innerHTML = `<h2 class="stage-heading">Match the word to the picture!</h2>`;
-  const words = shuffle(currentLesson.vocabulary);
-  const images = shuffle(currentLesson.vocabulary);
+  // pairs: [{key, left:{text}, right:{visualHTML}}]
+  const pairs = (currentLesson.matchPairs || currentLesson.vocabulary.map(v => ({ left: { text: v.word }, right: v }))).map((p, i) => ({
+    key: p.key || p.left.text || i,
+    leftLabel: p.left.text || p.left.word,
+    rightHTML: p.right.text ? `<span class="word-visual">${p.right.text}</span>` : itemVisualHTML(p.right),
+  }));
+
+  const lefts = shuffle(pairs);
+  const rights = shuffle(pairs);
   const layout = document.createElement('div');
   layout.className = 'match-layout';
   const wordsCol = document.createElement('div');
@@ -308,43 +330,43 @@ function renderStepMatching(stage) {
   const imgsCol = document.createElement('div');
   imgsCol.className = 'match-col';
 
-  let selectedWord = null;
+  let selectedKey = null;
   const matched = new Set();
 
-  words.forEach(item => {
+  lefts.forEach(item => {
     const b = document.createElement('button');
     b.className = 'match-word';
-    b.textContent = item.word;
+    b.textContent = item.leftLabel;
     b.addEventListener('click', () => {
-      if (matched.has(item.word)) return;
+      if (matched.has(item.key)) return;
       layout.querySelectorAll('.match-word').forEach(el => el.classList.remove('selected'));
       b.classList.add('selected');
-      selectedWord = item.word;
+      selectedKey = item.key;
     });
     wordsCol.appendChild(b);
   });
 
-  images.forEach(item => {
+  rights.forEach(item => {
     const b = document.createElement('button');
     b.className = 'match-img';
-    b.innerHTML = `<img src="${ASSETS}${item.img}" alt="${item.word}">`;
+    b.innerHTML = item.rightHTML;
     b.addEventListener('click', () => {
-      if (matched.has(item.word) || !selectedWord) return;
-      if (selectedWord === item.word) {
-        matched.add(item.word);
-        lessonSession.game1Correct++;
+      if (matched.has(item.key) || !selectedKey) return;
+      if (selectedKey === item.key) {
+        matched.add(item.key);
+        lessonSession.matchingCorrect++;
         b.classList.add('correct');
         layout.querySelector('.match-word.selected')?.classList.add('correct');
         showToast(ENCOURAGEMENT[Math.floor(Math.random() * ENCOURAGEMENT.length)]);
-        speak(item.word);
+        speak(item.leftLabel);
       } else {
         b.classList.add('wrong');
         showToast(TRY_AGAIN[Math.floor(Math.random() * TRY_AGAIN.length)]);
         setTimeout(() => b.classList.remove('wrong'), 500);
       }
-      selectedWord = null;
+      selectedKey = null;
       layout.querySelectorAll('.match-word').forEach(el => el.classList.remove('selected'));
-      if (matched.size === currentLesson.vocabulary.length) {
+      if (matched.size === pairs.length) {
         setTimeout(() => stage.appendChild(continueButton()), 400);
       }
     });
@@ -374,7 +396,7 @@ function renderStepListening(stage) {
   shuffle(currentLesson.vocabulary).forEach(item => {
     const b = document.createElement('button');
     b.className = 'listen-choice';
-    b.innerHTML = `<img src="${ASSETS}${item.img}" alt="${item.word}">`;
+    b.innerHTML = itemVisualHTML(item);
     b.addEventListener('click', () => {
       if (answered) return;
       if (item.word === target.word) {
@@ -406,34 +428,35 @@ function renderStepSpeaking(stage) {
   const hasRecognition = 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window;
   const hasRecorder = 'MediaRecorder' in window && navigator.mediaDevices;
 
-  currentLesson.vocabulary.forEach(item => {
+  const phrases = currentLesson.speakingPhrases || currentLesson.vocabulary.map(v => v.word);
+  phrases.forEach(phrase => {
     const row = document.createElement('div');
     row.className = 'speak-row';
     row.innerHTML = `
-      <span class="speak-word">${item.word}</span>
+      <span class="speak-word">${phrase}</span>
       <button class="btn-image btn-listen small"><img src="${ASSETS}ui/icons/icon-speaker.png" alt="Hear"></button>
       <button class="btn-image btn-mic"><img src="${ASSETS}ui/icons/icon-microphone.png" alt="Record"></button>
       <span class="speak-status"></span>`;
-    row.querySelector('.btn-listen').addEventListener('click', () => speak(item.word));
+    row.querySelector('.btn-listen').addEventListener('click', () => speak(phrase));
     const status = row.querySelector('.speak-status');
     row.querySelector('.btn-mic').addEventListener('click', () => {
-      lessonSession.spokeWords.add(item.word);
+      lessonSession.spokeWords.add(phrase);
       status.textContent = 'Nice try! 🎉';
       if (hasRecognition) {
-        tryRecognition(item.word, status);
+        tryRecognition(phrase, status);
       } else if (hasRecorder) {
         status.textContent = 'Recording...';
         recordAndPlayback(status);
       }
-      maybeShowSpeakingContinue(stage, list);
+      maybeShowSpeakingContinue(stage, phrases);
     });
     list.appendChild(row);
   });
   stage.appendChild(list);
 }
 
-function maybeShowSpeakingContinue(stage, list) {
-  if (lessonSession.spokeWords.size >= currentLesson.vocabulary.length && !document.getElementById('speak-continue')) {
+function maybeShowSpeakingContinue(stage, phrases) {
+  if (lessonSession.spokeWords.size >= phrases.length && !document.getElementById('speak-continue')) {
     const btn = continueButton();
     btn.id = 'speak-continue';
     stage.appendChild(btn);
@@ -478,7 +501,7 @@ function renderStepMemory(stage) {
   stage.innerHTML = `<h2 class="stage-heading">Memory Match</h2>`;
   const pairs = currentLesson.vocabulary.flatMap(item => ([
     { key: item.word, type: 'word', label: item.word },
-    { key: item.word, type: 'img', label: item.word, img: item.img },
+    { key: item.word, type: 'visual', label: item.word, item },
   ]));
   const cards = shuffle(pairs);
   const grid = document.createElement('div');
@@ -489,7 +512,7 @@ function renderStepMemory(stage) {
     const cell = document.createElement('button');
     cell.className = 'memory-card';
     cell.dataset.idx = idx;
-    cell.innerHTML = `<div class="memory-card-inner"><div class="memory-face-back">?</div><div class="memory-face-front">${c.type === 'word' ? c.label : `<img src="${ASSETS}${c.img}" alt="${c.label}">`}</div></div>`;
+    cell.innerHTML = `<div class="memory-card-inner"><div class="memory-face-back">?</div><div class="memory-face-front">${c.type === 'word' ? c.label : itemVisualHTML(c.item, 'small')}</div></div>`;
     cell.addEventListener('click', () => {
       if (lock || cell.classList.contains('flipped') || cell.classList.contains('matched')) return;
       cell.classList.add('flipped');
@@ -517,25 +540,251 @@ function renderStepMemory(stage) {
   stage.appendChild(grid);
 }
 
-function renderStepReview(stage) {
-  stage.innerHTML = `<h2 class="stage-heading">Great work! Here's what you learned:</h2>`;
-  const grid = document.createElement('div');
-  grid.className = 'review-grid';
-  currentLesson.vocabulary.forEach(item => {
-    grid.innerHTML += `
-      <div class="review-item">
-        <img src="${ASSETS}${item.img}" alt="${item.word}">
-        <img class="review-check" src="${ASSETS}rewards/stars/star-filled.png" alt="">
-      </div>`;
+// ---------- DRAG & DROP (pointer-events based — works with mouse and touch) ----------
+function setupDraggable(tile, onDrop) {
+  let dragging = false, offsetX = 0, offsetY = 0;
+  tile.style.touchAction = 'none';
+  tile.addEventListener('pointerdown', e => {
+    if (tile.classList.contains('placed')) return;
+    dragging = true;
+    tile.setPointerCapture(e.pointerId);
+    tile.classList.add('dragging');
+    const rect = tile.getBoundingClientRect();
+    offsetX = e.clientX - rect.left;
+    offsetY = e.clientY - rect.top;
+    tile.style.width = rect.width + 'px';
+    tile.style.position = 'fixed';
+    tile.style.zIndex = 1000;
+    tile.style.left = (e.clientX - offsetX) + 'px';
+    tile.style.top = (e.clientY - offsetY) + 'px';
   });
-  stage.appendChild(grid);
-  stage.appendChild(continueButton('See my reward!'));
+  tile.addEventListener('pointermove', e => {
+    if (!dragging) return;
+    tile.style.left = (e.clientX - offsetX) + 'px';
+    tile.style.top = (e.clientY - offsetY) + 'px';
+  });
+  tile.addEventListener('pointerup', e => {
+    if (!dragging) return;
+    dragging = false;
+    tile.classList.remove('dragging');
+    tile.style.pointerEvents = 'none';
+    const el = document.elementFromPoint(e.clientX, e.clientY);
+    tile.style.pointerEvents = '';
+    tile.style.position = ''; tile.style.zIndex = ''; tile.style.left = ''; tile.style.top = ''; tile.style.width = '';
+    const zone = el ? el.closest('.dropzone') : null;
+    onDrop(tile, zone);
+  });
 }
 
+function renderStepDragDrop(stage) {
+  const cfg = currentLesson.dragdrop || {
+    mode: 'toTarget',
+    instructions: 'Drag each word to the matching picture!',
+    items: currentLesson.vocabulary.map(v => ({ id: v.word, label: v.word, item: v })),
+  };
+  stage.innerHTML = `<h2 class="stage-heading">${cfg.instructions || 'Drag & Drop'}</h2>`;
+  const area = document.createElement('div');
+  area.className = 'dragdrop-area';
+
+  let placedCount = 0;
+  const finish = total => {
+    placedCount++;
+    if (placedCount === total) {
+      lessonSession.dragdropDone = true;
+      setTimeout(() => stage.appendChild(continueButton()), 400);
+    }
+  };
+
+  if (cfg.mode === 'slots') {
+    const words = shuffle(cfg.words);
+    const tray = document.createElement('div');
+    tray.className = 'dragdrop-tray';
+    if (cfg.template) {
+      const label = document.createElement('div');
+      label.className = 'dragdrop-template';
+      label.textContent = cfg.template;
+      area.appendChild(label);
+    }
+    const slots = document.createElement('div');
+    slots.className = 'dragdrop-slots';
+    cfg.answer.forEach((ans, i) => {
+      const slot = document.createElement('div');
+      slot.className = 'dropzone dropzone--slot';
+      slot.dataset.answer = ans;
+      slot.dataset.index = i;
+      slots.appendChild(slot);
+    });
+    words.forEach(w => {
+      const tile = document.createElement('div');
+      tile.className = 'drag-tile';
+      tile.textContent = w;
+      tray.appendChild(tile);
+      setupDraggable(tile, (t, zone) => {
+        if (!zone || zone.dataset.filled) { return; }
+        if (zone.dataset.answer === w) {
+          zone.textContent = w;
+          zone.dataset.filled = '1';
+          zone.classList.add('correct');
+          t.classList.add('placed');
+          t.style.visibility = 'hidden';
+          showToast(ENCOURAGEMENT[Math.floor(Math.random() * ENCOURAGEMENT.length)]);
+          finish(cfg.answer.length);
+        } else {
+          showToast(TRY_AGAIN[Math.floor(Math.random() * TRY_AGAIN.length)]);
+        }
+      });
+    });
+    area.appendChild(slots);
+    area.appendChild(tray);
+  } else {
+    const items = cfg.items;
+    const tray = document.createElement('div');
+    tray.className = 'dragdrop-tray';
+    const targets = document.createElement('div');
+    targets.className = 'dragdrop-targets';
+    shuffle(items).forEach(it => {
+      const zone = document.createElement('div');
+      zone.className = 'dropzone dropzone--target';
+      zone.dataset.id = it.id;
+      zone.innerHTML = `<div class="dropzone-visual">${itemVisualHTML(it.item || it)}</div><span>${it.label}</span>`;
+      targets.appendChild(zone);
+    });
+    shuffle(items).forEach(it => {
+      const tile = document.createElement('div');
+      tile.className = 'drag-tile';
+      tile.textContent = it.label;
+      tray.appendChild(tile);
+      setupDraggable(tile, (t, zone) => {
+        if (!zone || zone.dataset.filled) return;
+        if (zone.dataset.id === it.id) {
+          zone.classList.add('correct');
+          zone.dataset.filled = '1';
+          t.classList.add('placed');
+          t.style.visibility = 'hidden';
+          showToast(ENCOURAGEMENT[Math.floor(Math.random() * ENCOURAGEMENT.length)]);
+          speak(it.label);
+          finish(items.length);
+        } else {
+          showToast(TRY_AGAIN[Math.floor(Math.random() * TRY_AGAIN.length)]);
+        }
+      });
+    });
+    area.appendChild(targets);
+    area.appendChild(tray);
+  }
+
+  stage.appendChild(area);
+}
+
+// ---------- QUIZ ----------
+function renderChoiceActivity(stage, { title, promptHTML, options }, onCorrect) {
+  stage.innerHTML = `<h2 class="stage-heading">${title}</h2>`;
+  if (promptHTML) {
+    const p = document.createElement('div');
+    p.className = 'quiz-prompt';
+    p.innerHTML = promptHTML;
+    stage.appendChild(p);
+  }
+  const grid = document.createElement('div');
+  grid.className = 'quiz-options';
+  let answered = false;
+  let firstTry = true;
+  options.forEach(opt => {
+    const b = document.createElement('button');
+    b.className = 'quiz-option';
+    b.textContent = opt.label;
+    b.addEventListener('click', () => {
+      if (answered) return;
+      if (opt.correct) {
+        answered = true;
+        b.classList.add('correct');
+        showToast(ENCOURAGEMENT[Math.floor(Math.random() * ENCOURAGEMENT.length)]);
+        speak(opt.label);
+        setTimeout(() => stage.appendChild(continueButton()), 500);
+        if (onCorrect) onCorrect(firstTry);
+      } else {
+        firstTry = false;
+        b.classList.add('wrong');
+        showToast(TRY_AGAIN[Math.floor(Math.random() * TRY_AGAIN.length)]);
+        setTimeout(() => b.classList.remove('wrong'), 500);
+      }
+    });
+    grid.appendChild(b);
+  });
+  stage.appendChild(grid);
+}
+
+function renderStepQuiz(stage) {
+  const q = currentLesson.quiz;
+  renderChoiceActivity(stage, { title: 'Quiz Time!', promptHTML: `<p class="quiz-question">${q.question}</p>`, options: shuffle(q.options) },
+    firstTry => { lessonSession.quizCorrectFirstTry = firstTry; });
+  speak(q.question);
+}
+
+// ---------- CAPSTONE (varies per lesson) ----------
+function renderStepCapstone(stage) {
+  const c = currentLesson.capstone;
+  if (c.type === 'sentenceBuilder') {
+    stage.innerHTML = `<h2 class="stage-heading">${c.title}</h2><p class="quiz-prompt"><span class="quiz-question">Tap the words in the right order!</span></p>`;
+    const answerRow = document.createElement('div');
+    answerRow.className = 'sentence-answer';
+    const wordBank = document.createElement('div');
+    wordBank.className = 'sentence-bank';
+    const picked = [];
+    shuffle(c.words).forEach(w => {
+      const tile = document.createElement('button');
+      tile.className = 'drag-tile drag-tile--tap';
+      tile.textContent = w;
+      tile.addEventListener('click', () => {
+        if (tile.disabled) return;
+        tile.disabled = true;
+        tile.classList.add('placed');
+        picked.push(w);
+        const span = document.createElement('span');
+        span.className = 'sentence-answer-word';
+        span.textContent = w;
+        answerRow.appendChild(span);
+        if (picked.length === c.answer.length) {
+          const ok = picked.every((word, i) => word === c.answer[i]);
+          if (ok) {
+            showToast(ENCOURAGEMENT[Math.floor(Math.random() * ENCOURAGEMENT.length)]);
+            speak(c.answer.join(' '));
+            setTimeout(() => stage.appendChild(continueButton()), 500);
+          } else {
+            showToast(TRY_AGAIN[Math.floor(Math.random() * TRY_AGAIN.length)]);
+            setTimeout(() => { picked.length = 0; answerRow.innerHTML = ''; wordBank.querySelectorAll('button').forEach(b => { b.disabled = false; b.classList.remove('placed'); }); }, 900);
+          }
+        }
+      });
+      wordBank.appendChild(tile);
+    });
+    stage.appendChild(answerRow);
+    stage.appendChild(wordBank);
+    return;
+  }
+
+  if (c.type === 'countChoose') {
+    renderChoiceActivity(stage, {
+      title: c.title,
+      promptHTML: `<div class="count-row">${c.emoji.repeat(c.count)}</div><p class="quiz-question">How many?</p>`,
+      options: shuffle(c.options),
+    });
+    return;
+  }
+
+  // fillBlank, numberSequence, chooseOption all share the same "prompt + options" shape
+  renderChoiceActivity(stage, {
+    title: c.title,
+    promptHTML: `<p class="quiz-question">${c.prompt}</p>`,
+    options: shuffle(c.options),
+  });
+}
+
+// ---------- REWARD (also marks the lesson complete) ----------
 function renderStepReward(stage) {
   let starsEarned = 1;
-  if (lessonSession.game1Correct === currentLesson.vocabulary.length) starsEarned++;
-  if (lessonSession.listeningCorrect >= 1) starsEarned++;
+  if (lessonSession.matchingCorrect >= currentLesson.vocabulary.length) starsEarned++;
+  if (lessonSession.quizCorrectFirstTry || lessonSession.listeningCorrect >= 1) starsEarned++;
   starsEarned = Math.min(3, starsEarned);
 
   const firstLessonEver = state.completedLessons.length === 0;
@@ -543,6 +792,7 @@ function renderStepReward(stage) {
   stage.innerHTML = `
     <div class="reward-panel">
       <div class="buddy-guide"><img src="${ASSETS}characters/buddy/celebrating.png" alt="Buddy"></div>
+      <h2 class="stage-heading">Lesson Complete!</h2>
       <div class="reward-stars">
         ${[1, 2, 3].map(i => `<img src="${ASSETS}rewards/stars/${i <= starsEarned ? 'star-filled' : 'star-empty'}.png" class="reward-star">`).join('')}
       </div>
@@ -559,24 +809,11 @@ function renderStepReward(stage) {
     state.stars += starsEarned;
     state.gems += 5;
     if (firstLessonEver) state.badges.push('first-lesson');
+    if (!isLessonComplete(currentLesson.id)) state.completedLessons.push(currentLesson.id);
     saveState();
     lessonSession._applied = true;
   }
 
-  stage.appendChild(continueButton());
-}
-
-function renderStepComplete(stage) {
-  if (!isLessonComplete(currentLesson.id)) {
-    state.completedLessons.push(currentLesson.id);
-    saveState();
-  }
-  stage.innerHTML = `
-    <div class="stage-center">
-      <div class="buddy-guide"><img src="${ASSETS}characters/buddy/celebrating.png" alt="Buddy"></div>
-      <h2 class="stage-heading">Lesson Complete! 🎉</h2>
-      <p class="complete-note">${currentLesson.title} — done! Next up: Lesson 2 (coming soon).</p>
-    </div>`;
   const btn = document.createElement('button');
   btn.className = 'btn-image btn-continue-step';
   btn.innerHTML = `<img src="${ASSETS}ui/buttons/button-continue.png" alt="Back to world">`;

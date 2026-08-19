@@ -273,7 +273,8 @@ img { max-width: 100%; display: block; }
 }
 .vocab-card:hover { transform: translateY(-6px) scale(1.02); }
 .vocab-card.viewed { border-color: #6bd66b; }
-.vocab-img { width: 100%; border-radius: 20px; }
+.vocab-visual img { width: 100%; border-radius: 20px; display: block; }
+.vocab-visual { display: flex; align-items: center; justify-content: center; }
 .vocab-word {
   display: flex; align-items: center; justify-content: center; gap: 16px;
   font-weight: 400; font-size: clamp(36px, 4vw, 52px); color: var(--ink); margin-top: 16px;
@@ -341,6 +342,72 @@ img { max-width: 100%; display: block; }
 .reward-items { display: flex; gap: 48px; }
 .reward-item { display: flex; flex-direction: column; align-items: center; color: white; font-weight: 800; text-shadow: 0 2px 4px rgba(0,0,0,0.5); font-size: 26px; }
 .reward-item img { width: 140px; }
+
+/* generic content visuals — used wherever a vocabulary/match item has no
+   illustration yet (emoji / number-dots / plain word) */
+.emoji-visual { font-size: clamp(64px, 7vw, 96px); line-height: 1; display: block; }
+.emoji-visual--small { font-size: clamp(28px, 3vw, 40px); }
+.dots-visual { font-size: clamp(28px, 3vw, 40px); color: #e0562b; letter-spacing: 4px; display: block; }
+.word-visual { font-family: 'Luckiest Guy', 'Impact', 'Arial Black', sans-serif; font-size: clamp(28px, 3vw, 40px); color: var(--ink); display: block; }
+.listen-choice .emoji-visual, .listen-choice .dots-visual, .listen-choice .word-visual { padding: 20px 0; }
+.match-img .emoji-visual, .match-img .dots-visual { padding: 10px 0; }
+.memory-face-front .emoji-visual { font-size: clamp(40px, 4.5vw, 56px); }
+
+/* ---------- drag & drop ---------- */
+.dragdrop-area { display: flex; flex-direction: column; align-items: center; gap: 40px; width: 100%; }
+.dragdrop-template {
+  font-family: 'Luckiest Guy', 'Impact', 'Arial Black', sans-serif; color: #fff;
+  -webkit-text-stroke: 1.5px #0c1a3a; font-size: clamp(28px, 3.2vw, 40px); text-align: center;
+}
+.dragdrop-slots, .dragdrop-targets { display: flex; gap: 22px; flex-wrap: wrap; justify-content: center; }
+.dropzone {
+  display: flex; align-items: center; justify-content: center; flex-direction: column;
+  border: 5px dashed var(--wood); border-radius: 20px; background: rgba(255,248,236,0.75);
+  transition: background 0.15s ease, border-style 0.15s ease;
+}
+.dropzone--slot { width: 130px; height: 90px; font-family: 'Luckiest Guy', sans-serif; font-size: 30px; color: var(--ink); }
+.dropzone--target { width: 190px; height: 190px; padding: 12px; gap: 8px; font-family: 'Luckiest Guy', sans-serif; font-size: 22px; color: var(--ink); }
+.dropzone-visual img { width: 100px; border-radius: 12px; }
+.dropzone.correct { border-style: solid; border-color: #6bd66b; background: #c9f2c9; }
+.dragdrop-tray { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
+.drag-tile {
+  background: #ffd23f; border: 4px solid var(--wood); border-radius: 16px; padding: 16px 26px;
+  font-family: 'Luckiest Guy', 'Impact', 'Arial Black', sans-serif; font-size: 28px; color: var(--ink);
+  cursor: grab; user-select: none; box-shadow: 0 4px 8px rgba(0,0,0,0.25); touch-action: none;
+}
+.drag-tile.dragging { cursor: grabbing; box-shadow: 0 10px 18px rgba(0,0,0,0.4); }
+.drag-tile.placed { opacity: 0; }
+.drag-tile--tap { cursor: pointer; }
+.drag-tile--tap:disabled { cursor: default; }
+
+/* ---------- quiz / choice activities ---------- */
+.quiz-prompt { text-align: center; margin-bottom: 28px; }
+.quiz-question {
+  font-family: 'Luckiest Guy', 'Impact', 'Arial Black', sans-serif; color: #fff;
+  -webkit-text-stroke: 1.5px #0c1a3a; font-size: clamp(26px, 3vw, 38px); margin: 6px 0;
+}
+.count-row { font-size: clamp(48px, 6vw, 72px); letter-spacing: 8px; margin-bottom: 10px; }
+.quiz-options { display: flex; gap: 24px; flex-wrap: wrap; justify-content: center; }
+.quiz-option {
+  border: 5px solid var(--wood); background: var(--cream); border-radius: 20px; cursor: pointer;
+  padding: 22px 36px; font-family: 'Luckiest Guy', 'Impact', 'Arial Black', sans-serif;
+  font-size: clamp(24px, 2.6vw, 34px); color: var(--ink); transition: transform 0.1s ease;
+}
+.quiz-option:hover { transform: translateY(-3px); }
+.quiz-option.correct { background: #c9f2c9; border-color: #6bd66b; }
+.quiz-option.wrong { background: #f7c9c9; border-color: #e26060; }
+
+/* ---------- sentence builder ---------- */
+.sentence-answer {
+  min-height: 80px; width: min(70vw, 700px); border: 5px dashed var(--wood); border-radius: 20px;
+  background: rgba(255,248,236,0.75); display: flex; align-items: center; justify-content: center;
+  flex-wrap: wrap; gap: 12px; padding: 14px; margin-bottom: 30px;
+}
+.sentence-answer-word {
+  font-family: 'Luckiest Guy', 'Impact', 'Arial Black', sans-serif; font-size: 30px; color: var(--ink);
+  background: #ffd23f; border: 3px solid var(--wood); border-radius: 12px; padding: 8px 16px;
+}
+.sentence-bank { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
 
 /* toast */
 .toast {
