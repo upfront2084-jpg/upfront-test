@@ -330,12 +330,20 @@ function maybeEnableVocabContinue() {
 
 function renderStepMatching(stage) {
   stage.innerHTML = `<h2 class="stage-heading">Match the word to the picture!</h2>`;
-  // pairs: [{key, left:{text}, right:{visualHTML}}]
-  const pairs = (currentLesson.matchPairs || currentLesson.vocabulary.map(v => ({ left: { text: v.word }, right: v }))).map((p, i) => ({
-    key: p.key || p.left.text || i,
-    leftLabel: p.left.text || p.left.word,
-    rightHTML: p.right.text ? `<span class="word-visual">${p.right.text}</span>` : itemVisualHTML(p.right),
-  }));
+  // pairs: [{key, left:{text}, right:{visualHTML}}] — whichever side actually
+  // carries a word (text/word) becomes the word button; the other side
+  // (img/emoji/number) becomes the picture, regardless of which side it's
+  // on in the source data (matchPairs sometimes puts the picture on the left).
+  const pairs = (currentLesson.matchPairs || currentLesson.vocabulary.map(v => ({ left: { text: v.word }, right: v }))).map((p, i) => {
+    const leftIsWord = p.left.text || p.left.word;
+    const wordSide = leftIsWord ? p.left : p.right;
+    const visualSide = leftIsWord ? p.right : p.left;
+    return {
+      key: p.key || wordSide.text || wordSide.word || i,
+      leftLabel: wordSide.text || wordSide.word,
+      rightHTML: visualSide.text ? `<span class="word-visual">${visualSide.text}</span>` : itemVisualHTML(visualSide),
+    };
+  });
 
   const lefts = shuffle(pairs);
   const rights = shuffle(pairs);
@@ -343,15 +351,17 @@ function renderStepMatching(stage) {
   layout.className = 'match-layout';
   const tier = pairs.length <= 3 ? 'lg' : pairs.length === 4 ? 'md' : 'sm';
   layout.classList.add('match-tier-' + tier);
-  const wordsCol = document.createElement('div');
-  wordsCol.className = 'match-col';
-  const imgsCol = document.createElement('div');
-  imgsCol.className = 'match-col';
 
   let selectedKey = null;
   const matched = new Set();
 
-  lefts.forEach(item => {
+  // word and picture cells are placed word[i], image[i] into a 2-column CSS
+  // grid (not because they're the correct pair — lefts/rights are shuffled
+  // independently, matching still has to be figured out) so each row
+  // stretches to the taller cell, keeping the word button and its row's
+  // picture the same height instead of a tiny pill next to a tall photo.
+  for (let i = 0; i < pairs.length; i++) {
+    const item = lefts[i];
     const b = document.createElement('button');
     b.className = 'match-word';
     b.textContent = item.leftLabel;
@@ -361,26 +371,25 @@ function renderStepMatching(stage) {
       b.classList.add('selected');
       selectedKey = item.key;
     });
-    wordsCol.appendChild(b);
-  });
+    layout.appendChild(b);
 
-  rights.forEach(item => {
-    const b = document.createElement('button');
-    b.className = 'match-img';
-    b.innerHTML = item.rightHTML;
-    b.addEventListener('click', () => {
-      if (matched.has(item.key) || !selectedKey) return;
-      if (selectedKey === item.key) {
-        matched.add(item.key);
+    const imgItem = rights[i];
+    const ib = document.createElement('button');
+    ib.className = 'match-img';
+    ib.innerHTML = imgItem.rightHTML;
+    ib.addEventListener('click', () => {
+      if (matched.has(imgItem.key) || !selectedKey) return;
+      if (selectedKey === imgItem.key) {
+        matched.add(imgItem.key);
         lessonSession.matchingCorrect++;
-        b.classList.add('correct');
+        ib.classList.add('correct');
         layout.querySelector('.match-word.selected')?.classList.add('correct');
         showToast(ENCOURAGEMENT[Math.floor(Math.random() * ENCOURAGEMENT.length)]);
-        speak(item.leftLabel);
+        speak(imgItem.leftLabel);
       } else {
-        b.classList.add('wrong');
+        ib.classList.add('wrong');
         showToast(TRY_AGAIN[Math.floor(Math.random() * TRY_AGAIN.length)]);
-        setTimeout(() => b.classList.remove('wrong'), 500);
+        setTimeout(() => ib.classList.remove('wrong'), 500);
       }
       selectedKey = null;
       layout.querySelectorAll('.match-word').forEach(el => el.classList.remove('selected'));
@@ -388,11 +397,8 @@ function renderStepMatching(stage) {
         setTimeout(() => stage.appendChild(continueButton()), 400);
       }
     });
-    imgsCol.appendChild(b);
-  });
-
-  layout.appendChild(wordsCol);
-  layout.appendChild(imgsCol);
+    layout.appendChild(ib);
+  }
   stage.appendChild(layout);
 }
 

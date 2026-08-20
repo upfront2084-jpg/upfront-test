@@ -263,10 +263,10 @@ img { max-width: 100%; display: block; }
 .stage-center { display: flex; flex-direction: column; align-items: center; gap: 10px; }
 /* sits inside the illustrated plaque baked into the panel art at the top of .lesson-stage */
 .stage-heading {
-  position: absolute; top: 2.5%; left: 19%; width: 60%; height: 17%;
+  position: absolute; top: 2.5%; left: 16%; width: 68%; height: 17%;
   display: flex; align-items: center; justify-content: center; text-align: center;
   margin: 0; padding: 0 1%; line-height: 1.02; z-index: 2;
-  font-size: clamp(24px, 2.85vw, 39px);
+  font-size: clamp(18px, 2.15vw, 29px);
   background: linear-gradient(180deg, #ffffff 0%, #fff6e2 55%, #ffe3a0 100%);
   -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
 }
@@ -295,22 +295,25 @@ img { max-width: 100%; display: block; }
 }
 .icon-inline { width: 42px; height: 42px; }
 
-/* matching — words and pictures always stack in two parallel vertical columns
-   (never side-by-side rows) so each word lines up with its picture, making
-   it obvious which one to connect. Sized by pair count via .match-tier-*. */
-.match-layout { display: flex; gap: 40px; width: 100%; justify-content: center; }
-.match-col { display: flex; flex-direction: column; align-items: center; gap: var(--match-gap, 18px); }
+/* matching — a 2-column grid (word, picture) x pairs.length rows. Grid rows
+   default to align-items:stretch, so the word button in each row always
+   fills the same height as its row's picture card instead of sitting as a
+   tiny pill next to a tall photo. Sized by pair count via .match-tier-*. */
+.match-layout {
+  display: grid; grid-template-columns: repeat(2, var(--match-img-w, 225px));
+  row-gap: var(--match-gap, 14px); column-gap: 40px; justify-content: center;
+}
 .match-word, .match-img {
   border: var(--match-border, 7px) solid var(--wood); background: var(--cream); border-radius: 22px; cursor: pointer;
-  padding: var(--match-pad, 18px 30px);
   font-weight: 400; font-size: var(--match-font, clamp(26px, 2.6vw, 36px)); color: var(--ink);
-  width: var(--match-img-w, 260px); text-align: center; box-sizing: border-box;
+  box-sizing: border-box;
 }
-.match-img { padding: var(--match-img-pad, 10px); width: var(--match-img-w, 260px); }
-.match-img img { border-radius: 14px; }
-.match-tier-lg { --match-gap: 14px; --match-border: 7px; --match-pad: 13px 28px; --match-font: clamp(26px, 2.6vw, 36px); --match-img-w: 260px; --match-img-pad: 10px; }
-.match-tier-md { --match-gap: 14px; --match-border: 6px; --match-pad: 12px 22px; --match-font: clamp(20px, 2vw, 28px); --match-img-w: 210px; --match-img-pad: 8px; }
-.match-tier-sm { --match-gap: 10px; --match-border: 5px; --match-pad: 8px 16px; --match-font: clamp(16px, 1.6vw, 21px); --match-img-w: 155px; --match-img-pad: 6px; }
+.match-word { display: flex; align-items: center; justify-content: center; text-align: center; padding: var(--match-pad, 10px 20px); }
+.match-img { padding: var(--match-img-pad, 10px); }
+.match-img img { border-radius: 14px; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; display: block; }
+.match-tier-lg { --match-gap: 16px; --match-border: 7px; --match-pad: 10px 20px; --match-font: clamp(24px, 2.4vw, 33px); --match-img-w: 225px; --match-img-pad: 9px; }
+.match-tier-md { --match-gap: 14px; --match-border: 6px; --match-pad: 8px 16px; --match-font: clamp(18px, 1.8vw, 25px); --match-img-w: 185px; --match-img-pad: 7px; }
+.match-tier-sm { --match-gap: 10px; --match-border: 5px; --match-pad: 6px 12px; --match-font: clamp(14px, 1.4vw, 19px); --match-img-w: 140px; --match-img-pad: 5px; }
 .match-word.selected { background: #ffe9a8; }
 .match-word.correct, .match-img.correct { background: #c9f2c9; border-color: #6bd66b; }
 .match-img.wrong { background: #f7c9c9; border-color: #e26060; }
