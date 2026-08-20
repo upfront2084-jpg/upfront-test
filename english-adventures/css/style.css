@@ -254,7 +254,7 @@ img { max-width: 100%; display: block; }
   position: absolute; inset: 15% 2.5% 1.5%;
   display: flex; flex-direction: column; align-items: center; overflow-y: auto;
   background-repeat: no-repeat; background-position: center; background-size: 100% 100%;
-  padding: 15vh 8% 5vh;
+  padding: 16.5vh 8% 5vh;
 }
 .lesson-stage.bg-notebook { background-image: url('../../assets/ui/panels/panel-notebook.png'); }
 .lesson-stage.bg-wood { background-image: url('../../assets/ui/panels/panel-wood.png'); }
@@ -263,10 +263,10 @@ img { max-width: 100%; display: block; }
 .stage-center { display: flex; flex-direction: column; align-items: center; gap: 10px; }
 /* sits inside the illustrated plaque baked into the panel art at the top of .lesson-stage */
 .stage-heading {
-  position: absolute; top: 3%; left: 21%; width: 56%; height: 15%;
+  position: absolute; top: 2.5%; left: 19%; width: 60%; height: 17%;
   display: flex; align-items: center; justify-content: center; text-align: center;
-  margin: 0; padding: 0 1%; line-height: 1.05; z-index: 2;
-  font-size: clamp(16px, 1.9vw, 26px);
+  margin: 0; padding: 0 1%; line-height: 1.02; z-index: 2;
+  font-size: clamp(24px, 2.85vw, 39px);
   background: linear-gradient(180deg, #ffffff 0%, #fff6e2 55%, #ffe3a0 100%);
   -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
 }
@@ -298,16 +298,17 @@ img { max-width: 100%; display: block; }
 /* matching — words and pictures always stack in two parallel vertical columns
    (never side-by-side rows) so each word lines up with its picture, making
    it obvious which one to connect. Sized by pair count via .match-tier-*. */
-.match-layout { display: flex; gap: 40px; justify-content: center; }
-.match-col { display: flex; flex-direction: column; gap: var(--match-gap, 18px); }
+.match-layout { display: flex; gap: 40px; width: 100%; justify-content: center; }
+.match-col { display: flex; flex-direction: column; align-items: center; gap: var(--match-gap, 18px); }
 .match-word, .match-img {
   border: var(--match-border, 7px) solid var(--wood); background: var(--cream); border-radius: 22px; cursor: pointer;
   padding: var(--match-pad, 18px 30px);
   font-weight: 400; font-size: var(--match-font, clamp(26px, 2.6vw, 36px)); color: var(--ink);
+  width: var(--match-img-w, 260px); text-align: center; box-sizing: border-box;
 }
 .match-img { padding: var(--match-img-pad, 10px); width: var(--match-img-w, 260px); }
 .match-img img { border-radius: 14px; }
-.match-tier-lg { --match-gap: 18px; --match-border: 7px; --match-pad: 18px 30px; --match-font: clamp(26px, 2.6vw, 36px); --match-img-w: 260px; --match-img-pad: 10px; }
+.match-tier-lg { --match-gap: 14px; --match-border: 7px; --match-pad: 13px 28px; --match-font: clamp(26px, 2.6vw, 36px); --match-img-w: 260px; --match-img-pad: 10px; }
 .match-tier-md { --match-gap: 14px; --match-border: 6px; --match-pad: 12px 22px; --match-font: clamp(20px, 2vw, 28px); --match-img-w: 210px; --match-img-pad: 8px; }
 .match-tier-sm { --match-gap: 10px; --match-border: 5px; --match-pad: 8px 16px; --match-font: clamp(16px, 1.6vw, 21px); --match-img-w: 155px; --match-img-pad: 6px; }
 .match-word.selected { background: #ffe9a8; }
