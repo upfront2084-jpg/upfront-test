@@ -536,9 +536,24 @@ function renderStepMemory(stage) {
   const grid = document.createElement('div');
   grid.className = 'memory-grid';
   const cols = Math.min(5, Math.max(3, Math.ceil(cards.length / 2)));
-  const cardSize = { 3: 245, 4: 200, 5: 165 }[cols];
+  const rows = Math.ceil(cards.length / cols);
+  const gap = 22;
+  // A flat {3:245, 4:200, 5:165} px lookup keyed only on column count fit
+  // fine at the one viewport this used to be tuned against, but stayed
+  // that size regardless of how much room a short/narrow viewport
+  // actually had -- e.g. 2 rows of a 245px card is 512px tall, which
+  // doesn't fit a 1366x768 laptop window's stage. Measure the stage's
+  // real content box at render time instead, and size cards to what
+  // actually fits both dimensions.
+  const stageStyle = getComputedStyle(stage);
+  const availH = stage.clientHeight - parseFloat(stageStyle.paddingTop) - parseFloat(stageStyle.paddingBottom);
+  const availW = stage.clientWidth - parseFloat(stageStyle.paddingLeft) - parseFloat(stageStyle.paddingRight);
+  const sizeByHeight = (availH - (rows - 1) * gap) / rows;
+  const sizeByWidth = (availW - (cols - 1) * gap) / cols;
+  const tierMax = { 3: 245, 4: 200, 5: 165 }[cols];
+  const cardSize = Math.max(80, Math.min(sizeByHeight, sizeByWidth, tierMax));
   grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
-  grid.style.maxWidth = `${cols * cardSize + (cols - 1) * 22}px`;
+  grid.style.maxWidth = `${cols * cardSize + (cols - 1) * gap}px`;
   grid.style.setProperty('--memory-card-size', `${cardSize}px`);
   let first = null, lock = false, matchedCount = 0;
 

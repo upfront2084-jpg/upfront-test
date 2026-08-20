@@ -116,7 +116,7 @@ img { max-width: 100%; display: block; }
 }
 .btn-back img { width: 100%; }
 
-.btn-continue-step { width: min(30vw, 380px); margin: 30px auto 0; display: block; }
+.btn-continue-step { width: min(30vw, 380px); margin: clamp(10px, 2.5vh, 30px) auto 0; display: block; }
 
 /* ---------- nav bar (home) ---------- */
 .nav-bar {
@@ -148,6 +148,11 @@ img { max-width: 100%; display: block; }
   animation: buddy-bounce 2.4s ease-in-out infinite;
 }
 .buddy-guide--small { width: min(38vw, 480px); bottom: 2%; }
+/* On the lesson stage the available box can be short as well as narrow (a
+   1366x768 laptop window has far less height than a 1536x1024 one) — cap
+   Buddy's size against vh too so he shrinks on short viewports instead of
+   staying pinned to a viewport-width-only size that pokes past the panel. */
+.lesson-stage .buddy-guide { width: min(54vw, 46vh, 680px); }
 @keyframes buddy-bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 
 .dialog-bubble {
@@ -157,7 +162,15 @@ img { max-width: 100%; display: block; }
   width: min(55vw, 720px);
   z-index: 6;
 }
-.dialog-bubble--stage { position: relative; left: auto; right: auto; bottom: auto; width: min(52vw, 600px); margin: 12px auto 0; }
+.dialog-bubble--stage { position: relative; left: auto; right: auto; bottom: auto; width: min(52vw, 44vh, 600px); margin: clamp(6px, 1.4vh, 12px) auto 0; }
+/* .dialog-title/.dialog-body size off vw alone, which tracked the bubble
+   while its width was only vw-bound. Now that the stage bubble can also
+   shrink to a vh limit (above) on a short viewport, the text needs a
+   matching vh term or it stays full-size in a bubble that shrank out from
+   under it. Scoped to the stage variant so the Home/World dialogs (whose
+   bubble is never vh-capped) keep their original sizing. */
+.dialog-bubble--stage .dialog-title { font-size: clamp(24px, min(5.3vw, 4.5vh), 68px); }
+.dialog-bubble--stage .dialog-body { font-size: clamp(15px, min(3vw, 2.5vh), 38px); }
 .dialog-bg { width: 100%; display: block; }
 .dialog-text {
   position: absolute;
@@ -272,10 +285,20 @@ img { max-width: 100%; display: block; }
 }
 .complete-note { font-size: clamp(18px,2vw,26px); }
 
-/* vocabulary */
+/* vocabulary — a min column width of a flat 280px forced 3-card rows to
+   wrap into 2 columns (leaving a lone tall 3rd card) on any viewport
+   narrower than ~950px, which on a *short* viewport (a 1366x768 laptop
+   window, not just a phone) blew well past the panel's available height.
+   190px is roughly the narrowest a card can go before its own word (e.g.
+   "Three") no longer fits at the word's minimum font size, so this floor
+   keeps every lesson's 3-5 words on one row on every landscape viewport
+   tested; it only wraps on genuinely narrow (portrait-tablet) widths,
+   where the stage has plenty of spare height for a second row. The image
+   max-height keeps a lone wrapped card's picture from growing tall
+   enough to overflow a short viewport on its own. */
 .vocab-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(190px, 24vw), 1fr));
   gap: 24px;
   width: 100%;
   max-width: 1100px;
@@ -283,11 +306,11 @@ img { max-width: 100%; display: block; }
 }
 .vocab-card {
   width: 100%; background: var(--cream); border: 7px solid var(--wood); border-radius: 30px;
-  padding: 18px; cursor: pointer; transition: transform 0.15s ease;
+  padding: clamp(8px, 1.6vh, 18px); cursor: pointer; transition: transform 0.15s ease;
 }
 .vocab-card:hover { transform: translateY(-6px) scale(1.02); }
 .vocab-card.viewed { border-color: #6bd66b; }
-.vocab-visual img { width: 100%; border-radius: 20px; display: block; }
+.vocab-visual img { width: auto; max-width: 100%; max-height: 24vh; border-radius: 20px; display: block; }
 .vocab-visual { display: flex; align-items: center; justify-content: center; }
 .vocab-word {
   display: flex; align-items: center; justify-content: center; gap: 14px;
@@ -311,19 +334,28 @@ img { max-width: 100%; display: block; }
 .match-word { display: flex; align-items: center; justify-content: center; text-align: center; padding: var(--match-pad, 10px 20px); }
 .match-img { padding: var(--match-img-pad, 10px); }
 .match-img img { border-radius: 14px; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; display: block; }
-.match-tier-lg { --match-gap: 16px; --match-border: 7px; --match-pad: 10px 20px; --match-font: clamp(24px, 2.4vw, 33px); --match-img-w: 225px; --match-img-pad: 9px; }
-.match-tier-md { --match-gap: 14px; --match-border: 6px; --match-pad: 8px 16px; --match-font: clamp(18px, 1.8vw, 25px); --match-img-w: 185px; --match-img-pad: 7px; }
-.match-tier-sm { --match-gap: 10px; --match-border: 5px; --match-pad: 6px 12px; --match-font: clamp(14px, 1.4vw, 19px); --match-img-w: 140px; --match-img-pad: 5px; }
+/* Each tier's --match-img-w drives the row height (image aspect-ratio is
+   4/3), and rows stack pairs.length deep -- so a flat px width that only
+   varies by pair count still overflowed on any viewport short on height
+   (e.g. a 1366x768 laptop window), since it never shrank there. The vh
+   term in each clamp() lets the grid shrink with available height too;
+   the px ceiling keeps the tall-viewport look unchanged. */
+.match-tier-lg { --match-gap: clamp(6px, 2vh, 16px); --match-border: clamp(3px, 0.7vh, 7px); --match-pad: clamp(5px, 1vh, 10px) clamp(10px, 1.6vw, 20px); --match-font: clamp(20px, 2.4vw, 33px); --match-img-w: clamp(90px, 15vh, 225px); --match-img-pad: clamp(4px, 0.8vh, 9px); }
+.match-tier-md { --match-gap: clamp(5px, 1.6vh, 14px); --match-border: clamp(3px, 0.6vh, 6px); --match-pad: clamp(4px, 0.8vh, 8px) clamp(8px, 1.3vw, 16px); --match-font: clamp(15px, 1.8vw, 25px); --match-img-w: clamp(75px, 11.5vh, 185px); --match-img-pad: clamp(3px, 0.6vh, 7px); }
+.match-tier-sm { --match-gap: clamp(4px, 1.2vh, 10px); --match-border: clamp(2px, 0.5vh, 5px); --match-pad: clamp(3px, 0.6vh, 6px) clamp(6px, 1vw, 12px); --match-font: clamp(12px, 1.4vw, 19px); --match-img-w: clamp(65px, 9vh, 140px); --match-img-pad: clamp(2px, 0.5vh, 5px); }
 .match-word.selected { background: #ffe9a8; }
 .match-word.correct, .match-img.correct { background: #c9f2c9; border-color: #6bd66b; }
 .match-img.wrong { background: #f7c9c9; border-color: #e26060; }
 
-/* listening */
-.listen-round { display: flex; flex-direction: column; align-items: center; gap: 20px; }
-.btn-listen { width: 150px; }
+/* listening — a flat 280px choice width forced 5-item lessons to wrap
+   into extra rows on any narrower-or-shorter viewport, and since none of
+   the sizing here scaled with vh, the stacked play-button + choice rows
+   overflowed a short viewport even when the width had plenty of room. */
+.listen-round { display: flex; flex-direction: column; align-items: center; gap: clamp(8px, 2vh, 20px); }
+.btn-listen { width: clamp(70px, 10vh, 150px); }
 .btn-listen.small { width: 90px; }
-.listen-choices { display: flex; gap: 24px; flex-wrap: wrap; justify-content: center; }
-.listen-choice { border: 7px solid var(--wood); background: var(--cream); border-radius: 24px; padding: 12px; width: 280px; cursor: pointer; }
+.listen-choices { display: flex; gap: clamp(10px, 2vh, 24px); flex-wrap: wrap; justify-content: center; }
+.listen-choice { border: clamp(3px, 0.7vh, 7px) solid var(--wood); background: var(--cream); border-radius: 24px; padding: clamp(6px, 1.2vh, 12px); width: clamp(120px, min(22vw, 24vh), 280px); cursor: pointer; }
 .listen-choice img { border-radius: 16px; }
 .listen-choice.correct { border-color: #6bd66b; background: #c9f2c9; }
 .listen-choice.wrong { border-color: #e26060; background: #f7c9c9; }
@@ -383,35 +415,40 @@ img { max-width: 100%; display: block; }
 .reward-item img { width: 100px; }
 
 /* generic content visuals — used wherever a vocabulary/match item has no
-   illustration yet (emoji / number-dots / plain word) — doubled again */
-.emoji-visual { font-size: clamp(96px, 10vw, 144px); line-height: 1; display: block; }
-.emoji-visual--small { font-size: clamp(42px, 4.5vw, 60px); }
-.dots-visual { font-size: clamp(42px, 4.5vw, 60px); color: #e0562b; letter-spacing: 6px; display: block; }
-.word-visual { font-family: 'Luckiest Guy', 'Impact', 'Arial Black', sans-serif; font-size: clamp(42px, 4.5vw, 60px); color: var(--ink); display: block; }
-.listen-choice .emoji-visual, .listen-choice .dots-visual, .listen-choice .word-visual { padding: 26px 0; }
-.match-img .emoji-visual, .match-img .dots-visual { padding: 14px 0; }
-.memory-face-front .emoji-visual { font-size: clamp(56px, 6vw, 76px); }
+   illustration yet (emoji / number-dots / plain word) — doubled again.
+   These were vw-only, so a wide-but-short window never shrank them. */
+.emoji-visual { font-size: clamp(48px, min(10vw, 14vh), 144px); line-height: 1; display: block; }
+.emoji-visual--small { font-size: clamp(28px, min(4.5vw, 6vh), 60px); }
+.dots-visual { font-size: clamp(28px, min(4.5vw, 6vh), 60px); color: #e0562b; letter-spacing: 6px; display: block; }
+.word-visual { font-family: 'Luckiest Guy', 'Impact', 'Arial Black', sans-serif; font-size: clamp(28px, min(4.5vw, 6vh), 60px); color: var(--ink); display: block; }
+.listen-choice .emoji-visual, .listen-choice .dots-visual, .listen-choice .word-visual { padding: clamp(6px, 2vh, 26px) 0; }
+.match-img .emoji-visual, .match-img .dots-visual { padding: clamp(3px, 1vh, 14px) 0; }
+.memory-face-front .emoji-visual { font-size: clamp(30px, min(6vw, 7vh), 76px); }
 
-/* ---------- drag & drop — doubled again ---------- */
-.dragdrop-area { display: flex; flex-direction: column; align-items: center; gap: 50px; width: 100%; }
+/* ---------- drag & drop — doubled again. These were the worst offenders:
+   .dropzone--slot/--target were flat pixel boxes with zero relationship
+   to the viewport, so on a short/narrow window (a 1366x768 laptop, an
+   iPad in landscape) the same fixed 320x320px target tiles that fit fine
+   at 1536x1024 blew past the panel by hundreds of pixels. ---------- */
+.dragdrop-area { display: flex; flex-direction: column; align-items: center; gap: clamp(14px, 4vh, 50px); width: 100%; }
 .dragdrop-template {
   font-family: 'Luckiest Guy', 'Impact', 'Arial Black', sans-serif; color: #fff;
-  -webkit-text-stroke: 2px #0c1a3a; font-size: clamp(38px, 4.2vw, 54px); text-align: center;
+  -webkit-text-stroke: 2px #0c1a3a; font-size: clamp(24px, min(4.2vw, 5.5vh), 54px); text-align: center;
 }
-.dragdrop-slots, .dragdrop-targets { display: flex; gap: 30px; flex-wrap: wrap; justify-content: center; }
+.dragdrop-slots, .dragdrop-targets { display: flex; gap: clamp(10px, 2.4vh, 30px); flex-wrap: wrap; justify-content: center; }
 .dropzone {
   display: flex; align-items: center; justify-content: center; flex-direction: column;
   border: 7px dashed var(--wood); border-radius: 26px; background: rgba(255,248,236,0.75);
   transition: background 0.15s ease, border-style 0.15s ease;
 }
-.dropzone--slot { width: 220px; height: 150px; font-family: 'Luckiest Guy', sans-serif; font-size: 46px; color: var(--ink); }
-.dropzone--target { width: 320px; height: 320px; padding: 18px; gap: 12px; font-family: 'Luckiest Guy', sans-serif; font-size: 32px; color: var(--ink); }
-.dropzone-visual img { width: 170px; border-radius: 18px; }
+.dropzone--slot { width: clamp(90px, min(16vw, 15vh), 220px); height: clamp(62px, min(11vw, 10vh), 150px); font-family: 'Luckiest Guy', sans-serif; font-size: clamp(20px, min(4vw, 4vh), 46px); color: var(--ink); }
+.dropzone--target { width: clamp(110px, min(22vw, 20vh), 320px); height: clamp(110px, min(22vw, 20vh), 320px); padding: clamp(8px, 1.6vh, 18px); gap: clamp(6px, 1.2vh, 12px); font-family: 'Luckiest Guy', sans-serif; font-size: clamp(16px, min(2.8vw, 3.2vh), 32px); color: var(--ink); }
+.dropzone-visual img { width: clamp(50px, min(9vw, 9vh), 170px); border-radius: 18px; }
 .dropzone.correct { border-style: solid; border-color: #6bd66b; background: #c9f2c9; }
-.dragdrop-tray { display: flex; gap: 28px; flex-wrap: wrap; justify-content: center; }
+.dragdrop-tray { display: flex; gap: clamp(10px, 2.4vh, 28px); flex-wrap: wrap; justify-content: center; }
 .drag-tile {
-  background: #ffd23f; border: 6px solid var(--wood); border-radius: 22px; padding: 24px 38px;
-  font-family: 'Luckiest Guy', 'Impact', 'Arial Black', sans-serif; font-size: 42px; color: var(--ink);
+  background: #ffd23f; border: 6px solid var(--wood); border-radius: 22px; padding: clamp(8px, 1.8vh, 24px) clamp(14px, 3vw, 38px);
+  font-family: 'Luckiest Guy', 'Impact', 'Arial Black', sans-serif; font-size: clamp(18px, min(3.2vw, 4vh), 42px); color: var(--ink);
   cursor: grab; user-select: none; box-shadow: 0 4px 8px rgba(0,0,0,0.25); touch-action: none;
 }
 .drag-tile.dragging { cursor: grabbing; box-shadow: 0 10px 18px rgba(0,0,0,0.4); }
