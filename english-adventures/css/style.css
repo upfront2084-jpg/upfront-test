@@ -263,16 +263,64 @@ img { max-width: 100%; display: block; }
 .dot.active { background: #ffd23f; box-shadow: 0 0 0 4px rgba(255,210,63,0.4); }
 .dot.done { background: #6bd66b; }
 
-.lesson-stage {
+/* The panel art (notebook/wood/listen/reward) is a ~1.5-1.66:1 landscape
+   illustration. .lesson-stage used to be positioned AND sized by `inset`
+   alone with `background-size: 100% 100%`, which stretched that art to
+   whatever box shape the inset happened to produce -- on a narrow/tall
+   viewport (portrait tablet) the box was much taller and narrower than the
+   art's native proportions, so the flag/globe/pencil/wood-border artwork
+   rendered visibly warped. Fix: split the old single element into an OUTER
+   box that does the `inset` positioning (defining the max available area)
+   and an INNER box (still `#lesson-stage`, still the element app.js mounts
+   content into and toggles bg-* on) that is aspect-ratio-locked to the
+   active panel's real pixel dimensions and centered via flexbox, so the
+   browser sizes it as large as possible within the outer box without ever
+   distorting it -- exactly like `object-fit: contain` for a non-replaced
+   element. Because border-box sizing is global (see `* { box-sizing:
+   border-box }` above), the inner box's own padding/border never grow it
+   past the aspect-ratio-computed size.
+   All the existing percentage-based positioning inside the box (the
+   plaque heading's top/left/width/height, in .stage-heading below) was
+   tuned against the box's true rendered bounds -- since top/height % for
+   an absolutely-positioned descendant resolve against the CONTAINING
+   BLOCK's actual height, that math keeps working unchanged now that the
+   box truly is the artwork's bounds again (verified across the full
+   viewport matrix below). */
+.lesson-stage-outer {
   position: absolute; inset: 15% 2.5% 1.5%;
+  display: flex; align-items: center; justify-content: center;
+}
+.lesson-stage {
+  position: relative;
+  width: 100%; height: 100%; max-width: 100%; max-height: 100%;
   display: flex; flex-direction: column; align-items: center; overflow-y: auto;
   background-repeat: no-repeat; background-position: center; background-size: 100% 100%;
-  padding: 16.5vh 8% 5vh;
+  /* padding-top needs to clear the plaque (.stage-heading sits at
+     top:2.5%, height:17% of THIS box -> its bottom edge is at 19.5% of
+     the box's own height). CSS padding percentages resolve against the
+     containing block's WIDTH on every side (a long-standing CSS quirk,
+     including for padding-top/bottom) -- so a plain "20%" here would
+     track the wrong axis. `vh` was previously used to sidestep that, and
+     worked only because the old stretched box's height always equalled a
+     fixed 83.5% of the viewport height. Now that the box is aspect-ratio
+     letterboxed and can be *width*-constrained (portrait/narrow
+     viewports), its real height can be far less than 83.5vh, so a raw vh
+     value would once again stop tracking the box's true height -- under-
+     padding on some shapes, wildly over-padding on others. Container
+     query units (`cqh`) are exactly "% of this element's own rendered
+     height" regardless of the padding-percentage quirk, so they track the
+     box's real height in every case, letterboxed or not. Needs
+     `container-type: size` below, which is safe here specifically because
+     border-box sizing + the explicit aspect-ratio/max-width/max-height
+     already give this box a definite size that doesn't depend on its own
+     content, so sizing its padding off cqh creates no circularity. */
+  container-type: size;
+  padding: 19.8cqh 8% 5cqh;
 }
-.lesson-stage.bg-notebook { background-image: url('../../assets/ui/panels/panel-notebook.png'); }
-.lesson-stage.bg-wood { background-image: url('../../assets/ui/panels/panel-wood.png'); }
-.lesson-stage.bg-listen { background-image: url('../../assets/ui/panels/panel-listen.png'); }
-.lesson-stage.bg-reward { background-image: url('../../assets/ui/panels/panel-reward.png'); }
+.lesson-stage.bg-notebook { background-image: url('../../assets/ui/panels/panel-notebook.png'); aspect-ratio: 753 / 453; }
+.lesson-stage.bg-wood { background-image: url('../../assets/ui/panels/panel-wood.png'); aspect-ratio: 763 / 507; }
+.lesson-stage.bg-listen { background-image: url('../../assets/ui/panels/panel-listen.png'); aspect-ratio: 755 / 475; }
+.lesson-stage.bg-reward { background-image: url('../../assets/ui/panels/panel-reward.png'); aspect-ratio: 760 / 471; }
 .stage-center { display: flex; flex-direction: column; align-items: center; gap: 10px; }
 /* sits inside the illustrated plaque baked into the panel art at the top of .lesson-stage */
 .stage-heading {
@@ -306,15 +354,15 @@ img { max-width: 100%; display: block; }
 }
 .vocab-card {
   width: 100%; background: var(--cream); border: 7px solid var(--wood); border-radius: 30px;
-  padding: clamp(8px, 1.6vh, 18px); cursor: pointer; transition: transform 0.15s ease;
+  padding: clamp(8px, 1.3vh, 14px); cursor: pointer; transition: transform 0.15s ease;
 }
 .vocab-card:hover { transform: translateY(-6px) scale(1.02); }
 .vocab-card.viewed { border-color: #6bd66b; }
-.vocab-visual img { width: auto; max-width: 100%; max-height: 24vh; border-radius: 20px; display: block; }
+.vocab-visual img { width: auto; max-width: 100%; max-height: 21vh; border-radius: 20px; display: block; }
 .vocab-visual { display: flex; align-items: center; justify-content: center; }
 .vocab-word {
   display: flex; align-items: center; justify-content: center; gap: 14px;
-  font-weight: 400; font-size: clamp(32px, 3vw, 44px); color: var(--ink); margin-top: 12px;
+  font-weight: 400; font-size: clamp(28px, min(3vw, 3.6vh), 44px); color: var(--ink); margin-top: clamp(4px, 0.9vh, 12px);
 }
 .icon-inline { width: 42px; height: 42px; }
 
@@ -340,9 +388,9 @@ img { max-width: 100%; display: block; }
    (e.g. a 1366x768 laptop window), since it never shrank there. The vh
    term in each clamp() lets the grid shrink with available height too;
    the px ceiling keeps the tall-viewport look unchanged. */
-.match-tier-lg { --match-gap: clamp(6px, 2vh, 16px); --match-border: clamp(3px, 0.7vh, 7px); --match-pad: clamp(5px, 1vh, 10px) clamp(10px, 1.6vw, 20px); --match-font: clamp(20px, 2.4vw, 33px); --match-img-w: clamp(90px, 15vh, 225px); --match-img-pad: clamp(4px, 0.8vh, 9px); }
-.match-tier-md { --match-gap: clamp(5px, 1.6vh, 14px); --match-border: clamp(3px, 0.6vh, 6px); --match-pad: clamp(4px, 0.8vh, 8px) clamp(8px, 1.3vw, 16px); --match-font: clamp(15px, 1.8vw, 25px); --match-img-w: clamp(75px, 11.5vh, 185px); --match-img-pad: clamp(3px, 0.6vh, 7px); }
-.match-tier-sm { --match-gap: clamp(4px, 1.2vh, 10px); --match-border: clamp(2px, 0.5vh, 5px); --match-pad: clamp(3px, 0.6vh, 6px) clamp(6px, 1vw, 12px); --match-font: clamp(12px, 1.4vw, 19px); --match-img-w: clamp(65px, 9vh, 140px); --match-img-pad: clamp(2px, 0.5vh, 5px); }
+.match-tier-lg { --match-gap: clamp(6px, 1.6vh, 16px); --match-border: clamp(3px, 0.6vh, 7px); --match-pad: clamp(5px, 0.8vh, 10px) clamp(10px, 1.6vw, 20px); --match-font: clamp(20px, 2.4vw, 33px); --match-img-w: clamp(90px, 13.5vh, 225px); --match-img-pad: clamp(4px, 0.7vh, 9px); }
+.match-tier-md { --match-gap: clamp(5px, 1.4vh, 14px); --match-border: clamp(3px, 0.5vh, 6px); --match-pad: clamp(4px, 0.7vh, 8px) clamp(8px, 1.3vw, 16px); --match-font: clamp(15px, 1.8vw, 25px); --match-img-w: clamp(75px, 10.6vh, 185px); --match-img-pad: clamp(3px, 0.5vh, 7px); }
+.match-tier-sm { --match-gap: clamp(4px, 1.05vh, 10px); --match-border: clamp(2px, 0.45vh, 5px); --match-pad: clamp(3px, 0.5vh, 6px) clamp(6px, 1vw, 12px); --match-font: clamp(12px, 1.4vw, 19px); --match-img-w: clamp(65px, 8.3vh, 140px); --match-img-pad: clamp(2px, 0.45vh, 5px); }
 .match-word.selected { background: #ffe9a8; }
 .match-word.correct, .match-img.correct { background: #c9f2c9; border-color: #6bd66b; }
 .match-img.wrong { background: #f7c9c9; border-color: #e26060; }
@@ -406,10 +454,10 @@ img { max-width: 100%; display: block; }
 .review-check { position: absolute; width: 68px; top: -18px; right: -18px; }
 
 /* reward */
-.reward-panel { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.reward-panel { display: flex; flex-direction: column; align-items: center; gap: clamp(6px, 1.4vh, 12px); }
 .reward-stars { display: flex; gap: 16px; }
-.reward-star { width: 110px; }
-.reward-title { font-size: clamp(30px, 3.2vw, 42px); margin: 6px 0; }
+.reward-star { width: clamp(70px, 13vh, 110px); }
+.reward-title { font-size: clamp(24px, min(3.2vw, 4.2vh), 42px); margin: clamp(2px, 0.7vh, 6px) 0; }
 .reward-items { display: flex; gap: 34px; }
 .reward-item { display: flex; flex-direction: column; align-items: center; color: var(--ink); font-weight: 800; font-size: 22px; }
 .reward-item img { width: 100px; }
