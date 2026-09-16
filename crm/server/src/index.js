@@ -1,0 +1,74 @@
+import express from 'express';
+import session from 'express-session';
+import path from 'node:path';
+import fs from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import './db.js'; // ensures schema is applied before routes touch the db
+
+import authRoutes from './routes/auth.js';
+import leadsRoutes from './routes/leads.js';
+import tasksRoutes from './routes/tasks.js';
+import catalogRoutes from './routes/catalog.js';
+import usersRoutes from './routes/users.js';
+import campaignsRoutes from './routes/campaigns.js';
+import recoveryRoutes from './routes/recovery.js';
+import segmentsRoutes from './routes/segments.js';
+import dashboardRoutes from './routes/dashboard.js';
+import reportsRoutes from './routes/reports.js';
+import searchRoutes from './routes/search.js';
+import { requireAuth } from './lib/authMiddleware.js';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const app = express();
+const PORT = process.env.PORT || 4000;
+
+app.use(express.json({ limit: '2mb' }));
+app.set('trust proxy', 1);
+app.use(
+  session({
+    name: 'upfront_crm_sid',
+    secret: process.env.SESSION_SECRET || 'upfront-crm-dev-secret-change-me',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production' && process.env.COOKIE_SECURE !== 'false',
+      maxAge: 1000 * 60 * 60 * 24 * 14,
+    },
+  })
+);
+
+app.use('/api/auth', authRoutes);
+app.get('/api/health', (req, res) => res.json({ ok: true }));
+
+// everything else requires a logged-in session
+app.use('/api', requireAuth, leadsRoutes);
+app.use('/api', requireAuth, tasksRoutes);
+app.use('/api', requireAuth, catalogRoutes);
+app.use('/api', requireAuth, usersRoutes);
+app.use('/api', requireAuth, campaignsRoutes);
+app.use('/api', requireAuth, recoveryRoutes);
+app.use('/api', requireAuth, segmentsRoutes);
+app.use('/api', requireAuth, dashboardRoutes);
+app.use('/api', requireAuth, reportsRoutes);
+app.use('/api', requireAuth, searchRoutes);
+
+// In production this server also serves the built React client
+// (see ../client, built into ../client/dist by `npm run build`).
+const clientDist = path.join(__dirname, '..', '..', 'client', 'dist');
+if (fs.existsSync(clientDist)) {
+  app.use(express.static(clientDist));
+  app.get(/^(?!\/api).*/, (req, res) => {
+    res.sendFile(path.join(clientDist, 'index.html'));
+  });
+}
+
+app.use((err, req, res, next) => {
+  console.error(err);
+  res.status(500).json({ error: 'Erro interno do servidor' });
+});
+
+app.listen(PORT, () => {
+  console.log(`Upfront CRM API rodando em http://localhost:${PORT}`);
+});
