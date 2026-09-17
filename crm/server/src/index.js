@@ -69,6 +69,10 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Erro interno do servidor' });
 });
 
-app.listen(PORT, () => {
-  console.log(`Upfront CRM API rodando em http://localhost:${PORT}`);
+// Bind explicitly to 0.0.0.0: most PaaS/container deploy targets (including
+// Hostinger's Web Apps) route external traffic to the container's public
+// interface, not just localhost/loopback, so listening on the default host
+// can leave the app unreachable even though the process is "running".
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Upfront CRM API rodando em http://0.0.0.0:${PORT}`);
 });
