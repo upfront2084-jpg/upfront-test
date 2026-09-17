@@ -5,15 +5,6 @@ import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { isEmpty } from './db.js'; // also ensures schema is applied before routes touch the db
 
-// Auto-seed on first boot against an empty database. This makes the app
-// self-sufficient on deploy targets with no shell/SSH access to run
-// `npm run seed` manually — the demo data appears the first time the
-// server starts against a fresh database, and never runs again afterward.
-if (isEmpty()) {
-  console.log('Banco de dados vazio — gerando dados de demonstração...');
-  await import('./seed.js');
-}
-
 import authRoutes from './routes/auth.js';
 import leadsRoutes from './routes/leads.js';
 import tasksRoutes from './routes/tasks.js';
@@ -83,10 +74,29 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Erro interno do servidor' });
 });
 
-// Bind explicitly to 0.0.0.0: most PaaS/container deploy targets (including
-// Hostinger's Web Apps) route external traffic to the container's public
-// interface, not just localhost/loopback, so listening on the default host
-// can leave the app unreachable even though the process is "running".
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Upfront CRM API rodando em http://0.0.0.0:${PORT}`);
-});
+// No top-level await here: some deploy targets (Hostinger's Web Apps among
+// them) load this ESM entry file through a require()-based adapter, which
+// breaks the moment a module has a top-level await. Wrapping the async
+// startup work (auto-seed) in a function and calling it without awaiting
+// at the top level keeps this file requireable while still sequencing the
+// seed before the server starts accepting connections.
+async function start() {
+  // Auto-seed on first boot against an empty database. This makes the app
+  // self-sufficient on deploy targets with no shell/SSH access to run
+  // `npm run seed` manually — the demo data appears the first time the
+  // server starts against a fresh database, and never runs again afterward.
+  if (isEmpty()) {
+    console.log('Banco de dados vazio — gerando dados de demonstração...');
+    await import('./seed.js');
+  }
+
+  // Bind explicitly to 0.0.0.0: most PaaS/container deploy targets (including
+  // Hostinger's Web Apps) route external traffic to the container's public
+  // interface, not just localhost/loopback, so listening on the default host
+  // can leave the app unreachable even though the process is "running".
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Upfront CRM API rodando em http://0.0.0.0:${PORT}`);
+  });
+}
+
+start();
