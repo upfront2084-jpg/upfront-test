@@ -33,7 +33,12 @@ app.use(
     cookie: {
       httpOnly: true,
       sameSite: 'lax',
-      secure: process.env.NODE_ENV === 'production' && process.env.COOKIE_SECURE !== 'false',
+      // 'auto' marks the cookie secure only when the actual request came in
+      // over HTTPS (honoring X-Forwarded-Proto, since trust proxy is set
+      // above) — a flat NODE_ENV check would mark it secure even while the
+      // domain is still being served over plain HTTP, silently dropping the
+      // cookie and leaving the app stuck on a blank page after login.
+      secure: 'auto',
       maxAge: 1000 * 60 * 60 * 24 * 14,
     },
   })
