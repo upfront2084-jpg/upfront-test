@@ -5,7 +5,7 @@ import BrandMark from '../components/BrandMark.jsx';
 
 export default function Login() {
   const { login, error } = useAuth();
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [busy, setBusy] = useState(false);
   const navigate = useNavigate();
@@ -13,7 +13,7 @@ export default function Login() {
   async function submit(e) {
     e.preventDefault();
     setBusy(true);
-    const ok = await login(email, password);
+    const ok = await login(username, password);
     setBusy(false);
     if (ok) navigate('/');
   }
@@ -26,8 +26,17 @@ export default function Login() {
         <p className="sub">CRM e gestão de leads da escola de inglês</p>
         <form onSubmit={submit}>
           <div className="field">
-            <label>E-mail</label>
-            <input className="input" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="voce@upfrontschool.com" />
+            <label>Usuário</label>
+            <input
+              className="input"
+              type="text"
+              autoCapitalize="none"
+              autoCorrect="off"
+              required
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="seu.usuario"
+            />
           </div>
           <div className="field">
             <label>Senha</label>
@@ -38,6 +47,7 @@ export default function Login() {
           </button>
           {error && <div className="login-err">{error}</div>}
         </form>
+        <p className="login-hint">Esqueceu sua senha? Fale com o administrador do sistema.</p>
       </div>
     </div>
   );

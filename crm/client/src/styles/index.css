@@ -215,6 +215,7 @@ table.data-table tbody tr:hover { background: var(--surface-2); cursor: pointer;
 .login-card h1 { font-size: 21px; font-weight: 800; margin-bottom: 5px; }
 .login-card p.sub { color: var(--text-dim); font-size: 13px; margin-bottom: 22px; }
 .login-err { color: var(--danger); font-size: 12.5px; margin-top: 8px; font-weight: 600; }
+.login-hint { margin-top: 18px; text-align: center; font-size: 12px; color: var(--text-faint); }
 
 /* ============ MISC ============ */
 .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border); margin-bottom: 16px; flex-wrap: wrap; }

@@ -111,21 +111,21 @@ function seedReferenceData() {
   });
 
   const userDefs = [
-    { name: 'Ana Beatriz Souza', email: 'admin@upfrontschool.com', role: 'admin' },
-    { name: 'Carlos Eduardo Lima', email: 'gestor@upfrontschool.com', role: 'manager' },
-    { name: 'Fernanda Rocha', email: 'fernanda@upfrontschool.com', role: 'agent' },
-    { name: 'João Pedro Alves', email: 'joao@upfrontschool.com', role: 'agent' },
-    { name: 'Marina Costa', email: 'marina@upfrontschool.com', role: 'agent' },
-    { name: 'Prof. Ricardo Nunes', email: 'ricardo.nunes@upfrontschool.com', role: 'teacher', teacherId: teachers[0].id },
-    { name: 'Prof. Camila Duarte', email: 'camila.duarte@upfrontschool.com', role: 'teacher', teacherId: teachers[1].id },
+    { name: 'Ana Beatriz Souza', username: 'admin', email: 'admin@upfrontschool.com', role: 'admin' },
+    { name: 'Carlos Eduardo Lima', username: 'carlos.lima', email: 'gestor@upfrontschool.com', role: 'manager' },
+    { name: 'Fernanda Rocha', username: 'fernanda', email: 'fernanda@upfrontschool.com', role: 'agent' },
+    { name: 'João Pedro Alves', username: 'joao', email: 'joao@upfrontschool.com', role: 'agent' },
+    { name: 'Marina Costa', username: 'marina', email: 'marina@upfrontschool.com', role: 'agent' },
+    { name: 'Prof. Ricardo Nunes', username: 'ricardo.nunes', email: 'ricardo.nunes@upfrontschool.com', role: 'teacher', teacherId: teachers[0].id },
+    { name: 'Prof. Camila Duarte', username: 'camila.duarte', email: 'camila.duarte@upfrontschool.com', role: 'teacher', teacherId: teachers[1].id },
   ];
   const passwordHash = hashPassword('upfront123');
   const users = userDefs.map((u) => {
     const id = uid('usr');
     db.prepare(
-      `INSERT INTO users (id, name, email, password_hash, role, teacher_id, active, created_at, updated_at)
-       VALUES (?,?,?,?,?,?,1,?,?)`
-    ).run(id, u.name, u.email, passwordHash, u.role, u.teacherId || null, now, now);
+      `INSERT INTO users (id, name, username, email, password_hash, role, teacher_id, active, created_at, updated_at)
+       VALUES (?,?,?,?,?,?,?,1,?,?)`
+    ).run(id, u.name, u.username, u.email, passwordHash, u.role, u.teacherId || null, now, now);
     return { id, ...u };
   });
 
@@ -716,8 +716,8 @@ function main() {
   }
   console.log('Seed concluído:', counts);
   console.log('\nLogin de demonstração (senha para todos: upfront123):');
-  for (const row of db.prepare('SELECT email, role FROM users ORDER BY role').all()) {
-    console.log(`  ${row.email}  (${row.role})`);
+  for (const row of db.prepare('SELECT username, role FROM users ORDER BY role').all()) {
+    console.log(`  ${row.username}  (${row.role})`);
   }
 }
 

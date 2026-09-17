@@ -57,12 +57,18 @@ Acesse `http://localhost:5173`. Em desenvolvimento o Vite faz proxy de
 
 Todos os usuários de demonstração usam a senha `upfront123`:
 
-| E-mail | Perfil |
+| Usuário | Perfil |
 |---|---|
-| admin@upfrontschool.com | Administrador — acesso completo |
-| gestor@upfrontschool.com | Gestor — leads, relatórios, campanhas, equipe |
-| fernanda@upfrontschool.com / joao@upfrontschool.com / marina@upfrontschool.com | Atendente — leads e tarefas atribuídos |
-| ricardo.nunes@upfrontschool.com / camila.duarte@upfrontschool.com | Professor — experimentais e alunos |
+| admin | Administrador — acesso completo |
+| carlos.lima | Gestor — leads, relatórios, campanhas, equipe |
+| fernanda / joao / marina | Atendente — leads e tarefas atribuídos |
+| ricardo.nunes / camila.duarte | Professor — experimentais e alunos |
+
+O login é por **usuário**, não e-mail — cada pessoa recebe um usuário e
+senha definidos por um Administrador na página **Usuários** (menu
+Administração), que também permite redefinir a senha de qualquer pessoa a
+qualquer momento. Não existe fluxo de "esqueci minha senha": quem
+esquece pede pro administrador redefinir.
 
 Para recriar os dados de demonstração do zero a qualquer momento:
 `npm run seed` (dentro de `crm/`).

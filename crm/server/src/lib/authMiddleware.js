@@ -3,7 +3,7 @@ import { one } from '../db.js';
 export function requireAuth(req, res, next) {
   const userId = req.session?.userId;
   if (!userId) return res.status(401).json({ error: 'Não autenticado' });
-  const user = one('SELECT id, name, email, role, teacher_id, active FROM users WHERE id = ?', [userId]);
+  const user = one('SELECT id, name, username, email, role, teacher_id, active FROM users WHERE id = ?', [userId]);
   if (!user || !user.active) return res.status(401).json({ error: 'Não autenticado' });
   req.user = user;
   next();

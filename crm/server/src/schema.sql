@@ -8,7 +8,8 @@ PRAGMA foreign_keys = ON;
 CREATE TABLE IF NOT EXISTS users (
   id TEXT PRIMARY KEY,
   name TEXT NOT NULL,
-  email TEXT NOT NULL UNIQUE,
+  username TEXT NOT NULL UNIQUE,
+  email TEXT,
   password_hash TEXT NOT NULL,
   role TEXT NOT NULL CHECK (role IN ('admin','manager','agent','teacher')),
   teacher_id TEXT REFERENCES teachers(id),

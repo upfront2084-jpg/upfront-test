@@ -20,10 +20,10 @@ export function AuthProvider({ children }) {
     refresh();
   }, [refresh]);
 
-  const login = useCallback(async (email, password) => {
+  const login = useCallback(async (username, password) => {
     setError('');
     try {
-      const { user } = await api.post('/auth/login', { email, password });
+      const { user } = await api.post('/auth/login', { username, password });
       setUser(user);
       return true;
     } catch (e) {
