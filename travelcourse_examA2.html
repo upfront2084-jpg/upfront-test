@@ -1,0 +1,1198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Upfront Idiomas — English for Human Resources — Exam A2 (Classes 11–20)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy:   #1A1A2E;
+    --blue:   #1F3A5F;
+    --teal:   #2E7D7D;
+    --teal-l: #e0f2f2;
+    --light:  #F5F7FA;
+    --white:  #ffffff;
+    --border: #d0d5dd;
+    --red:    #8B1A1A;
+    --green:  #1a5c35;
+    --orange: #b85c00;
+    --text:   #1A1A2E;
+    --muted:  #6b7280;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #eef1f6;
+    color: var(--text);
+    min-height: 100vh;
+    padding-bottom: 60px;
+  }
+
+  /* ── HEADER ─────────────────────────────────────────── */
+  .test-header {
+    background: var(--navy);
+    padding: 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,.3);
+  }
+  .header-inner {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 18px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+  }
+  .brand-name {
+    font-family: 'Sora', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -.02em;
+  }
+  .brand-sub {
+    font-size: 11px;
+    color: #8892aa;
+    font-weight: 400;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+  .header-badge {
+    background: var(--teal);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 20px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  /* ── PROGRESS BAR ───────────────────────────────────── */
+  .progress-wrap {
+    background: #2a2d3e;
+    height: 4px;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--teal);
+    transition: width .4s ease;
+    width: 0%;
+  }
+  .progress-label {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 6px 32px;
+    display: flex;
+    justify-content: flex-end;
+    font-size: 11px;
+    color: #8892aa;
+    background: var(--navy);
+  }
+
+  /* ── WRAPPER ────────────────────────────────────────── */
+  .page-wrap {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 32px 24px;
+  }
+
+  /* ── SECTION CARD ───────────────────────────────────── */
+  .section-card {
+    background: var(--white);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 28px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.08);
+  }
+  .section-header {
+    background: var(--blue);
+    padding: 13px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-number {
+    background: var(--teal);
+    color: #fff;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .section-title {
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+  }
+  .section-sub {
+    color: #a8c4cc;
+    font-size: 12px;
+    margin-top: 1px;
+  }
+  .section-body {
+    padding: 0;
+  }
+
+  /* ── QUESTION BLOCK ─────────────────────────────────── */
+  .q-block {
+    padding: 20px 24px;
+    border-bottom: 1px solid #f0f2f5;
+  }
+  .q-block:last-child { border-bottom: none; }
+  .q-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .q-tag {
+    background: var(--teal-l);
+    color: var(--teal);
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+  .q-text {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--navy);
+    line-height: 1.55;
+    margin-bottom: 14px;
+  }
+  .q-text .blank {
+    display: inline-block;
+    min-width: 72px;
+    border-bottom: 2px solid var(--blue);
+    text-align: center;
+    padding: 0 4px;
+  }
+
+  /* ── OPTIONS GRID ───────────────────────────────────── */
+  .options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  @media (max-width: 520px) { .options { grid-template-columns: 1fr; } }
+
+  .opt {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    background: #fff;
+    transition: all .15s;
+    font-size: 13.5px;
+    color: var(--text);
+    text-align: left;
+    user-select: none;
+  }
+  .opt:hover { border-color: var(--teal); background: #f4fafa; }
+  .opt.selected { border-color: var(--blue); background: #eaf1f8; }
+  .opt.correct  { border-color: var(--green); background: #eaf7ef; color: var(--green); cursor: default; }
+  .opt.wrong    { border-color: var(--red);   background: #fdf1f0; color: var(--red);   cursor: default; }
+  .opt.revealed { cursor: default; }
+
+  .opt-letter {
+    width: 24px; height: 24px;
+    border-radius: 6px;
+    background: var(--light);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 12px;
+    flex-shrink: 0;
+    color: var(--blue);
+    transition: all .15s;
+  }
+  .opt.selected .opt-letter { background: var(--blue); color: #fff; border-color: var(--blue); }
+  .opt.correct  .opt-letter { background: var(--green); color: #fff; border-color: var(--green); }
+  .opt.wrong    .opt-letter { background: var(--red);   color: #fff; border-color: var(--red); }
+
+  /* ── LISTENING BOX ──────────────────────────────────── */
+  .listen-box {
+    margin: 0 24px 20px;
+    background: var(--light);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+  }
+  .listen-label {
+    font-size: 11px; font-weight: 700; color: var(--teal);
+    letter-spacing: .1em; text-transform: uppercase; margin-bottom: 10px;
+  }
+  .audio-row {
+    display: flex; align-items: center; gap: 14px;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
+  }
+  .play-btn {
+    width: 40px; height: 40px;
+    background: var(--blue);
+    border: none; border-radius: 50%;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: background .15s;
+  }
+  .play-btn:hover { background: var(--teal); }
+  .play-btn svg { width: 16px; height: 16px; fill: #fff; margin-left: 2px; }
+  .audio-info { flex: 1; }
+  .audio-title { font-size: 13px; font-weight: 600; color: var(--navy); }
+  .audio-hint  { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .audio-note  { font-size: 11px; color: var(--muted); font-style: italic; margin-top: 8px; }
+
+  /* input audio file */
+  .audio-upload {
+    margin-top: 8px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .audio-upload label {
+    background: var(--blue); color: #fff;
+    padding: 5px 12px; border-radius: 6px;
+    font-size: 11px; font-weight: 600; cursor: pointer;
+    letter-spacing: .04em;
+  }
+  .audio-upload span { font-size: 11px; color: var(--muted); }
+  #audioFileInput { display: none; }
+  #audioPlayer { display: block; width: 100%; margin-top: 10px; }
+
+  /* ── READING BOX ────────────────────────────────────── */
+  .reading-box {
+    margin: 0 24px 20px;
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .reading-header {
+    background: var(--light);
+    padding: 10px 18px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--blue);
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+  }
+  .reading-text {
+    padding: 18px;
+    font-size: 13.5px;
+    line-height: 1.85;
+    color: var(--text);
+    border-left: 4px solid var(--teal);
+    margin: 14px;
+    background: #f9fbfb;
+    border-radius: 0 8px 8px 0;
+  }
+  .reading-text p { margin-bottom: 10px; }
+  .reading-text p:last-child { margin-bottom: 0; }
+  .spk { font-weight: 700; color: var(--blue); }
+
+  /* ── WRITING BOX ────────────────────────────────────── */
+  .writing-box {
+    margin: 0 24px 20px;
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+  }
+  .writing-topic {
+    background: var(--teal-l);
+    border: 1.5px solid var(--teal);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--teal);
+    margin-bottom: 14px;
+  }
+  .writing-prompt {
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.65;
+    margin-bottom: 12px;
+  }
+  .writing-hints {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 14px;
+    padding-left: 4px;
+  }
+  .writing-hints li { margin-left: 18px; margin-bottom: 4px; }
+  .writing-hints li strong { color: var(--blue); }
+  textarea {
+    width: 100%;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13.5px;
+    color: var(--text);
+    resize: vertical;
+    min-height: 140px;
+    outline: none;
+    transition: border .15s;
+    line-height: 1.7;
+  }
+  textarea:focus { border-color: var(--teal); }
+  .word-count { text-align: right; font-size: 11px; color: var(--muted); margin-top: 6px; }
+
+  /* ── SUBMIT ─────────────────────────────────────────── */
+  .submit-wrap {
+    text-align: center;
+    padding: 8px 0 32px;
+  }
+  .submit-btn {
+    background: var(--navy);
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    padding: 15px 52px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    letter-spacing: .03em;
+    transition: background .15s, transform .1s;
+    box-shadow: 0 4px 16px rgba(26,26,46,.25);
+  }
+  .submit-btn:hover { background: var(--blue); }
+  .submit-btn:active { transform: scale(.98); }
+  .submit-btn:disabled { background: #9ca3af; cursor: not-allowed; box-shadow: none; }
+  .submit-note { font-size: 12px; color: var(--muted); margin-top: 10px; }
+
+  /* ── RESULT CARD ────────────────────────────────────── */
+  .result-card {
+    display: none;
+    background: #fff;
+    border-radius: 14px;
+    padding: 36px 32px;
+    text-align: center;
+    margin-bottom: 32px;
+    box-shadow: 0 4px 24px rgba(0,0,0,.1);
+    border: 2px solid var(--navy);
+  }
+  .result-card.show { display: block; }
+  .result-eyebrow {
+    font-size: 11px; font-weight: 700; color: var(--muted);
+    letter-spacing: .12em; text-transform: uppercase; margin-bottom: 10px;
+  }
+  .result-score {
+    font-family: 'Sora', sans-serif;
+    font-size: 56px; font-weight: 800;
+    color: var(--navy); line-height: 1;
+  }
+  .result-pct {
+    font-size: 18px; color: var(--muted); margin-top: 4px; margin-bottom: 16px;
+  }
+  .result-grade {
+    display: inline-block;
+    font-size: 18px; font-weight: 700;
+    padding: 8px 28px; border-radius: 8px; margin-bottom: 20px;
+  }
+  .g-a { background: #eaf7ef; color: var(--green); }
+  .g-b { background: #eaf1f8; color: var(--blue); }
+  .g-c { background: #fff8ec; color: var(--orange); }
+  .g-d { background: #fdf1f0; color: var(--red); }
+
+  .result-breakdown {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 8px;
+  }
+  .rb {
+    background: var(--light);
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .rb strong {
+    display: block;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 2px;
+  }
+
+  .print-btn {
+    margin-top: 20px;
+    background: transparent;
+    border: 1.5px solid var(--border);
+    color: var(--muted);
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 9px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .print-btn:hover { border-color: var(--blue); color: var(--blue); }
+
+  @media print {
+    body { background: white; }
+    .test-header, .progress-wrap, .progress-label, .submit-wrap, .print-btn { display: none !important; }
+    .section-card { box-shadow: none; border: 1px solid #ccc; }
+    .opt.correct { background: #eaf7ef !important; -webkit-print-color-adjust: exact; }
+    .opt.wrong   { background: #fdf1f0 !important; }
+    .result-card.show { border: 2px solid #333; }
+  }
+</style>
+
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="test-header">
+  <div class="header-inner">
+    <div>
+      <div class="brand-name">Upfront Idiomas</div>
+      <div class="brand-sub">English for Human Resources — Exam · A2 · Elementary (Classes 11–20)</div>
+    </div>
+    <div class="header-badge">Exam · A2</div>
+  </div>
+  <div class="progress-wrap"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label"><span id="progressLabel">0 / 44 answered</span></div>
+</header>
+
+<div class="page-wrap">
+
+<!-- RESULT (shown after submit) -->
+<div class="result-card" id="resultCard">
+  <div class="result-eyebrow">Your Result</div>
+  <div class="result-score" id="rScore">0/44</div>
+  <div class="result-pct"  id="rPct">0% correct</div>
+  <div class="result-grade" id="rGrade"></div>
+  <div class="result-breakdown" id="rBreakdown"></div>
+  <button class="print-btn" onclick="window.print()">🖨 Print / Save as PDF</button>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     PART 1 — VOCABULARY &amp; KEY TERMS
+═══════════════════════════════════════════════ -->
+<div class="section-card">
+  <div class="section-header">
+    <div class="section-number">1</div>
+    <div>
+      <div class="section-title">Vocabulary &amp; Key Terms</div>
+      <div class="section-sub">Choose the word that completes the sentence · Escolha a palavra correta</div>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 01</span></div>
+      <div class="q-text">An increase in salary based on good individual performance is called a ______.</div>
+      <div class="options" data-q="1" data-ans="B">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> Base salary</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> Merit increase</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> Market rate</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> Equity</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 02</span></div>
+      <div class="q-text">If you are ill and cannot come to work, you can use your ______.</div>
+      <div class="options" data-q="2" data-ans="A">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> Sick leave</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> Vacation days</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> Public holiday</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> Leave of absence</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 03</span></div>
+      <div class="q-text">Extra hours worked beyond the normal schedule are called ______.</div>
+      <div class="options" data-q="3" data-ans="C">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> Punctuality</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> Workload</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> Overtime</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> Shift</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 04</span></div>
+      <div class="q-text">A part of your job performance where you need to improve is called a(n) ______.</div>
+      <div class="options" data-q="4" data-ans="D">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> Achievement</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> Rating</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> Strength</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> Area for improvement</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 05</span></div>
+      <div class="q-text">The sequence of jobs and promotions someone follows during their working life is their ______.</div>
+      <div class="options" data-q="5" data-ans="A">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> Career path</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> Trajectory</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> Milestone</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> Mentorship</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 06</span></div>
+      <div class="q-text">When a company ends an employee's contract because of their conduct, it is called ______.</div>
+      <div class="options" data-q="6" data-ans="C">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> Resignation</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> Layoff</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> Dismissal</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> Retirement</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 07</span></div>
+      <div class="q-text">Money paid to an employee when their job ends, according to labor law, is called ______.</div>
+      <div class="options" data-q="7" data-ans="C">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> Notice period</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> Final paycheck</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> Severance pay</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> Settlement</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 08</span></div>
+      <div class="q-text">The document that shows your salary, deductions and net pay each month is called a ______.</div>
+      <div class="options" data-q="8" data-ans="D">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> Payroll cycle</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> Timesheet</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> Statement</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> Payslip</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 09</span></div>
+      <div class="q-text">An extra payment given to an employee for reaching a target is called a(n) ______.</div>
+      <div class="options" data-q="9" data-ans="B">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> Salary</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> Bonus</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> Deduction</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> Allowance</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 10</span></div>
+      <div class="q-text">A difference between the skills employees have and the skills a job requires is called a ______.</div>
+      <div class="options" data-q="10" data-ans="C">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> Curriculum</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> Certification</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> Skill gap</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> Assessment</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 11</span></div>
+      <div class="q-text">A worker organization that represents employees in labor negotiations is called a ______.</div>
+      <div class="options" data-q="11" data-ans="B">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> Stakeholder</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> Union</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> Committee</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> Panel</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 12</span></div>
+      <div class="q-text">A formal test used to measure an employee's progress after training is called a(n) ______.</div>
+      <div class="options" data-q="12" data-ans="D">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> Curriculum</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> Facilitator</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> E-learning</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> Assessment</div>
+      </div>
+    </div>
+
+  </div>
+</div><!-- /section-card -->
+
+<!-- ═══════════════════════════════════════════════
+     PART 2 — FUNCTIONAL EXPRESSIONS
+═══════════════════════════════════════════════ -->
+<div class="section-card">
+  <div class="section-header">
+    <div class="section-number">2</div>
+    <div>
+      <div class="section-title">Functional Expressions</div>
+      <div class="section-sub">Choose the best expression for the situation · Escolha a melhor expressão</div>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 13</span></div>
+      <div class="q-text">You want to tell an employee that their salary increase starts this month.</div>
+      <div class="options" data-q="13" data-ans="A">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> Your raise is effective from...</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> That's within our budget.</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> Let me get back to you on that.</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> We can't match that number.</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 14</span></div>
+      <div class="q-text">You want to ask an employee when they will return from vacation.</div>
+      <div class="options" data-q="14" data-ans="B">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> I'll be out of office next week.</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> When will you be back?</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> Let me check your balance.</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> That works for me.</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 15</span></div>
+      <div class="q-text">You need an employee to explain why they were absent.</div>
+      <div class="options" data-q="15" data-ans="A">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> Could you justify this absence?</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> Please clock in on time.</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> Overtime needs prior approval.</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> We noticed a pattern of tardiness.</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 16</span></div>
+      <div class="q-text">You want to encourage an employee after a strong performance review.</div>
+      <div class="options" data-q="16" data-ans="B">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> There's room for improvement in...</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> Keep up the great work.</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> What are your career goals?</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> I have some feedback for you.</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 17</span></div>
+      <div class="q-text">You want to congratulate a colleague who was just promoted.</div>
+      <div class="options" data-q="17" data-ans="C">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> What's your next career goal?</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> You have the experience we need.</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> Congratulations on this milestone!</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> This comes with more responsibility.</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 18</span></div>
+      <div class="q-text">You need to tell an employee a meeting about ending their contract will not be easy.</div>
+      <div class="options" data-q="18" data-ans="A">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> We need to have a difficult conversation.</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> We appreciate your contributions.</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> Let's plan the handover.</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> This decision was not made lightly.</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 19</span></div>
+      <div class="q-text">You want to confirm that a severance calculation followed the law correctly.</div>
+      <div class="options" data-q="19" data-ans="B">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> The union was informed.</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> Everything is in compliance.</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> We reached a settlement.</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> We consulted our legal team.</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 20</span></div>
+      <div class="q-text">You want to tell a sales rep they achieved the goal needed for a bonus.</div>
+      <div class="options" data-q="20" data-ans="C">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> This will be a great incentive.</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> The criteria include...</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> You reached your target.</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> Congratulations on reaching your goal!</div>
+      </div>
+    </div>
+
+  </div>
+</div><!-- /section-card -->
+
+<!-- ═══════════════════════════════════════════════
+     PART 3 — GRAMMAR
+═══════════════════════════════════════════════ -->
+<div class="section-card">
+  <div class="section-header">
+    <div class="section-number">3</div>
+    <div>
+      <div class="section-title">Grammar</div>
+      <div class="section-sub">Choose the correct answer · Escolha a resposta correta</div>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 21</span></div>
+      <div class="q-text">We ___ (review) your compensation last week.</div>
+      <div class="options" data-q="21" data-ans="A">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> reviewed</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> reviews</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> review</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> reviewing</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 22</span></div>
+      <div class="q-text">She ___ (go) to the meeting yesterday, but he didn't.</div>
+      <div class="options" data-q="22" data-ans="B">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> goed</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> went</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> gone</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> go</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 23</span></div>
+      <div class="q-text">I ___ take some time off next month. It's already planned.</div>
+      <div class="options" data-q="23" data-ans="A">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> am going to</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> will</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> did</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> have</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 24</span></div>
+      <div class="q-text">Don't worry, I ___ help you with that request right now.</div>
+      <div class="options" data-q="24" data-ans="A">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> will</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> am going to</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> do</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> did</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 25</span></div>
+      <div class="q-text">This shift is ___ than that one.</div>
+      <div class="options" data-q="25" data-ans="B">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> busy</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> busier</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> more busy</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> busyer</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 26</span></div>
+      <div class="q-text">Taxes are ___ this year than last year.</div>
+      <div class="options" data-q="26" data-ans="C">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> high</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> more high</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> higher</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> highest</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 27</span></div>
+      <div class="q-text">This was your ___ result this year.</div>
+      <div class="options" data-q="27" data-ans="C">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> good</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> better</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> best</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> most good</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 28</span></div>
+      <div class="q-text">He has ___ money saved than before.</div>
+      <div class="options" data-q="28" data-ans="C">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> much</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> many</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> more</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> most</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 29</span></div>
+      <div class="q-text">There is ___ information missing from your file.</div>
+      <div class="options" data-q="29" data-ans="C">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> many</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> few</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> some</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> every</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 30</span></div>
+      <div class="q-text">We don't have ___ vacancies open right now.</div>
+      <div class="options" data-q="30" data-ans="B">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> some</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> any</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> no</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> every</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 31</span></div>
+      <div class="q-text">Severance pay ___ calculated correctly last month.</div>
+      <div class="options" data-q="31" data-ans="A">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> was</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> is</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> calculated</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> calculate</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 32</span></div>
+      <div class="q-text">You ___ eligible for the bonus if you reach your target.</div>
+      <div class="options" data-q="32" data-ans="C">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> are</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> were</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> will be</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> going be</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 33</span></div>
+      <div class="q-text">Our company usually ___ bonuses in December.</div>
+      <div class="options" data-q="33" data-ans="A">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> pays</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> paid</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> is paying</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> pay</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 34</span></div>
+      <div class="q-text">How ___ vacation days do you have left?</div>
+      <div class="options" data-q="34" data-ans="B">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> much</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> many</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> few</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> little</div>
+      </div>
+    </div>
+
+  </div>
+</div><!-- /section-card -->
+
+<!-- ═══════════════════════════════════════════════
+     PART 4 — READING COMPREHENSION
+═══════════════════════════════════════════════ -->
+<div class="section-card">
+  <div class="section-header">
+    <div class="section-number">4</div>
+    <div>
+      <div class="section-title">Reading Comprehension</div>
+      <div class="section-sub">Read the dialogue and answer · Leia o diálogo e responda</div>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="q-block" style="padding-bottom:0; border-bottom:none;">
+      <div class="reading-box">
+        <div class="reading-header">Dialogue — A Salary Conversation</div>
+        <div class="reading-text">
+          <p><span class="spk">Bianca:</span> Hi Marcos, thanks for coming in. We reviewed your compensation last quarter.</p>
+          <p><span class="spk">Marcos:</span> Thanks, Bianca. I actually wanted to discuss my salary expectations.</p>
+          <p><span class="spk">Bianca:</span> Sure. We benchmarked your role against the market, and your base salary is slightly below the market rate.</p>
+          <p><span class="spk">Marcos:</span> I thought so. I've worked here for three years and I took on more responsibility last year.</p>
+          <p><span class="spk">Bianca:</span> That's true. We can offer a merit increase of eight percent, effective next month.</p>
+          <p><span class="spk">Marcos:</span> I appreciate that. What about my vacation balance? I still have twelve days left this year.</p>
+          <p><span class="spk">Bianca:</span> You can carry over up to ten days, so make sure to schedule some time off before December.</p>
+          <p><span class="spk">Marcos:</span> Understood. One more thing — I worked overtime last week. Will that be compensated?</p>
+          <p><span class="spk">Bianca:</span> Yes, overtime pay was already added to your next payslip.</p>
+          <p><span class="spk">Marcos:</span> Great, thank you for clarifying everything.</p>
+        </div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 35</span></div>
+      <div class="q-text">Why did Bianca and Marcos meet?</div>
+      <div class="options" data-q="35" data-ans="B">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> To plan a training</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> To discuss his compensation</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> To schedule an interview</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> To conduct an exit interview</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 36</span></div>
+      <div class="q-text">What did the benchmarking show about Marcos's salary?</div>
+      <div class="options" data-q="36" data-ans="C">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> It is above the market rate</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> It matches the market rate exactly</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> It is slightly below the market rate</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> It was never compared to the market</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 37</span></div>
+      <div class="q-text">What raise did Bianca offer, and when does it start?</div>
+      <div class="options" data-q="37" data-ans="B">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> A 15% raise starting immediately</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> An 8% raise starting next month</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> A 5% raise starting in December</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> No raise this year</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 38</span></div>
+      <div class="q-text">How many vacation days can Marcos carry over?</div>
+      <div class="options" data-q="38" data-ans="B">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> Up to 5</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> Up to 10</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> Up to 12</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> All of them</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 39</span></div>
+      <div class="q-text">Was Marcos's overtime compensated?</div>
+      <div class="options" data-q="39" data-ans="B">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> No, it was denied</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> Yes, it was added to his next payslip</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> It is still under review</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> He didn't ask about it</div>
+      </div>
+    </div>
+
+  </div>
+</div><!-- /section-card -->
+
+<!-- ═══════════════════════════════════════════════
+     PART 5 — LISTENING COMPREHENSION
+═══════════════════════════════════════════════ -->
+<div class="section-card">
+  <div class="section-header">
+    <div class="section-number">5</div>
+    <div>
+      <div class="section-title">Listening Comprehension</div>
+      <div class="section-sub">Listen and answer · Ouça e responda</div>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="q-block" style="padding-bottom:0;border-bottom:none;">
+      <div class="listen-box">
+        <div class="listen-label">Audio — A Termination Voicemail</div>
+        <div class="audio-row">
+          <button class="play-btn" onclick="togglePlay()">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          </button>
+          <div class="audio-info">
+            <div class="audio-title">🎧 Audio — A Termination Voicemail</div>
+            <div class="audio-hint">Peça ao professor para ler o roteiro em voz alta (2x) ou fazer upload de um áudio gravado.</div>
+          </div>
+        </div>
+        <audio id="audioPlayer" controls style="width:100%;margin-top:12px;border-radius:8px;display:none;"></audio>
+        <div class="audio-upload">
+          <label for="audioFileInput">Upload Audio</label>
+          <input type="file" id="audioFileInput" accept="audio/*" onchange="loadAudio(this)">
+          <span id="audioFileName">Nenhum arquivo selecionado.</span>
+        </div>
+        <details style="margin-top:12px;">
+          <summary style="cursor:pointer;font-size:11px;font-weight:700;color:var(--teal);letter-spacing:.05em;text-transform:uppercase;">Roteiro (apenas para o professor ler em voz alta)</summary>
+          <p style="margin-top:10px;font-size:13px;line-height:1.75;color:var(--text);background:#f9fbfb;border-left:4px solid var(--teal);padding:14px;border-radius:0 8px 8px 0;">Hello Diego, this is Sofia from Human Resources. I'm calling about your termination process. Your last working day will be July 31st, and your notice period is sixty days, not thirty. Please remember that your final paycheck will be deposited on August 5th. We also need you to sign some documentation before you leave. This is not related to misconduct; it's part of a layoff due to budget cuts. Please schedule your exit interview with me before your last day. If you have questions about your severance, call the payroll office at extension 204. Thank you for your hard work over the past four years, Diego. We wish you success in your next role. Please call me back by Friday to confirm your exit interview time.</p>
+        </details>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 40</span></div>
+      <div class="q-text">Who is Sofia calling in the voicemail?</div>
+      <div class="options" data-q="40" data-ans="A">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> Diego</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> Bianca</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> Rafael</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 41</span></div>
+      <div class="q-text">According to the voicemail, why is Diego leaving the company?</div>
+      <div class="options" data-q="41" data-ans="B">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> Misconduct</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> Layoff due to budget cuts</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> Resignation</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 42</span></div>
+      <div class="q-text">What extension should Diego call with questions about severance?</div>
+      <div class="options" data-q="42" data-ans="A">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> Extension 204</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> Extension 310</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> Extension 100</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 43</span></div>
+      <div class="q-text">How long is Diego's notice period?</div>
+      <div class="options" data-q="43" data-ans="C">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> Thirty days</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> Forty-five days</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> Sixty days</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 44</span></div>
+      <div class="q-text">When will Diego's final paycheck be deposited?</div>
+      <div class="options" data-q="44" data-ans="B">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> July 31st</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> August 5th</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> At the end of the month</div>
+      </div>
+    </div>
+
+  </div>
+</div><!-- /section-card -->
+
+<!-- ═══════════════════════════════════════════════
+     PART 6 — WRITING (manual grading)
+═══════════════════════════════════════════════ -->
+<div class="section-card">
+  <div class="section-header">
+    <div class="section-number">6</div>
+    <div>
+      <div class="section-title">Writing</div>
+      <div class="section-sub">Correção manual do professor · Not auto-graded</div>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="writing-box">
+      <div class="writing-topic">Performance Review Summary</div>
+      <div class="writing-prompt">Write a short paragraph (6–8 sentences) summarizing an employee's annual performance review. Mention one strength, one area for improvement, and their raise or bonus.</div>
+      <ul class="writing-hints">
+          <li><strong>Use Past Simple</strong> to describe what happened during the year.</li>
+          <li><strong>Use at least one comparative or superlative</strong> (e.g., better, higher, the best).</li>
+          <li><strong>Include vocabulary</strong> from this level (e.g., performance review, feedback, merit increase, bonus).</li>
+      </ul>
+      <textarea id="writingArea" placeholder="Escreva sua resposta aqui... (mínimo 50 palavras)"></textarea>
+      <div class="word-count" id="wordCount">0 palavras</div>
+      <div class="submit-note" style="text-align:left;margin-top:10px;">Esta seção é corrigida manualmente pelo professor e não conta para a pontuação automática.</div>
+    </div>
+  </div>
+
+</div><!-- /section-card -->
+
+<!-- SUBMIT -->
+<div class="submit-wrap">
+  <button class="submit-btn" id="submitBtn" onclick="submitTest()">Submit Test &amp; See Results</button>
+  <div class="submit-note">Make sure all 44 multiple-choice questions are answered before submitting.</div>
+</div>
+
+</div><!-- /page-wrap -->
+
+<script>
+  const answers = {};
+  const TOTAL   = 44;
+  let   done    = false;
+
+  document.querySelectorAll('.options').forEach(group => {
+    group.querySelectorAll('.opt').forEach(opt => {
+      opt.addEventListener('click', () => {
+        if (done) return;
+        const q = group.dataset.q;
+        group.querySelectorAll('.opt').forEach(o => o.classList.remove('selected'));
+        opt.classList.add('selected');
+        answers[q] = opt.dataset.v;
+        updateProgress();
+      });
+    });
+  });
+
+  function updateProgress() {
+    const n = Object.keys(answers).length;
+    document.getElementById('progressLabel').textContent = n + ' / ' + TOTAL + ' answered';
+    document.getElementById('progressFill').style.width  = (n / TOTAL * 100) + '%';
+  }
+
+  function loadAudio(input) {
+    if (input.files && input.files[0]) {
+      const url = URL.createObjectURL(input.files[0]);
+      const player = document.getElementById('audioPlayer');
+      player.src = url;
+      player.style.display = 'block';
+      document.getElementById('audioFileName').textContent = input.files[0].name;
+    }
+  }
+
+  function togglePlay() {
+    const p = document.getElementById('audioPlayer');
+    if (!p.src) return;
+    p.paused ? p.play() : p.pause();
+  }
+
+  const wa = document.getElementById('writingArea');
+  if (wa) {
+    wa.addEventListener('input', () => {
+      const words = wa.value.trim().length ? wa.value.trim().split(/\s+/).length : 0;
+      document.getElementById('wordCount').textContent = words + ' palavra' + (words !== 1 ? 's' : '');
+    });
+  }
+
+  function submitTest() {
+    done = true;
+    document.getElementById('submitBtn').disabled = true;
+
+    let correct = 0;
+    const parts = { p1: 0, p2: 0, p3: 0, p4: 0, p5: 0 };
+
+    document.querySelectorAll('.options').forEach(group => {
+      const q   = parseInt(group.dataset.q);
+      const ans = group.dataset.ans;
+      const sel = answers[String(q)];
+
+      group.querySelectorAll('.opt').forEach(opt => {
+        opt.classList.add('revealed');
+        opt.style.cursor = 'default';
+        if (opt.dataset.v === ans) {
+          opt.classList.add('correct');
+          opt.classList.remove('selected');
+        } else if (opt.classList.contains('selected')) {
+          opt.classList.add('wrong');
+          opt.classList.remove('selected');
+        }
+      });
+
+      if (sel === ans) {
+        correct++;
+        if (q <= 12) parts.p1++;
+        else if (q <= 20) parts.p2++;
+        else if (q <= 34) parts.p3++;
+        else if (q <= 39) parts.p4++;
+        else parts.p5++;
+      }
+    });
+
+    const pct = Math.round(correct / TOTAL * 100);
+    let grade, gc;
+    if (pct >= 90) { grade = 'A — Excellent!';          gc = 'g-a'; }
+    else if (pct >= 75) { grade = 'B — Good job!';      gc = 'g-b'; }
+    else if (pct >= 60) { grade = 'C — Keep practicing';gc = 'g-c'; }
+    else                { grade = 'D — Review content'; gc = 'g-d'; }
+
+    document.getElementById('rScore').textContent   = correct + '/' + TOTAL;
+    document.getElementById('rPct').textContent     = pct + '% correct';
+    document.getElementById('rGrade').textContent   = grade;
+    document.getElementById('rGrade').className     = 'result-grade ' + gc;
+    document.getElementById('rBreakdown').innerHTML =
+      '<div class="rb"><strong>' + parts.p1 + '/12</strong>Vocabulary</div>' +
+      '<div class="rb"><strong>' + parts.p2 + '/8</strong>Expressions</div>' +
+      '<div class="rb"><strong>' + parts.p3 + '/14</strong>Grammar</div>' +
+      '<div class="rb"><strong>' + parts.p4 + '/5</strong>Reading</div>' +
+      '<div class="rb"><strong>' + parts.p5 + '/5</strong>Listening</div>';
+
+    const card = document.getElementById('resultCard');
+    card.classList.add('show');
+    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    updateProgress();
+  }
+</script>
+</body>
+</html>

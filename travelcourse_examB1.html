@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Upfront Idiomas — English for Human Resources — Exam B1 (Classes 21–30)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy:   #1A1A2E;
+    --blue:   #1F3A5F;
+    --teal:   #2E7D7D;
+    --teal-l: #e0f2f2;
+    --light:  #F5F7FA;
+    --white:  #ffffff;
+    --border: #d0d5dd;
+    --red:    #8B1A1A;
+    --green:  #1a5c35;
+    --orange: #b85c00;
+    --text:   #1A1A2E;
+    --muted:  #6b7280;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #eef1f6;
+    color: var(--text);
+    min-height: 100vh;
+    padding-bottom: 60px;
+  }
+
+  /* ── HEADER ─────────────────────────────────────────── */
+  .test-header {
+    background: var(--navy);
+    padding: 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,.3);
+  }
+  .header-inner {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 18px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+  }
+  .brand-name {
+    font-family: 'Sora', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -.02em;
+  }
+  .brand-sub {
+    font-size: 11px;
+    color: #8892aa;
+    font-weight: 400;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+  .header-badge {
+    background: var(--teal);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 20px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  /* ── PROGRESS BAR ───────────────────────────────────── */
+  .progress-wrap {
+    background: #2a2d3e;
+    height: 4px;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--teal);
+    transition: width .4s ease;
+    width: 0%;
+  }
+  .progress-label {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 6px 32px;
+    display: flex;
+    justify-content: flex-end;
+    font-size: 11px;
+    color: #8892aa;
+    background: var(--navy);
+  }
+
+  /* ── WRAPPER ────────────────────────────────────────── */
+  .page-wrap {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 32px 24px;
+  }
+
+  /* ── SECTION CARD ───────────────────────────────────── */
+  .section-card {
+    background: var(--white);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 28px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.08);
+  }
+  .section-header {
+    background: var(--blue);
+    padding: 13px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-number {
+    background: var(--teal);
+    color: #fff;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .section-title {
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+  }
+  .section-sub {
+    color: #a8c4cc;
+    font-size: 12px;
+    margin-top: 1px;
+  }
+  .section-body {
+    padding: 0;
+  }
+
+  /* ── QUESTION BLOCK ─────────────────────────────────── */
+  .q-block {
+    padding: 20px 24px;
+    border-bottom: 1px solid #f0f2f5;
+  }
+  .q-block:last-child { border-bottom: none; }
+  .q-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .q-tag {
+    background: var(--teal-l);
+    color: var(--teal);
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+  .q-text {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--navy);
+    line-height: 1.55;
+    margin-bottom: 14px;
+  }
+  .q-text .blank {
+    display: inline-block;
+    min-width: 72px;
+    border-bottom: 2px solid var(--blue);
+    text-align: center;
+    padding: 0 4px;
+  }
+
+  /* ── OPTIONS GRID ───────────────────────────────────── */
+  .options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  @media (max-width: 520px) { .options { grid-template-columns: 1fr; } }
+
+  .opt {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    background: #fff;
+    transition: all .15s;
+    font-size: 13.5px;
+    color: var(--text);
+    text-align: left;
+    user-select: none;
+  }
+  .opt:hover { border-color: var(--teal); background: #f4fafa; }
+  .opt.selected { border-color: var(--blue); background: #eaf1f8; }
+  .opt.correct  { border-color: var(--green); background: #eaf7ef; color: var(--green); cursor: default; }
+  .opt.wrong    { border-color: var(--red);   background: #fdf1f0; color: var(--red);   cursor: default; }
+  .opt.revealed { cursor: default; }
+
+  .opt-letter {
+    width: 24px; height: 24px;
+    border-radius: 6px;
+    background: var(--light);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 12px;
+    flex-shrink: 0;
+    color: var(--blue);
+    transition: all .15s;
+  }
+  .opt.selected .opt-letter { background: var(--blue); color: #fff; border-color: var(--blue); }
+  .opt.correct  .opt-letter { background: var(--green); color: #fff; border-color: var(--green); }
+  .opt.wrong    .opt-letter { background: var(--red);   color: #fff; border-color: var(--red); }
+
+  /* ── LISTENING BOX ──────────────────────────────────── */
+  .listen-box {
+    margin: 0 24px 20px;
+    background: var(--light);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+  }
+  .listen-label {
+    font-size: 11px; font-weight: 700; color: var(--teal);
+    letter-spacing: .1em; text-transform: uppercase; margin-bottom: 10px;
+  }
+  .audio-row {
+    display: flex; align-items: center; gap: 14px;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
+  }
+  .play-btn {
+    width: 40px; height: 40px;
+    background: var(--blue);
+    border: none; border-radius: 50%;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: background .15s;
+  }
+  .play-btn:hover { background: var(--teal); }
+  .play-btn svg { width: 16px; height: 16px; fill: #fff; margin-left: 2px; }
+  .audio-info { flex: 1; }
+  .audio-title { font-size: 13px; font-weight: 600; color: var(--navy); }
+  .audio-hint  { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .audio-note  { font-size: 11px; color: var(--muted); font-style: italic; margin-top: 8px; }
+
+  /* input audio file */
+  .audio-upload {
+    margin-top: 8px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .audio-upload label {
+    background: var(--blue); color: #fff;
+    padding: 5px 12px; border-radius: 6px;
+    font-size: 11px; font-weight: 600; cursor: pointer;
+    letter-spacing: .04em;
+  }
+  .audio-upload span { font-size: 11px; color: var(--muted); }
+  #audioFileInput { display: none; }
+  #audioPlayer { display: block; width: 100%; margin-top: 10px; }
+
+  /* ── READING BOX ────────────────────────────────────── */
+  .reading-box {
+    margin: 0 24px 20px;
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .reading-header {
+    background: var(--light);
+    padding: 10px 18px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--blue);
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+  }
+  .reading-text {
+    padding: 18px;
+    font-size: 13.5px;
+    line-height: 1.85;
+    color: var(--text);
+    border-left: 4px solid var(--teal);
+    margin: 14px;
+    background: #f9fbfb;
+    border-radius: 0 8px 8px 0;
+  }
+  .reading-text p { margin-bottom: 10px; }
+  .reading-text p:last-child { margin-bottom: 0; }
+  .spk { font-weight: 700; color: var(--blue); }
+
+  /* ── WRITING BOX ────────────────────────────────────── */
+  .writing-box {
+    margin: 0 24px 20px;
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+  }
+  .writing-topic {
+    background: var(--teal-l);
+    border: 1.5px solid var(--teal);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--teal);
+    margin-bottom: 14px;
+  }
+  .writing-prompt {
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.65;
+    margin-bottom: 12px;
+  }
+  .writing-hints {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 14px;
+    padding-left: 4px;
+  }
+  .writing-hints li { margin-left: 18px; margin-bottom: 4px; }
+  .writing-hints li strong { color: var(--blue); }
+  textarea {
+    width: 100%;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13.5px;
+    color: var(--text);
+    resize: vertical;
+    min-height: 140px;
+    outline: none;
+    transition: border .15s;
+    line-height: 1.7;
+  }
+  textarea:focus { border-color: var(--teal); }
+  .word-count { text-align: right; font-size: 11px; color: var(--muted); margin-top: 6px; }
+
+  /* ── SUBMIT ─────────────────────────────────────────── */
+  .submit-wrap {
+    text-align: center;
+    padding: 8px 0 32px;
+  }
+  .submit-btn {
+    background: var(--navy);
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    padding: 15px 52px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    letter-spacing: .03em;
+    transition: background .15s, transform .1s;
+    box-shadow: 0 4px 16px rgba(26,26,46,.25);
+  }
+  .submit-btn:hover { background: var(--blue); }
+  .submit-btn:active { transform: scale(.98); }
+  .submit-btn:disabled { background: #9ca3af; cursor: not-allowed; box-shadow: none; }
+  .submit-note { font-size: 12px; color: var(--muted); margin-top: 10px; }
+
+  /* ── RESULT CARD ────────────────────────────────────── */
+  .result-card {
+    display: none;
+    background: #fff;
+    border-radius: 14px;
+    padding: 36px 32px;
+    text-align: center;
+    margin-bottom: 32px;
+    box-shadow: 0 4px 24px rgba(0,0,0,.1);
+    border: 2px solid var(--navy);
+  }
+  .result-card.show { display: block; }
+  .result-eyebrow {
+    font-size: 11px; font-weight: 700; color: var(--muted);
+    letter-spacing: .12em; text-transform: uppercase; margin-bottom: 10px;
+  }
+  .result-score {
+    font-family: 'Sora', sans-serif;
+    font-size: 56px; font-weight: 800;
+    color: var(--navy); line-height: 1;
+  }
+  .result-pct {
+    font-size: 18px; color: var(--muted); margin-top: 4px; margin-bottom: 16px;
+  }
+  .result-grade {
+    display: inline-block;
+    font-size: 18px; font-weight: 700;
+    padding: 8px 28px; border-radius: 8px; margin-bottom: 20px;
+  }
+  .g-a { background: #eaf7ef; color: var(--green); }
+  .g-b { background: #eaf1f8; color: var(--blue); }
+  .g-c { background: #fff8ec; color: var(--orange); }
+  .g-d { background: #fdf1f0; color: var(--red); }
+
+  .result-breakdown {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 8px;
+  }
+  .rb {
+    background: var(--light);
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .rb strong {
+    display: block;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 2px;
+  }
+
+  .print-btn {
+    margin-top: 20px;
+    background: transparent;
+    border: 1.5px solid var(--border);
+    color: var(--muted);
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 9px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .print-btn:hover { border-color: var(--blue); color: var(--blue); }
+
+  @media print {
+    body { background: white; }
+    .test-header, .progress-wrap, .progress-label, .submit-wrap, .print-btn { display: none !important; }
+    .section-card { box-shadow: none; border: 1px solid #ccc; }
+    .opt.correct { background: #eaf7ef !important; -webkit-print-color-adjust: exact; }
+    .opt.wrong   { background: #fdf1f0 !important; }
+    .result-card.show { border: 2px solid #333; }
+  }
+</style>
+
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="test-header">
+  <div class="header-inner">
+    <div>
+      <div class="brand-name">Upfront Idiomas</div>
+      <div class="brand-sub">English for Human Resources — Exam · B1 · Intermediate (Classes 21–30)</div>
+    </div>
+    <div class="header-badge">Exam · B1</div>
+  </div>
+  <div class="progress-wrap"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label"><span id="progressLabel">0 / 44 answered</span></div>
+</header>
+
+<div class="page-wrap">
+
+<!-- RESULT (shown after submit) -->
+<div class="result-card" id="resultCard">
+  <div class="result-eyebrow">Your Result</div>
+  <div class="result-score" id="rScore">0/44</div>
+  <div class="result-pct"  id="rPct">0% correct</div>
+  <div class="result-grade" id="rGrade"></div>
+  <div class="result-breakdown" id="rBreakdown"></div>
+  <button class="print-btn" onclick="window.print()">🖨 Print / Save as PDF</button>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     PART 1 — VOCABULARY &amp; KEY TERMS
+═══════════════════════════════════════════════ -->
+<div class="section-card">
+  <div class="section-header">
+    <div class="section-number">1</div>
+    <div>
+      <div class="section-title">Vocabulary &amp; Key Terms</div>
+      <div class="section-sub">Choose the word that completes the sentence · Escolha a palavra correta</div>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 01</span></div>
+      <div class="q-text">A message shared with the whole company about an important change is called an ______.</div>
+      <div class="options" data-q="1" data-ans="A">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> Announcement</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> Memo</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> Newsletter</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> Update</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 02</span></div>
+      <div class="q-text">A formal complaint made by an employee about a workplace issue is called a ______.</div>
+      <div class="options" data-q="2" data-ans="B">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> Mediation</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> Grievance</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> Investigation</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> Resolution</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 03</span></div>
+      <div class="q-text">Finding a solution that both sides in a conflict can accept means reaching ______.</div>
+      <div class="options" data-q="3" data-ans="A">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> Common ground</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> Root cause</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> Boundary</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> Perspective</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 04</span></div>
+      <div class="q-text">Rules that employees must follow at work are part of the ______.</div>
+      <div class="options" data-q="4" data-ans="C">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> Guideline</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> Audit</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> Code of conduct</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> Ethics</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 05</span></div>
+      <div class="q-text">A feeling of being accepted and valued at work is called ______.</div>
+      <div class="options" data-q="5" data-ans="D">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> Bias</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> Diversity</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> Awareness</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> Belonging</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 06</span></div>
+      <div class="q-text">The percentage of employees who leave a company in a given period is called the ______.</div>
+      <div class="options" data-q="6" data-ans="C">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> Retention</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> Headcount</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> Turnover rate</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> Engagement score</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 07</span></div>
+      <div class="q-text">A person identified to take over a key role in the future is called a ______.</div>
+      <div class="options" data-q="7" data-ans="C">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> Mentor</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> Stakeholder</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> Successor</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> Facilitator</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 08</span></div>
+      <div class="q-text">The ability to understand and manage your own emotions and those of others is called ______.</div>
+      <div class="options" data-q="8" data-ans="C">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> Executive presence</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> Accountability</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> Emotional intelligence</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> Resilience</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 09</span></div>
+      <div class="q-text">A proposed change that is tested on a small scale before full implementation is called a ______.</div>
+      <div class="options" data-q="9" data-ans="C">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> Rollback</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> Consensus</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> Pilot program</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> Concession</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 10</span></div>
+      <div class="q-text">A person who leads and directs a meeting is said to ______ the meeting.</div>
+      <div class="options" data-q="10" data-ans="D">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> Wrap up</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> Recap</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> Escalate</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> Chair</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 11</span></div>
+      <div class="q-text">Making decisions based on information and evidence, instead of guessing, is called ______ decision-making.</div>
+      <div class="options" data-q="11" data-ans="C">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> Transparent</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> Confidential</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> Data-driven</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> Inclusive</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 12</span></div>
+      <div class="q-text">A situation where an employee's personal interests could improperly influence their job decisions is a ______.</div>
+      <div class="options" data-q="12" data-ans="B">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> Whistleblower</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> Conflict of interest</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> Disciplinary action</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> Impact assessment</div>
+      </div>
+    </div>
+
+  </div>
+</div><!-- /section-card -->
+
+<!-- ═══════════════════════════════════════════════
+     PART 2 — FUNCTIONAL EXPRESSIONS
+═══════════════════════════════════════════════ -->
+<div class="section-card">
+  <div class="section-header">
+    <div class="section-number">2</div>
+    <div>
+      <div class="section-title">Functional Expressions</div>
+      <div class="section-sub">Choose the best expression for the situation · Escolha a melhor expressão</div>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 13</span></div>
+      <div class="q-text">You want to say that something has already been shared with the whole company.</div>
+      <div class="options" data-q="13" data-ans="A">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> This has already been communicated.</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> Please cascade this to your team.</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> We value transparency.</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> This channel is for urgent matters only.</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 14</span></div>
+      <div class="q-text">You want to assure someone that their complaint will stay private.</div>
+      <div class="options" data-q="14" data-ans="B">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> An investigation has been opened.</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> This will be treated confidentially.</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> We are committed to fairness.</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> The issue was escalated appropriately.</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 15</span></div>
+      <div class="q-text">You want to suggest finding a solution both sides can accept.</div>
+      <div class="options" data-q="15" data-ans="C">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> Let's de-escalate this conversation.</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> What's the root cause here?</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> Let's find common ground.</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> I understand your perspective.</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 16</span></div>
+      <div class="q-text">You need to remind employees that a training is required by law.</div>
+      <div class="options" data-q="16" data-ans="B">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> You should report any concerns.</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> You must complete this training.</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> You may ask questions at any time.</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> You can't share confidential data.</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 17</span></div>
+      <div class="q-text">You want to describe how a new coaching program improved decision-making.</div>
+      <div class="options" data-q="17" data-ans="B">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> However, results take time.</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> As a result, decision-making improved.</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> On the other hand, some leaders need more support.</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> Despite the challenges, the results were strong.</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 18</span></div>
+      <div class="q-text">You want to propose testing a new HR policy on a small scale before rolling it out fully.</div>
+      <div class="options" data-q="18" data-ans="A">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> We should pilot this before rolling it out fully.</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> This could face some pushback.</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> Can we find a middle ground?</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> We should revisit this policy in six months.</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 19</span></div>
+      <div class="q-text">You want to ask who is responsible for recording what was discussed in a meeting.</div>
+      <div class="options" data-q="19" data-ans="B">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> Let's move to the next item.</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> Who is taking the minutes?</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> Who owns this action item?</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> Are there any blockers?</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 20</span></div>
+      <div class="q-text">You want to say that one HR metric is more important than the others.</div>
+      <div class="options" data-q="20" data-ans="C">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> The data shows a clear trend.</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> This gives us a useful insight.</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> This is the metric that matters most.</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> We need more data before deciding.</div>
+      </div>
+    </div>
+
+  </div>
+</div><!-- /section-card -->
+
+<!-- ═══════════════════════════════════════════════
+     PART 3 — GRAMMAR
+═══════════════════════════════════════════════ -->
+<div class="section-card">
+  <div class="section-header">
+    <div class="section-number">3</div>
+    <div>
+      <div class="section-title">Grammar</div>
+      <div class="section-sub">Choose the correct answer · Escolha a resposta correta</div>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 21</span></div>
+      <div class="q-text">We ___ an important update this morning.</div>
+      <div class="options" data-q="21" data-ans="A">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> have shared</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> shared</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> share</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> are sharing</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 22</span></div>
+      <div class="q-text">___ you ever filed a grievance before?</div>
+      <div class="options" data-q="22" data-ans="A">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> Have</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> Did</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> Do</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> Are</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 23</span></div>
+      <div class="q-text">The investigation ___ last week.</div>
+      <div class="options" data-q="23" data-ans="A">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> was opened</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> opened</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> is opened</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> has opened</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 24</span></div>
+      <div class="q-text">Every important decision ___ by both parties, not by one person alone.</div>
+      <div class="options" data-q="24" data-ans="A">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> is made</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> made</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> was making</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> makes</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 25</span></div>
+      <div class="q-text">If we listen to both sides, we ___ a solution.</div>
+      <div class="options" data-q="25" data-ans="A">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> will find</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> find</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> found</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> would find</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 26</span></div>
+      <div class="q-text">If this continues, it ___ the team's morale.</div>
+      <div class="options" data-q="26" data-ans="A">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> won't help</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> doesn't help</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> not help</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> isn't help</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 27</span></div>
+      <div class="q-text">You ___ complete this training — it's required by law.</div>
+      <div class="options" data-q="27" data-ans="A">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> must</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> should</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> can</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> may</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 28</span></div>
+      <div class="q-text">You ___ ask questions at any time during the session.</div>
+      <div class="options" data-q="28" data-ans="B">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> must</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> may</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> should</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> have to</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 29</span></div>
+      <div class="q-text">She said that inclusion ___ a lot to her.</div>
+      <div class="options" data-q="29" data-ans="B">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> matters</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> mattered</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> matter</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> has mattered</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 30</span></div>
+      <div class="q-text">He told us that the program ___ him a great deal.</div>
+      <div class="options" data-q="30" data-ans="B">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> helps</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> helped</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> help</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> has helped</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 31</span></div>
+      <div class="q-text">The metric ___ we track monthly shows a clear trend.</div>
+      <div class="options" data-q="31" data-ans="A">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> which</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> who</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> whose</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> where</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 32</span></div>
+      <div class="q-text">The employees ___ left the company cited better pay as their main reason.</div>
+      <div class="options" data-q="32" data-ans="B">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> which</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> who</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> whom</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> whose</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 33</span></div>
+      <div class="q-text">We have identified a successor. ___, we haven't finalized the transition plan yet.</div>
+      <div class="options" data-q="33" data-ans="A">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> However</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> Therefore</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> In addition</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> Furthermore</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 34</span></div>
+      <div class="q-text">You must complete this training. ___, you should report any concerns you notice.</div>
+      <div class="options" data-q="34" data-ans="C">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> However</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> On the other hand</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> In addition</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> Despite</div>
+      </div>
+    </div>
+
+  </div>
+</div><!-- /section-card -->
+
+<!-- ═══════════════════════════════════════════════
+     PART 4 — READING COMPREHENSION
+═══════════════════════════════════════════════ -->
+<div class="section-card">
+  <div class="section-header">
+    <div class="section-number">4</div>
+    <div>
+      <div class="section-title">Reading Comprehension</div>
+      <div class="section-sub">Read the dialogue and answer · Leia o diálogo e responda</div>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="q-block" style="padding-bottom:0; border-bottom:none;">
+      <div class="reading-box">
+        <div class="reading-header">Dialogue — Resolving a Team Conflict</div>
+        <div class="reading-text">
+          <p><span class="spk">Camila:</span> Thiago, I've received a grievance from two employees who work on your team.</p>
+          <p><span class="spk">Thiago:</span> I heard about it. Ana and Bruno, who both handle client accounts, have been in conflict for weeks.</p>
+          <p><span class="spk">Camila:</span> That's right. Ana told me that Bruno often interrupts her during meetings.</p>
+          <p><span class="spk">Thiago:</span> I see. If we don't address this soon, it will affect the whole team's morale.</p>
+          <p><span class="spk">Camila:</span> Agreed. We should schedule a mediation session this week.</p>
+          <p><span class="spk">Thiago:</span> I can facilitate it myself, or we could bring in someone from Employee Relations.</p>
+          <p><span class="spk">Camila:</span> Actually, this case should be handled by someone who is neutral, so Employee Relations should lead it.</p>
+          <p><span class="spk">Thiago:</span> That makes sense. What's the next step?</p>
+          <p><span class="spk">Camila:</span> I'll set up the meeting and make sure everyone understands the confidentiality policy.</p>
+          <p><span class="spk">Thiago:</span> Perfect. I'm confident we can find a resolution that works for both of them.</p>
+        </div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 35</span></div>
+      <div class="q-text">Who filed the grievance?</div>
+      <div class="options" data-q="35" data-ans="C">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> Camila</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> Thiago</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> Ana and Bruno</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> Employee Relations</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 36</span></div>
+      <div class="q-text">What did Ana say about Bruno?</div>
+      <div class="options" data-q="36" data-ans="B">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> That he is late every day</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> That he often interrupts her during meetings</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> That he refuses to work with clients</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> That he filed a complaint against her</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 37</span></div>
+      <div class="q-text">According to Thiago, what will happen if the conflict isn't addressed?</div>
+      <div class="options" data-q="37" data-ans="B">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> Nothing will change</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> It will affect the team's morale</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> Ana will resign</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> The client will be lost</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 38</span></div>
+      <div class="q-text">Who should lead the mediation, according to Camila?</div>
+      <div class="options" data-q="38" data-ans="C">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> Thiago, because he is their manager</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> Camila herself</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> Someone neutral from Employee Relations</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> Ana and Bruno should resolve it alone</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 39</span></div>
+      <div class="q-text">What will Camila make sure everyone understands?</div>
+      <div class="options" data-q="39" data-ans="B">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> The new code of conduct</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> The confidentiality policy</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> The company's turnover rate</div>
+        <div class="opt" data-v="D"><span class="opt-letter">D</span> The succession plan</div>
+      </div>
+    </div>
+
+  </div>
+</div><!-- /section-card -->
+
+<!-- ═══════════════════════════════════════════════
+     PART 5 — LISTENING COMPREHENSION
+═══════════════════════════════════════════════ -->
+<div class="section-card">
+  <div class="section-header">
+    <div class="section-number">5</div>
+    <div>
+      <div class="section-title">Listening Comprehension</div>
+      <div class="section-sub">Listen and answer · Ouça e responda</div>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="q-block" style="padding-bottom:0;border-bottom:none;">
+      <div class="listen-box">
+        <div class="listen-label">Audio — Employee Relations Case Study</div>
+        <div class="audio-row">
+          <button class="play-btn" onclick="togglePlay()">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          </button>
+          <div class="audio-info">
+            <div class="audio-title">🎧 Audio — Employee Relations Case Study</div>
+            <div class="audio-hint">Peça ao professor para ler o roteiro em voz alta (2x) ou fazer upload de um áudio gravado.</div>
+          </div>
+        </div>
+        <audio id="audioPlayer" controls style="width:100%;margin-top:12px;border-radius:8px;display:none;"></audio>
+        <div class="audio-upload">
+          <label for="audioFileInput">Upload Audio</label>
+          <input type="file" id="audioFileInput" accept="audio/*" onchange="loadAudio(this)">
+          <span id="audioFileName">Nenhum arquivo selecionado.</span>
+        </div>
+        <details style="margin-top:12px;">
+          <summary style="cursor:pointer;font-size:11px;font-weight:700;color:var(--teal);letter-spacing:.05em;text-transform:uppercase;">Roteiro (apenas para o professor ler em voz alta)</summary>
+          <p style="margin-top:10px;font-size:13px;line-height:1.75;color:var(--text);background:#f9fbfb;border-left:4px solid var(--teal);padding:14px;border-radius:0 8px 8px 0;">This is a short case study on workplace mediation, Case File 118-C. Six weeks ago, an employee named Marcus filed a formal complaint about unfair shift scheduling in the warehouse team. The complaint reached the regional HR office within two days, and an investigator named Elena Cruz was assigned to review it. Elena interviewed five colleagues and checked the schedule records, keeping every detail private throughout the process. After three weeks, Marcus and his supervisor agreed to sit down together with a neutral facilitator. The meeting lasted ninety minutes, and by the end, they had built a new rotation system that both sides accepted. Morale in the warehouse team improved noticeably afterward, and no further complaints were filed that quarter. This case shows how quick action and confidentiality can rebuild trust.</p>
+        </details>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 40</span></div>
+      <div class="q-text">Who was assigned as the investigator in the case?</div>
+      <div class="options" data-q="40" data-ans="A">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> Elena Cruz</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> Marcus</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> Bianca</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 41</span></div>
+      <div class="q-text">How long did the meeting between Marcus and his supervisor last?</div>
+      <div class="options" data-q="41" data-ans="A">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> Ninety minutes</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> Thirty minutes</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> Two hours</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 42</span></div>
+      <div class="q-text">How many colleagues did Elena interview?</div>
+      <div class="options" data-q="42" data-ans="A">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> Five</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> Two</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> Ten</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 43</span></div>
+      <div class="q-text">What did Marcus originally file a complaint about?</div>
+      <div class="options" data-q="43" data-ans="A">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> Unfair shift scheduling</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> A salary dispute</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> A safety violation</div>
+      </div>
+    </div>
+    <div class="q-block">
+      <div class="q-meta"><span class="q-tag">Q 44</span></div>
+      <div class="q-text">How many weeks after the complaint was filed did Marcus and his supervisor meet with a facilitator?</div>
+      <div class="options" data-q="44" data-ans="B">
+        <div class="opt" data-v="A"><span class="opt-letter">A</span> One week</div>
+        <div class="opt" data-v="B"><span class="opt-letter">B</span> Three weeks</div>
+        <div class="opt" data-v="C"><span class="opt-letter">C</span> Six weeks</div>
+      </div>
+    </div>
+
+  </div>
+</div><!-- /section-card -->
+
+<!-- ═══════════════════════════════════════════════
+     PART 6 — WRITING (manual grading)
+═══════════════════════════════════════════════ -->
+<div class="section-card">
+  <div class="section-header">
+    <div class="section-number">6</div>
+    <div>
+      <div class="section-title">Writing</div>
+      <div class="section-sub">Correção manual do professor · Not auto-graded</div>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="writing-box">
+      <div class="writing-topic">Conflict Resolution Update</div>
+      <div class="writing-prompt">Write an email (8–10 sentences) to a team explaining the outcome of a workplace conflict that was resolved through mediation.</div>
+      <ul class="writing-hints">
+          <li><strong>Use Present Perfect</strong> to summarize what has happened so far.</li>
+          <li><strong>Use the Passive Voice</strong> at least once (e.g., 'the issue was resolved').</li>
+          <li><strong>Use at least one Relative Clause</strong> with who, which or that.</li>
+          <li><strong>Include vocabulary</strong> from this level (e.g., grievance, mediation, resolution, confidentiality).</li>
+      </ul>
+      <textarea id="writingArea" placeholder="Escreva sua resposta aqui... (mínimo 70 palavras)"></textarea>
+      <div class="word-count" id="wordCount">0 palavras</div>
+      <div class="submit-note" style="text-align:left;margin-top:10px;">Esta seção é corrigida manualmente pelo professor e não conta para a pontuação automática.</div>
+    </div>
+  </div>
+
+</div><!-- /section-card -->
+
+<!-- SUBMIT -->
+<div class="submit-wrap">
+  <button class="submit-btn" id="submitBtn" onclick="submitTest()">Submit Test &amp; See Results</button>
+  <div class="submit-note">Make sure all 44 multiple-choice questions are answered before submitting.</div>
+</div>
+
+</div><!-- /page-wrap -->
+
+<script>
+  const answers = {};
+  const TOTAL   = 44;
+  let   done    = false;
+
+  document.querySelectorAll('.options').forEach(group => {
+    group.querySelectorAll('.opt').forEach(opt => {
+      opt.addEventListener('click', () => {
+        if (done) return;
+        const q = group.dataset.q;
+        group.querySelectorAll('.opt').forEach(o => o.classList.remove('selected'));
+        opt.classList.add('selected');
+        answers[q] = opt.dataset.v;
+        updateProgress();
+      });
+    });
+  });
+
+  function updateProgress() {
+    const n = Object.keys(answers).length;
+    document.getElementById('progressLabel').textContent = n + ' / ' + TOTAL + ' answered';
+    document.getElementById('progressFill').style.width  = (n / TOTAL * 100) + '%';
+  }
+
+  function loadAudio(input) {
+    if (input.files && input.files[0]) {
+      const url = URL.createObjectURL(input.files[0]);
+      const player = document.getElementById('audioPlayer');
+      player.src = url;
+      player.style.display = 'block';
+      document.getElementById('audioFileName').textContent = input.files[0].name;
+    }
+  }
+
+  function togglePlay() {
+    const p = document.getElementById('audioPlayer');
+    if (!p.src) return;
+    p.paused ? p.play() : p.pause();
+  }
+
+  const wa = document.getElementById('writingArea');
+  if (wa) {
+    wa.addEventListener('input', () => {
+      const words = wa.value.trim().length ? wa.value.trim().split(/\s+/).length : 0;
+      document.getElementById('wordCount').textContent = words + ' palavra' + (words !== 1 ? 's' : '');
+    });
+  }
+
+  function submitTest() {
+    done = true;
+    document.getElementById('submitBtn').disabled = true;
+
+    let correct = 0;
+    const parts = { p1: 0, p2: 0, p3: 0, p4: 0, p5: 0 };
+
+    document.querySelectorAll('.options').forEach(group => {
+      const q   = parseInt(group.dataset.q);
+      const ans = group.dataset.ans;
+      const sel = answers[String(q)];
+
+      group.querySelectorAll('.opt').forEach(opt => {
+        opt.classList.add('revealed');
+        opt.style.cursor = 'default';
+        if (opt.dataset.v === ans) {
+          opt.classList.add('correct');
+          opt.classList.remove('selected');
+        } else if (opt.classList.contains('selected')) {
+          opt.classList.add('wrong');
+          opt.classList.remove('selected');
+        }
+      });
+
+      if (sel === ans) {
+        correct++;
+        if (q <= 12) parts.p1++;
+        else if (q <= 20) parts.p2++;
+        else if (q <= 34) parts.p3++;
+        else if (q <= 39) parts.p4++;
+        else parts.p5++;
+      }
+    });
+
+    const pct = Math.round(correct / TOTAL * 100);
+    let grade, gc;
+    if (pct >= 90) { grade = 'A — Excellent!';          gc = 'g-a'; }
+    else if (pct >= 75) { grade = 'B — Good job!';      gc = 'g-b'; }
+    else if (pct >= 60) { grade = 'C — Keep practicing';gc = 'g-c'; }
+    else                { grade = 'D — Review content'; gc = 'g-d'; }
+
+    document.getElementById('rScore').textContent   = correct + '/' + TOTAL;
+    document.getElementById('rPct').textContent     = pct + '% correct';
+    document.getElementById('rGrade').textContent   = grade;
+    document.getElementById('rGrade').className     = 'result-grade ' + gc;
+    document.getElementById('rBreakdown').innerHTML =
+      '<div class="rb"><strong>' + parts.p1 + '/12</strong>Vocabulary</div>' +
+      '<div class="rb"><strong>' + parts.p2 + '/8</strong>Expressions</div>' +
+      '<div class="rb"><strong>' + parts.p3 + '/14</strong>Grammar</div>' +
+      '<div class="rb"><strong>' + parts.p4 + '/5</strong>Reading</div>' +
+      '<div class="rb"><strong>' + parts.p5 + '/5</strong>Listening</div>';
+
+    const card = document.getElementById('resultCard');
+    card.classList.add('show');
+    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    updateProgress();
+  }
+</script>
+</body>
+</html>
