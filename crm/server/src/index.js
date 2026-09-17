@@ -3,7 +3,7 @@ import session from 'express-session';
 import path from 'node:path';
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { isEmpty } from './db.js'; // also ensures schema is applied before routes touch the db
+import { isEmpty, all } from './db.js'; // also ensures schema is applied before routes touch the db
 import { SqliteSessionStore } from './lib/sqliteSessionStore.js';
 
 import authRoutes from './routes/auth.js';
@@ -96,6 +96,13 @@ async function start() {
     console.log('Banco de dados vazio — gerando dados de demonstração...');
     await import('./seed.js');
   }
+
+  // Diagnostic boot log: always printed (not just on first seed), so the
+  // Hostinger Runtime Logs make it obvious whether this boot found the
+  // expected users already there or started from a reset/empty database —
+  // useful signal if login/session problems return after a restart.
+  const userRows = all('SELECT username, role, active FROM users ORDER BY role, username');
+  console.log(`Usuários no banco neste boot (${userRows.length}):`, userRows.map((u) => `${u.username}(${u.role}${u.active ? '' : ',inativo'})`).join(', '));
 
   // Bind explicitly to 0.0.0.0: most PaaS/container deploy targets (including
   // Hostinger's Web Apps) route external traffic to the container's public

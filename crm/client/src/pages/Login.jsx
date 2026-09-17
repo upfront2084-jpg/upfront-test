@@ -40,7 +40,16 @@ export default function Login() {
           </div>
           <div className="field">
             <label>Senha</label>
-            <input className="input" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+            <input
+              className="input"
+              type="password"
+              autoCapitalize="none"
+              autoCorrect="off"
+              spellCheck="false"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
           </div>
           <button className="btn btn-primary" style={{ width: '100%', justifyContent: 'center' }} disabled={busy}>
             {busy ? 'Entrando…' : 'Entrar'}
