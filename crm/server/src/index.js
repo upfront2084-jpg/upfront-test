@@ -4,6 +4,7 @@ import path from 'node:path';
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { isEmpty } from './db.js'; // also ensures schema is applied before routes touch the db
+import { SqliteSessionStore } from './lib/sqliteSessionStore.js';
 
 import authRoutes from './routes/auth.js';
 import leadsRoutes from './routes/leads.js';
@@ -27,6 +28,7 @@ app.set('trust proxy', 1);
 app.use(
   session({
     name: 'upfront_crm_sid',
+    store: new SqliteSessionStore(),
     secret: process.env.SESSION_SECRET || 'upfront-crm-dev-secret-change-me',
     resave: false,
     saveUninitialized: false,

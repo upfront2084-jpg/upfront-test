@@ -5,6 +5,16 @@
 
 PRAGMA foreign_keys = ON;
 
+-- Login sessions, persisted here (instead of left in process memory) so
+-- a logged-in user stays logged in across server restarts — some hosting
+-- runtimes recycle the Node process between requests, which would
+-- otherwise silently log everyone back out mid-session.
+CREATE TABLE IF NOT EXISTS sessions (
+  sid TEXT PRIMARY KEY,
+  sess TEXT NOT NULL,
+  expires INTEGER NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS users (
   id TEXT PRIMARY KEY,
   name TEXT NOT NULL,
