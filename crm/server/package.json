@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "node --watch --env-file-if-exists=.env src/index.js",
     "start": "node --env-file-if-exists=.env src/index.js",
-    "seed": "node src/seed.js"
+    "seed": "node src/seed.js",
+    "build": "echo 'nothing to build: client is pre-built and shipped in ../client/dist'"
   },
   "dependencies": {
     "express": "^4.21.2",
