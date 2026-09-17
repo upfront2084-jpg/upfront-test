@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import { ROLE_LABELS } from '../lib/constants.js';
 import { initials } from '../lib/format.js';
+import { api } from '../api.js';
 import GlobalSearch from './GlobalSearch.jsx';
+import BrandMark from './BrandMark.jsx';
 
 const NAV = [
   { group: 'Visão geral', items: [{ to: '/', label: 'Dashboard', icon: '📊', roles: ['admin', 'manager', 'agent', 'teacher'] }] },
@@ -11,7 +13,7 @@ const NAV = [
     group: 'Vendas',
     items: [
       { to: '/leads', label: 'Leads', icon: '🧑‍🎓', roles: ['admin', 'manager', 'agent', 'teacher'] },
-      { to: '/pipeline', label: 'Funil (Kanban)', icon: '🗂️', roles: ['admin', 'manager', 'agent'] },
+      { to: '/pipeline', label: 'Funil de Vendas', icon: '🗂️', roles: ['admin', 'manager', 'agent'] },
       { to: '/tasks', label: 'Tarefas de Hoje', icon: '✅', roles: ['admin', 'manager', 'agent', 'teacher'] },
       { to: '/recovery', label: 'Recuperação', icon: '♻️', roles: ['admin', 'manager', 'agent'] },
       { to: '/campaigns', label: 'Campanhas', icon: '📣', roles: ['admin', 'manager'] },
@@ -31,7 +33,12 @@ const NAV = [
 export default function Layout() {
   const { user, logout } = useAuth();
   const [open, setOpen] = useState(false);
+  const [overdueCount, setOverdueCount] = useState(0);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    api.get('/tasks?scope=overdue').then((r) => setOverdueCount(r.tasks.length)).catch(() => {});
+  }, []);
 
   async function handleLogout() {
     await logout();
@@ -43,7 +50,7 @@ export default function Layout() {
       <div className={`sidebar-backdrop ${open ? 'open' : ''}`} onClick={() => setOpen(false)} />
       <aside className={`sidebar ${open ? 'open' : ''}`}>
         <div className="brand">
-          <img src="/favicon.svg" className="mark" alt="Upfront" />
+          <BrandMark size={38} />
           <div className="txt">
             <div>Upfront CRM</div>
             <div>Gestão de Leads</div>
@@ -66,12 +73,20 @@ export default function Layout() {
                   >
                     <span className="ic">{it.icon}</span>
                     <span className="lbl">{it.label}</span>
+                    {it.to === '/tasks' && overdueCount > 0 && <span className="badge-count">{overdueCount}</span>}
                   </NavLink>
                 ))}
               </div>
             );
           })}
         </nav>
+
+        <div className="sidebar-promo">
+          <div className="sidebar-promo-icon">✈️</div>
+          <div className="sidebar-promo-title">Mais pessoas, mais histórias em inglês.</div>
+          <div className="sidebar-promo-brand">UPFRONT</div>
+        </div>
+
         <div className="sidebar-foot">
           <div className="user-chip">
             <span className="av">{initials(user.name)}</span>
@@ -84,10 +99,21 @@ export default function Layout() {
         </div>
       </aside>
       <main className="main">
-        <div className="hstack mb12">
+        <div className="topbar-strip">
           <button className="mobile-menu-btn" onClick={() => setOpen(true)} aria-label="Abrir menu">☰</button>
-          <div style={{ flex: 1 }} />
           <GlobalSearch />
+          <div style={{ flex: 1 }} />
+          <button className="icon-btn" onClick={() => navigate('/tasks')} aria-label="Tarefas atrasadas" style={{ position: 'relative' }}>
+            🔔
+            {overdueCount > 0 && <span className="notif-dot">{overdueCount}</span>}
+          </button>
+          <div className="topbar-user hide-mobile">
+            <span className="av">{initials(user.name)}</span>
+            <div>
+              <div className="name">{user.name}</div>
+              <div className="role">{ROLE_LABELS[user.role]}</div>
+            </div>
+          </div>
         </div>
         <Outlet />
       </main>

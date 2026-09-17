@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
+import BrandMark from '../components/BrandMark.jsx';
 
 export default function Login() {
   const { login, error } = useAuth();
@@ -20,7 +21,7 @@ export default function Login() {
   return (
     <div className="login-wrap">
       <div className="login-card">
-        <img src="/favicon.svg" className="mark" alt="Upfront" />
+        <div className="mark"><BrandMark size={46} /></div>
         <h1>Entrar no Upfront CRM</h1>
         <p className="sub">CRM e gestão de leads da escola de inglês</p>
         <form onSubmit={submit}>

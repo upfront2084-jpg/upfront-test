@@ -247,3 +247,61 @@ table.data-table tbody tr:hover { background: var(--surface-2); cursor: pointer;
 .stat-inline .s { }
 .stat-inline .s .v { font-size: 20px; font-weight: 800; }
 .stat-inline .s .l { font-size: 11px; color: var(--text-faint); }
+
+/* ============ TOPBAR STRIP (persistent, above page content) ============ */
+.topbar-strip { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.topbar-user { display: flex; align-items: center; gap: 9px; padding: 6px 10px 6px 6px; border-radius: 12px; background: var(--surface); border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
+.topbar-user .av { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), #5B93FF); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; flex-shrink: 0; }
+.topbar-user .name { font-size: 12.5px; font-weight: 700; }
+.topbar-user .role { font-size: 10.5px; color: var(--text-faint); }
+.notif-dot { position: absolute; top: 2px; right: 2px; background: var(--danger); color: #fff; font-size: 9px; font-weight: 800; min-width: 15px; height: 15px; border-radius: 20px; display: flex; align-items: center; justify-content: center; padding: 0 3px; }
+@media (max-width: 700px) { .hide-mobile { display: none; } }
+
+/* ============ SIDEBAR PROMO CARD ============ */
+.sidebar-promo { margin: 14px 4px; padding: 16px 14px; border-radius: 16px; background: linear-gradient(135deg, #1E4FCF, #2F6FED 60%, #5B93FF); position: relative; overflow: hidden; }
+.sidebar-promo-icon { font-size: 20px; margin-bottom: 8px; transform: rotate(-20deg); display: inline-block; }
+.sidebar-promo-title { font-size: 12.5px; font-weight: 700; color: #fff; line-height: 1.4; margin-bottom: 10px; }
+.sidebar-promo-brand { font-size: 11px; font-weight: 800; letter-spacing: .08em; color: rgba(255,255,255,.85); }
+
+/* ============ DASHBOARD KPI CARDS v2 (colored, with trend) ============ */
+.kpi-grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; margin-bottom: 22px; }
+.kpi-card-2 { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow-sm); }
+.kpi-card-2 .kpi-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.kpi-card-2 .kpi-icon { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+.kpi-card-2 .kpi-value { font-size: 28px; font-weight: 800; letter-spacing: -.02em; }
+.kpi-card-2 .kpi-label { font-size: 12.5px; color: var(--text-faint); font-weight: 600; margin-top: 3px; }
+.trend-badge { font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 20px; }
+.trend-badge.up { background: var(--success-soft); color: var(--success); }
+.trend-badge.down { background: var(--danger-soft); color: var(--danger); }
+
+/* ============ DASHBOARD LAYOUT ROWS ============ */
+.dash-row-3 { display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 14px; margin-bottom: 20px; align-items: stretch; }
+.dash-row-2 { display: grid; grid-template-columns: 1.4fr 1fr; gap: 14px; margin-bottom: 8px; align-items: start; }
+@media (max-width: 1100px) { .dash-row-3 { grid-template-columns: 1fr; } .dash-row-2 { grid-template-columns: 1fr; } }
+
+/* ============ FUNNEL PANEL ============ */
+.funnel-list { display: flex; flex-direction: column; gap: 13px; margin-top: 6px; }
+.funnel-row-head { display: flex; justify-content: space-between; font-size: 12.5px; font-weight: 700; margin-bottom: 5px; }
+.funnel-track { height: 9px; border-radius: 20px; background: var(--surface-3); overflow: hidden; }
+.funnel-fill { height: 100%; border-radius: 20px; transition: width .3s; }
+
+/* ============ DONUT ============ */
+.donut-wrap { position: relative; }
+.donut-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; pointer-events: none; }
+.donut-total { font-size: 22px; font-weight: 800; }
+.donut-label { font-size: 10.5px; color: var(--text-faint); font-weight: 600; }
+.donut-legend { display: flex; flex-direction: column; gap: 7px; margin-top: 10px; max-height: 130px; overflow-y: auto; }
+.donut-legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+.donut-legend-item .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+/* ============ STATUS LIST ============ */
+.status-list { display: flex; flex-direction: column; gap: 11px; margin-top: 8px; max-height: 260px; overflow-y: auto; }
+.status-row { display: flex; align-items: center; gap: 9px; font-size: 13px; }
+.status-row .dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+
+/* ============ MINI TABLE / TASK ROWS ============ */
+.mini-table thead th { font-size: 10px; padding: 8px 10px; }
+.mini-table tbody td { padding: 9px 10px; font-size: 12.5px; }
+.task-mini-row { display: flex; align-items: center; gap: 9px; padding: 8px 2px; font-size: 13px; border-bottom: 1px solid var(--border); }
+.task-mini-row:last-child { border-bottom: none; }
+.grow { flex: 1; min-width: 0; }
