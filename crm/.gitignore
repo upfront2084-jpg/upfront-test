@@ -2,5 +2,6 @@ node_modules/
 server/src/data/*.sqlite
 server/src/data/*.sqlite-*
 client/dist/
+server/public/
 .env
 *.log

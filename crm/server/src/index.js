@@ -54,9 +54,14 @@ app.use('/api', requireAuth, dashboardRoutes);
 app.use('/api', requireAuth, reportsRoutes);
 app.use('/api', requireAuth, searchRoutes);
 
-// In production this server also serves the built React client
-// (see ../client, built into ../client/dist by `npm run build`).
-const clientDist = path.join(__dirname, '..', '..', 'client', 'dist');
+// In production this server also serves the built React client. It checks
+// two locations: server/public (a self-contained copy, used for deploy
+// targets that only upload/run the server/ folder on its own) and the
+// sibling ../client/dist (used in local dev and VPS deploys where the
+// whole crm/ monorepo is present together).
+const selfContainedDist = path.join(__dirname, '..', 'public');
+const siblingDist = path.join(__dirname, '..', '..', 'client', 'dist');
+const clientDist = fs.existsSync(path.join(selfContainedDist, 'index.html')) ? selfContainedDist : siblingDist;
 if (fs.existsSync(clientDist)) {
   app.use(express.static(clientDist));
   app.get(/^(?!\/api).*/, (req, res) => {
