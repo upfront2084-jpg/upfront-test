@@ -37,6 +37,17 @@ export default function Users() {
     reload();
   }
 
+  async function deleteUser(u) {
+    if (!window.confirm(`Excluir o usuário "${u.name}" (${u.username})? Isso só é possível se ele não tiver histórico no sistema.`)) return;
+    try {
+      await api.del(`/users/${u.id}`);
+      push(`Usuário "${u.username}" excluído`, 'success');
+      reload();
+    } catch (err) {
+      push(err.message, 'error');
+    }
+  }
+
   async function submitReset(e) {
     e.preventDefault();
     setResetting(true);
@@ -82,6 +93,7 @@ export default function Users() {
                       <div className="hstack">
                         <button className="btn btn-ghost btn-sm" onClick={() => { setResetTarget(u); setNewPassword(''); }}>Redefinir senha</button>
                         <button className="btn btn-ghost btn-sm" onClick={() => toggleActive(u)}>{u.active ? 'Desativar' : 'Ativar'}</button>
+                        <button className="btn btn-ghost btn-sm" style={{ color: 'var(--danger)' }} onClick={() => deleteUser(u)}>Excluir</button>
                       </div>
                     </td>
                   </tr>

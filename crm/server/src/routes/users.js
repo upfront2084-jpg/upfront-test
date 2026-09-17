@@ -65,4 +65,26 @@ router.put('/users/:id/password', requireRole('admin'), (req, res) => {
   res.json({ ok: true });
 });
 
+// Hard delete — only allowed for users with no history attached (leads,
+// tasks, notes, interactions, campaigns they own/created reference their
+// id and must never be orphaned). Anyone with history should be
+// deactivated instead, which keeps that history intact.
+router.delete('/users/:id', requireRole('admin'), (req, res) => {
+  const u = one('SELECT * FROM users WHERE id = ?', [req.params.id]);
+  if (!u) return res.status(404).json({ error: 'Usuário não encontrado' });
+  if (u.id === req.user.id) return res.status(400).json({ error: 'Você não pode excluir seu próprio usuário' });
+  if (u.role === 'admin') {
+    const otherAdmins = one("SELECT COUNT(*) as n FROM users WHERE role = 'admin' AND active = 1 AND id != ?", [u.id]);
+    if (otherAdmins.n === 0) return res.status(400).json({ error: 'Não é possível excluir o único administrador ativo' });
+  }
+  try {
+    run('DELETE FROM users WHERE id = ?', [u.id]);
+  } catch {
+    return res.status(409).json({
+      error: 'Este usuário já tem histórico no sistema (leads, tarefas ou campanhas vinculadas) e não pode ser excluído sem perder esse histórico. Use "Desativar" para bloquear o acesso mantendo o histórico.',
+    });
+  }
+  res.json({ ok: true });
+});
+
 export default router;
