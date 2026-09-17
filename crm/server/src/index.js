@@ -3,7 +3,16 @@ import session from 'express-session';
 import path from 'node:path';
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import './db.js'; // ensures schema is applied before routes touch the db
+import { isEmpty } from './db.js'; // also ensures schema is applied before routes touch the db
+
+// Auto-seed on first boot against an empty database. This makes the app
+// self-sufficient on deploy targets with no shell/SSH access to run
+// `npm run seed` manually — the demo data appears the first time the
+// server starts against a fresh database, and never runs again afterward.
+if (isEmpty()) {
+  console.log('Banco de dados vazio — gerando dados de demonstração...');
+  await import('./seed.js');
+}
 
 import authRoutes from './routes/auth.js';
 import leadsRoutes from './routes/leads.js';
