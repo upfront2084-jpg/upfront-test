@@ -224,6 +224,7 @@ export default function LeadDetail() {
               <div><b>Frequência:</b> {lead.enrollment.frequency || '—'}</div>
               <div><b>Horário:</b> {lead.enrollment.scheduleText || '—'}</div>
               <div><b>Valor mensal:</b> {fmtMoney(lead.enrollment.monthlyValue)}</div>
+              {!!lead.enrollment.discountValue && <div><b>Desconto aplicado:</b> {fmtMoney(lead.enrollment.discountValue)}</div>}
               <div><b>Forma de pagamento:</b> {lead.enrollment.paymentMethod || '—'}</div>
               <div><b>Turma inicial:</b> {lead.enrollment.startingClass || '—'}</div>
               <div><b>Observações:</b> {lead.enrollment.notes || '—'}</div>

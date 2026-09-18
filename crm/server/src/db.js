@@ -38,6 +38,15 @@ const connectionConfig = process.env.DATABASE_URL
 
 export const pool = new pg.Pool(connectionConfig);
 
+// pg emits 'error' on the pool when an idle client's connection is dropped
+// server-side (Supabase's pooler recycles idle connections routinely) — with
+// no listener, Node treats that as an uncaught exception and kills the whole
+// process, which is what was causing the app to intermittently go down
+// (surfacing to users as "Failed to fetch").
+pool.on('error', (err) => {
+  console.error('Postgres pool idle client error (connection recycled, not fatal):', err.message);
+});
+
 // Lets transaction() run a whole callback on one dedicated client without
 // every call site having to thread a connection through — one()/all()/run()
 // below check this store first and fall back to the shared pool when not

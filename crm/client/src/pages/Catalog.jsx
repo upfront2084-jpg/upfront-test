@@ -37,6 +37,8 @@ export default function Catalog() {
   const [newTeacher, setNewTeacher] = useState({ name: '', email: '', levels: '' });
   const [newPackage, setNewPackage] = useState({ name: '', description: '', hoursPerWeek: '', durationMonths: '', price: '' });
   const [bulkDeleting, setBulkDeleting] = useState(false);
+  const [editingPackageId, setEditingPackageId] = useState(null);
+  const [editPackage, setEditPackage] = useState(null);
 
   const srcSel = useBulkSelect();
   const tchSel = useBulkSelect();
@@ -123,6 +125,29 @@ export default function Catalog() {
       await api.post('/packages', { ...newPackage, hoursPerWeek: Number(newPackage.hoursPerWeek) || null, durationMonths: Number(newPackage.durationMonths) || null, price: Number(newPackage.price) || null });
       setNewPackage({ name: '', description: '', hoursPerWeek: '', durationMonths: '', price: '' });
       push('Pacote adicionado', 'success');
+      reload();
+    } catch (err) {
+      push(err.message, 'error');
+    }
+  }
+  function startEditPackage(p) {
+    setEditingPackageId(p.id);
+    setEditPackage({ name: p.name, description: p.description || '', hoursPerWeek: p.hoursPerWeek ?? '', durationMonths: p.durationMonths ?? '', price: p.price ?? '' });
+  }
+  function cancelEditPackage() {
+    setEditingPackageId(null);
+    setEditPackage(null);
+  }
+  async function saveEditPackage(id) {
+    try {
+      await api.put(`/packages/${id}`, {
+        ...editPackage,
+        hoursPerWeek: Number(editPackage.hoursPerWeek) || null,
+        durationMonths: Number(editPackage.durationMonths) || null,
+        price: Number(editPackage.price) || null,
+      });
+      push('Pacote atualizado', 'success');
+      cancelEditPackage();
       reload();
     } catch (err) {
       push(err.message, 'error');
@@ -228,16 +253,35 @@ export default function Catalog() {
             <BulkBar items={packages} selected={pkgSel.selected} toggleAll={pkgSel.toggleAll} clear={pkgSel.clear} count={pkgSel.selected.size} onDelete={bulkDeletePackages} deleting={bulkDeleting} label="Remover selecionados" />
             <div className="stack">
               {packages.map((p) => (
-                <div key={p.id} className="hstack" style={{ justifyContent: 'space-between' }}>
-                  <label className="hstack" style={{ cursor: 'pointer' }}>
-                    <input type="checkbox" checked={pkgSel.selected.has(p.id)} onChange={() => pkgSel.toggle(p.id)} />
-                    <div>
-                      <div style={{ fontWeight: 700 }}>{p.name} — {fmtMoney(p.price)}/mês</div>
-                      <div className="small muted">{p.description} · {p.hoursPerWeek}x/semana · {p.durationMonths} meses</div>
+                editingPackageId === p.id ? (
+                  <div key={p.id} className="card" style={{ background: 'var(--bg-subtle, #f7f7f8)' }}>
+                    <div className="field"><label>Nome</label><input className="input" value={editPackage.name} onChange={(e) => setEditPackage((f) => ({ ...f, name: e.target.value }))} /></div>
+                    <div className="field"><label>Descrição</label><input className="input" value={editPackage.description} onChange={(e) => setEditPackage((f) => ({ ...f, description: e.target.value }))} /></div>
+                    <div className="field-row">
+                      <div className="field"><label>Horas/semana</label><input className="input" type="number" value={editPackage.hoursPerWeek} onChange={(e) => setEditPackage((f) => ({ ...f, hoursPerWeek: e.target.value }))} /></div>
+                      <div className="field"><label>Duração (meses)</label><input className="input" type="number" value={editPackage.durationMonths} onChange={(e) => setEditPackage((f) => ({ ...f, durationMonths: e.target.value }))} /></div>
                     </div>
-                  </label>
-                  <button className="btn btn-ghost btn-sm" onClick={() => removePackage(p.id)}>Remover</button>
-                </div>
+                    <div className="field"><label>Valor mensal (R$)</label><input className="input" type="number" step="0.01" value={editPackage.price} onChange={(e) => setEditPackage((f) => ({ ...f, price: e.target.value }))} /></div>
+                    <div className="hstack">
+                      <button className="btn btn-primary btn-sm" onClick={() => saveEditPackage(p.id)}>Salvar</button>
+                      <button className="btn btn-ghost btn-sm" onClick={cancelEditPackage}>Cancelar</button>
+                    </div>
+                  </div>
+                ) : (
+                  <div key={p.id} className="hstack" style={{ justifyContent: 'space-between' }}>
+                    <label className="hstack" style={{ cursor: 'pointer' }}>
+                      <input type="checkbox" checked={pkgSel.selected.has(p.id)} onChange={() => pkgSel.toggle(p.id)} />
+                      <div>
+                        <div style={{ fontWeight: 700 }}>{p.name} — {fmtMoney(p.price)}/mês</div>
+                        <div className="small muted">{p.description} · {p.hoursPerWeek}x/semana · {p.durationMonths} meses</div>
+                      </div>
+                    </label>
+                    <div className="hstack">
+                      <button className="btn btn-ghost btn-sm" onClick={() => startEditPackage(p)}>Editar</button>
+                      <button className="btn btn-ghost btn-sm" onClick={() => removePackage(p.id)}>Remover</button>
+                    </div>
+                  </div>
+                )
               ))}
             </div>
           </div>

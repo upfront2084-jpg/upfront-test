@@ -127,6 +127,7 @@ router.get('/leads/:id', ah(async (req, res) => {
       id: lead.enrollment.id, enrollmentDate: lead.enrollment.enrollment_date, startDate: lead.enrollment.start_date,
       packageId: lead.enrollment.package_id, teacherId: lead.enrollment.teacher_id, frequency: lead.enrollment.frequency,
       scheduleText: lead.enrollment.schedule_text, monthlyValue: lead.enrollment.monthly_value,
+      discountValue: lead.enrollment.discount_value,
       paymentMethod: lead.enrollment.payment_method, startingClass: lead.enrollment.starting_class, notes: lead.enrollment.notes,
     };
   }
@@ -399,11 +400,11 @@ router.post('/leads/:id/enroll', requireRole('admin', 'manager', 'agent'), ah(as
   }
   const enrollmentId = uid('enr');
   await run(
-    `INSERT INTO enrollments (id, lead_id, student_id, enrollment_date, start_date, package_id, teacher_id, frequency, schedule_text, monthly_value, payment_method, starting_class, notes, created_at)
-     VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+    `INSERT INTO enrollments (id, lead_id, student_id, enrollment_date, start_date, package_id, teacher_id, frequency, schedule_text, monthly_value, discount_value, payment_method, starting_class, notes, created_at)
+     VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
     [enrollmentId, lead.id, student.id, b.enrollmentDate || todayISO(), b.startDate || null, b.packageId || null,
       b.teacherId || lead.teacher_id || null, b.frequency || '', b.scheduleText || '', b.monthlyValue || null,
-      b.paymentMethod || '', b.startingClass || '', b.notes || '', now]
+      b.discountValue || null, b.paymentMethod || '', b.startingClass || '', b.notes || '', now]
   );
   await run('UPDATE leads SET status = ?, last_stage_change_at = ?, last_contact_date = ?, updated_at = ? WHERE id = ?', [
     'matriculado', now, todayISO(), now, lead.id,

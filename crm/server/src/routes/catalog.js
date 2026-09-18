@@ -98,6 +98,20 @@ router.post('/packages', requireRole('admin', 'manager'), ah(async (req, res) =>
   res.status(201).json({ id });
 }));
 
+router.put('/packages/:id', requireRole('admin', 'manager'), ah(async (req, res) => {
+  const p = await one('SELECT * FROM packages WHERE id = ?', [req.params.id]);
+  if (!p) return res.status(404).json({ error: 'Pacote não encontrado' });
+  const b = req.body || {};
+  await run('UPDATE packages SET name=?, description=?, hours_per_week=?, duration_months=?, price=? WHERE id=?', [
+    b.name ?? p.name, b.description ?? p.description,
+    b.hoursPerWeek === undefined ? p.hours_per_week : (Number(b.hoursPerWeek) || null),
+    b.durationMonths === undefined ? p.duration_months : (Number(b.durationMonths) || null),
+    b.price === undefined ? p.price : (Number(b.price) || null),
+    p.id,
+  ]);
+  res.json({ ok: true });
+}));
+
 async function deletePackageCascade(id) {
   await run('UPDATE proposals SET package_id = NULL WHERE package_id = ?', [id]);
   await run('UPDATE enrollments SET package_id = NULL WHERE package_id = ?', [id]);

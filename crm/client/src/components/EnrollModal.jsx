@@ -10,9 +10,13 @@ export default function EnrollModal({ leadId, onClose, onSaved }) {
   const { push } = useToast();
   const [form, setForm] = useState({
     enrollmentDate: todayISO(), startDate: '', packageId: '', teacherId: '', frequency: '', scheduleText: '',
-    monthlyValue: '', paymentMethod: '', startingClass: '', notes: '',
+    monthlyValue: '', discountValue: '', paymentMethod: '', startingClass: '', notes: '',
   });
   const [saving, setSaving] = useState(false);
+
+  const finalValue = form.monthlyValue !== '' && form.monthlyValue !== null
+    ? Math.max(0, Number(form.monthlyValue) - (Number(form.discountValue) || 0))
+    : null;
 
   function set(k, v) { setForm((f) => ({ ...f, [k]: v })); }
   function pickPackage(id) {
@@ -24,7 +28,11 @@ export default function EnrollModal({ leadId, onClose, onSaved }) {
     e.preventDefault();
     setSaving(true);
     try {
-      await api.post(`/leads/${leadId}/enroll`, { ...form, monthlyValue: form.monthlyValue ? Number(form.monthlyValue) : null });
+      await api.post(`/leads/${leadId}/enroll`, {
+        ...form,
+        monthlyValue: finalValue,
+        discountValue: form.discountValue ? Number(form.discountValue) : null,
+      });
       push('Matrícula confirmada', 'success');
       onSaved?.();
     } catch (err) {
@@ -80,8 +88,18 @@ export default function EnrollModal({ leadId, onClose, onSaved }) {
             <input className="input" value={form.scheduleText} onChange={(e) => set('scheduleText', e.target.value)} placeholder="Seg/Qua/Sex 08:00" />
           </div>
           <div className="field">
-            <label>Valor mensal (R$)</label>
+            <label>Valor do pacote (R$)</label>
             <input className="input" type="number" step="0.01" value={form.monthlyValue} onChange={(e) => set('monthlyValue', e.target.value)} />
+          </div>
+        </div>
+        <div className="field-row">
+          <div className="field">
+            <label>Desconto (R$)</label>
+            <input className="input" type="number" step="0.01" value={form.discountValue} onChange={(e) => set('discountValue', e.target.value)} placeholder="0,00" />
+          </div>
+          <div className="field">
+            <label>Valor final mensal</label>
+            <input className="input" value={finalValue !== null ? `R$ ${finalValue.toFixed(2)}` : '—'} disabled />
           </div>
         </div>
         <div className="field-row">

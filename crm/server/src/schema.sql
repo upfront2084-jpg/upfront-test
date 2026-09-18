@@ -194,6 +194,7 @@ CREATE TABLE IF NOT EXISTS enrollments (
   frequency VARCHAR(100),
   schedule_text VARCHAR(255),
   monthly_value DOUBLE PRECISION,
+  discount_value DOUBLE PRECISION,
   payment_method VARCHAR(100),
   starting_class VARCHAR(255),
   notes TEXT,
@@ -203,6 +204,7 @@ CREATE TABLE IF NOT EXISTS enrollments (
   FOREIGN KEY (package_id) REFERENCES packages(id),
   FOREIGN KEY (teacher_id) REFERENCES teachers(id)
 );
+ALTER TABLE enrollments ADD COLUMN IF NOT EXISTS discount_value DOUBLE PRECISION;
 
 CREATE TABLE IF NOT EXISTS campaigns (
   id VARCHAR(40) PRIMARY KEY,
