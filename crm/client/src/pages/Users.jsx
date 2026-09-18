@@ -16,6 +16,9 @@ export default function Users() {
   const [resetTarget, setResetTarget] = useState(null); // user being reset
   const [newPassword, setNewPassword] = useState('');
   const [resetting, setResetting] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState(null); // user being deleted
+  const [reassignTo, setReassignTo] = useState('');
+  const [deleting, setDeleting] = useState(false);
 
   async function submit(e) {
     e.preventDefault();
@@ -42,14 +45,18 @@ export default function Users() {
     }
   }
 
-  async function deleteUser(u) {
-    if (!window.confirm(`Excluir o usuário "${u.name}" (${u.username})? Isso só é possível se ele não tiver histórico no sistema.`)) return;
+  async function submitDelete(e) {
+    e.preventDefault();
+    setDeleting(true);
     try {
-      await api.del(`/users/${u.id}`);
-      push(`Usuário "${u.username}" excluído`, 'success');
+      await api.del(`/users/${deleteTarget.id}`, reassignTo ? { reassignToUserId: reassignTo } : undefined);
+      push(`Usuário "${deleteTarget.username}" excluído`, 'success');
+      setDeleteTarget(null);
       reload();
     } catch (err) {
       push(err.message, 'error');
+    } finally {
+      setDeleting(false);
     }
   }
 
@@ -98,7 +105,7 @@ export default function Users() {
                       <div className="hstack">
                         <button className="btn btn-ghost btn-sm" onClick={() => { setResetTarget(u); setNewPassword(''); }}>Redefinir senha</button>
                         <button className="btn btn-ghost btn-sm" onClick={() => toggleActive(u)}>{u.active ? 'Desativar' : 'Ativar'}</button>
-                        <button className="btn btn-ghost btn-sm" style={{ color: 'var(--danger)' }} onClick={() => deleteUser(u)}>Excluir</button>
+                        <button className="btn btn-ghost btn-sm" style={{ color: 'var(--danger)' }} onClick={() => { setDeleteTarget(u); setReassignTo(''); }}>Excluir</button>
                       </div>
                     </td>
                   </tr>
@@ -165,6 +172,32 @@ export default function Users() {
             <div className="field">
               <label>Nova senha</label>
               <input className="input" type="text" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="Mínimo 4 caracteres" required autoFocus />
+            </div>
+          </form>
+        </Modal>
+      )}
+
+      {deleteTarget && (
+        <Modal
+          title={`Excluir ${deleteTarget.name}`}
+          onClose={() => setDeleteTarget(null)}
+          footer={<>
+            <button className="btn btn-secondary" onClick={() => setDeleteTarget(null)}>Cancelar</button>
+            <button className="btn btn-primary" style={{ background: 'var(--danger)', borderColor: 'var(--danger)' }} form="delete-user-form" disabled={deleting}>{deleting ? 'Excluindo…' : 'Excluir usuário'}</button>
+          </>}
+        >
+          <form id="delete-user-form" onSubmit={submitDelete}>
+            <div className="small muted mb12">
+              Os leads, tarefas e campanhas de "{deleteTarget.username}" continuam no sistema — eles são do CRM, não da conta dele. Escolha quem passa a ser o responsável por eles a partir de agora, ou deixe em aberto.
+            </div>
+            <div className="field">
+              <label>Transferir leads e tarefas para</label>
+              <select className="input" value={reassignTo} onChange={(e) => setReassignTo(e.target.value)}>
+                <option value="">Deixar sem responsável</option>
+                {users.filter((u) => u.id !== deleteTarget.id && u.active).map((u) => (
+                  <option key={u.id} value={u.id}>{u.name} ({ROLE_LABELS[u.role]})</option>
+                ))}
+              </select>
             </div>
           </form>
         </Modal>

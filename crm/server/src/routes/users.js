@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { all, one, run } from '../db.js';
+import { all, one, run, transaction } from '../db.js';
 import { uid, nowISO } from '../lib/util.js';
 import { requireRole } from '../lib/authMiddleware.js';
 import { hashPassword } from '../lib/password.js';
@@ -65,10 +65,13 @@ router.put('/users/:id/password', requireRole('admin'), (req, res) => {
   res.json({ ok: true });
 });
 
-// Hard delete — only allowed for users with no history attached (leads,
-// tasks, notes, interactions, campaigns they own/created reference their
-// id and must never be orphaned). Anyone with history should be
-// deactivated instead, which keeps that history intact.
+// Hard delete. The leads/tasks/campaigns this person owned belong to the
+// school, not to their user account, so they're never deleted with it:
+// they're reassigned to `reassignToUserId` when given, or left unassigned
+// otherwise. Notes/interactions are historical log entries (who wrote
+// what, when) — those always just lose the author reference, never get
+// reassigned, since re-attributing past history to someone else would be
+// inaccurate.
 router.delete('/users/:id', requireRole('admin'), (req, res) => {
   const u = one('SELECT * FROM users WHERE id = ?', [req.params.id]);
   if (!u) return res.status(404).json({ error: 'Usuário não encontrado' });
@@ -77,13 +80,22 @@ router.delete('/users/:id', requireRole('admin'), (req, res) => {
     const otherAdmins = one("SELECT COUNT(*) as n FROM users WHERE role = 'admin' AND active = 1 AND id != ?", [u.id]);
     if (otherAdmins.n === 0) return res.status(400).json({ error: 'Não é possível excluir o único administrador ativo' });
   }
-  try {
-    run('DELETE FROM users WHERE id = ?', [u.id]);
-  } catch {
-    return res.status(409).json({
-      error: 'Este usuário já tem histórico no sistema (leads, tarefas ou campanhas vinculadas) e não pode ser excluído sem perder esse histórico. Use "Desativar" para bloquear o acesso mantendo o histórico.',
-    });
+  const { reassignToUserId } = req.body || {};
+  let targetId = null;
+  if (reassignToUserId) {
+    const target = one('SELECT id FROM users WHERE id = ? AND active = 1', [reassignToUserId]);
+    if (!target) return res.status(400).json({ error: 'Usuário de destino inválido' });
+    if (target.id === u.id) return res.status(400).json({ error: 'Escolha um usuário diferente do que está sendo excluído' });
+    targetId = target.id;
   }
+  transaction(() => {
+    run('UPDATE leads SET owner_user_id = ? WHERE owner_user_id = ?', [targetId, u.id]);
+    run('UPDATE tasks SET assigned_user_id = ? WHERE assigned_user_id = ?', [targetId, u.id]);
+    run('UPDATE campaigns SET responsible_user_id = ? WHERE responsible_user_id = ?', [targetId, u.id]);
+    run('UPDATE interactions SET user_id = NULL WHERE user_id = ?', [u.id]);
+    run('UPDATE notes SET user_id = NULL WHERE user_id = ?', [u.id]);
+    run('DELETE FROM users WHERE id = ?', [u.id]);
+  });
   res.json({ ok: true });
 });
 

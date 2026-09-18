@@ -1,6 +1,6 @@
 // Small reference-data resources: sources, teachers, packages, tags.
 import { Router } from 'express';
-import { all, one, run } from '../db.js';
+import { all, one, run, transaction } from '../db.js';
 import { uid, nowISO } from '../lib/util.js';
 import { requireRole } from '../lib/authMiddleware.js';
 
@@ -18,11 +18,10 @@ router.post('/sources', requireRole('admin', 'manager'), (req, res) => {
   res.status(201).json({ id });
 });
 router.delete('/sources/:id', requireRole('admin', 'manager'), (req, res) => {
-  try {
+  transaction(() => {
+    run('UPDATE leads SET source_id = NULL WHERE source_id = ?', [req.params.id]);
     run('DELETE FROM sources WHERE id = ?', [req.params.id]);
-  } catch {
-    return res.status(409).json({ error: 'Esta fonte já está sendo usada por leads cadastrados e não pode ser removida.' });
-  }
+  });
   res.json({ ok: true });
 });
 

@@ -27,7 +27,7 @@ export default function Catalog() {
     }
   }
   async function removeSource(id) {
-    if (!confirm('Remover esta fonte?')) return;
+    if (!confirm('Remover esta fonte? Leads que usam ela ficam sem origem definida, mas não são apagados.')) return;
     try {
       await api.del(`/sources/${id}`);
       push('Fonte removida', 'success');

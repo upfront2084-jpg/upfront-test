@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { db, one, all, run } from '../db.js';
+import { db, one, all, run, transaction } from '../db.js';
 import { uid, nowISO, todayISO } from '../lib/util.js';
 import { queryLeads, countLeads, buildLeadWhere } from '../lib/leadQuery.js';
 import { scopeForUser, requireRole } from '../lib/authMiddleware.js';
@@ -187,16 +187,25 @@ router.put('/leads/:id', (req, res) => {
   res.json({ lead: serializeLead(queryLeads({ ids: [lead.id] })[0]) });
 });
 
+// Hard delete — removes the lead and everything tied to it (trial classes,
+// proposals, enrollment/student record, campaign participation, tasks,
+// notes, interaction log). Deliberately destructive: the admin/manager
+// asked for a real delete, not a soft one.
 router.delete('/leads/:id', requireRole('admin', 'manager'), (req, res) => {
   const lead = one('SELECT id FROM leads WHERE id = ?', [req.params.id]);
   if (!lead) return res.status(404).json({ error: 'Lead não encontrado' });
-  try {
+  transaction(() => {
+    run('DELETE FROM campaign_recipients WHERE lead_id = ?', [lead.id]);
+    run('DELETE FROM enrollments WHERE lead_id = ?', [lead.id]);
+    run('DELETE FROM students WHERE lead_id = ?', [lead.id]);
+    run('DELETE FROM proposals WHERE lead_id = ?', [lead.id]);
+    run('DELETE FROM trial_classes WHERE lead_id = ?', [lead.id]);
+    run('DELETE FROM tasks WHERE lead_id = ?', [lead.id]);
+    run('DELETE FROM notes WHERE lead_id = ?', [lead.id]);
+    run('DELETE FROM interactions WHERE lead_id = ?', [lead.id]);
+    run('DELETE FROM lead_tags WHERE lead_id = ?', [lead.id]);
     run('DELETE FROM leads WHERE id = ?', [lead.id]);
-  } catch {
-    return res.status(409).json({
-      error: 'Este lead já virou aluno matriculado ou participou de campanhas, então não pode ser excluído sem perder esse histórico.',
-    });
-  }
+  });
   res.json({ ok: true });
 });
 

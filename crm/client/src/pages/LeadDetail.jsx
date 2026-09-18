@@ -69,7 +69,7 @@ export default function LeadDetail() {
   const canDelete = ['admin', 'manager'].includes(user.role);
 
   async function deleteLead() {
-    if (!confirm(`Excluir o lead "${lead.name}"? Isso apaga todo o histórico (notas, tarefas, experimentais, propostas) e não pode ser desfeito.`)) return;
+    if (!confirm(`Excluir o lead "${lead.name}"? Isso apaga TUDO relacionado a ele (notas, tarefas, experimentais, propostas, matrícula e participação em campanhas) e não pode ser desfeito.`)) return;
     try {
       await api.del(`/leads/${id}`);
       push('Lead excluído', 'success');
