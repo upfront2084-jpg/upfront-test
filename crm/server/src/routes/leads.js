@@ -187,26 +187,46 @@ router.put('/leads/:id', (req, res) => {
   res.json({ lead: serializeLead(queryLeads({ ids: [lead.id] })[0]) });
 });
 
-// Hard delete — removes the lead and everything tied to it (trial classes,
-// proposals, enrollment/student record, campaign participation, tasks,
-// notes, interaction log). Deliberately destructive: the admin/manager
-// asked for a real delete, not a soft one.
+// Removes a lead and everything tied to it (trial classes, proposals,
+// enrollment/student record, campaign participation, tasks, notes,
+// interaction log). Deliberately destructive — a real delete, not a soft
+// one — shared by the single-lead and bulk-delete routes below.
+function cascadeDeleteLead(id) {
+  run('DELETE FROM campaign_recipients WHERE lead_id = ?', [id]);
+  run('DELETE FROM enrollments WHERE lead_id = ?', [id]);
+  run('DELETE FROM students WHERE lead_id = ?', [id]);
+  run('DELETE FROM proposals WHERE lead_id = ?', [id]);
+  run('DELETE FROM trial_classes WHERE lead_id = ?', [id]);
+  run('DELETE FROM tasks WHERE lead_id = ?', [id]);
+  run('DELETE FROM notes WHERE lead_id = ?', [id]);
+  run('DELETE FROM interactions WHERE lead_id = ?', [id]);
+  run('DELETE FROM lead_tags WHERE lead_id = ?', [id]);
+  run('DELETE FROM leads WHERE id = ?', [id]);
+}
+
 router.delete('/leads/:id', requireRole('admin', 'manager'), (req, res) => {
   const lead = one('SELECT id FROM leads WHERE id = ?', [req.params.id]);
   if (!lead) return res.status(404).json({ error: 'Lead não encontrado' });
-  transaction(() => {
-    run('DELETE FROM campaign_recipients WHERE lead_id = ?', [lead.id]);
-    run('DELETE FROM enrollments WHERE lead_id = ?', [lead.id]);
-    run('DELETE FROM students WHERE lead_id = ?', [lead.id]);
-    run('DELETE FROM proposals WHERE lead_id = ?', [lead.id]);
-    run('DELETE FROM trial_classes WHERE lead_id = ?', [lead.id]);
-    run('DELETE FROM tasks WHERE lead_id = ?', [lead.id]);
-    run('DELETE FROM notes WHERE lead_id = ?', [lead.id]);
-    run('DELETE FROM interactions WHERE lead_id = ?', [lead.id]);
-    run('DELETE FROM lead_tags WHERE lead_id = ?', [lead.id]);
-    run('DELETE FROM leads WHERE id = ?', [lead.id]);
-  });
+  transaction(() => cascadeDeleteLead(lead.id));
   res.json({ ok: true });
+});
+
+// Bulk delete: either an explicit list of ids (checkboxes on the current
+// page), or the same filter shape the leads list uses (the "select all N
+// that match this filter" case) so we never have to ship thousands of ids
+// to the client just to select them.
+router.post('/leads/bulk-delete', requireRole('admin', 'manager'), (req, res) => {
+  const { ids, filters } = req.body || {};
+  let targetIds = [];
+  if (Array.isArray(ids) && ids.length) {
+    targetIds = [...new Set(ids)];
+  } else if (filters) {
+    const scope = scopeForUser(req.user);
+    targetIds = queryLeads({ ...parseListFilters(filters), ...scope }).map((r) => r.id);
+  }
+  if (targetIds.length === 0) return res.status(400).json({ error: 'Nenhum lead selecionado' });
+  transaction(() => { for (const id of targetIds) cascadeDeleteLead(id); });
+  res.json({ ok: true, count: targetIds.length });
 });
 
 // ---- stage transitions (Kanban) -----------------------------------------

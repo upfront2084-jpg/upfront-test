@@ -7,18 +7,24 @@ import { fmtDate, initials, daysSince } from '../lib/format.js';
 import StageBadge from '../components/StageBadge.jsx';
 import LeadFormModal from '../components/LeadFormModal.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
+import { useToast } from '../context/ToastContext.jsx';
 
 const PAGE_SIZE = 25;
 
 export default function Leads() {
   const { sources } = useRefData();
   const { user } = useAuth();
+  const { push } = useToast();
   const navigate = useNavigate();
   const [filters, setFilters] = useState({ search: '', status: '', sourceId: '', objective: '', englishLevel: '' });
   const [page, setPage] = useState(1);
   const [result, setResult] = useState({ leads: [], total: 0 });
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
+  const [selected, setSelected] = useState(() => new Set());
+  const [selectAllMatching, setSelectAllMatching] = useState(false);
+  const [bulkDeleting, setBulkDeleting] = useState(false);
+  const canDelete = ['admin', 'manager'].includes(user.role);
 
   async function load() {
     setLoading(true);
@@ -28,10 +34,48 @@ export default function Leads() {
   }
 
   useEffect(() => { load(); }, [filters, page]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { setSelected(new Set()); setSelectAllMatching(false); }, [filters, page]);
 
   function setFilter(key, value) {
     setPage(1);
     setFilters((f) => ({ ...f, [key]: value }));
+  }
+
+  function toggleOne(id) {
+    setSelectAllMatching(false);
+    setSelected((s) => {
+      const next = new Set(s);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  }
+
+  function togglePage() {
+    setSelectAllMatching(false);
+    const pageIds = result.leads.map((l) => l.id);
+    const allSelected = pageIds.length > 0 && pageIds.every((id) => selected.has(id));
+    setSelected(allSelected ? new Set() : new Set(pageIds));
+  }
+
+  const selectedCount = selectAllMatching ? result.total : selected.size;
+  const pageIds = result.leads.map((l) => l.id);
+  const wholePageSelected = pageIds.length > 0 && pageIds.every((id) => selected.has(id));
+
+  async function bulkDelete() {
+    if (!confirm(`Excluir ${selectedCount} lead(s) selecionado(s)? Isso apaga tudo relacionado a eles (notas, tarefas, experimentais, propostas, matrículas) e não pode ser desfeito.`)) return;
+    setBulkDeleting(true);
+    try {
+      const body = selectAllMatching ? { filters } : { ids: [...selected] };
+      const { count } = await api.post('/leads/bulk-delete', body);
+      push(`${count} lead(s) excluído(s)`, 'success');
+      setSelected(new Set());
+      setSelectAllMatching(false);
+      if (page !== 1) setPage(1); else load();
+    } catch (err) {
+      push(err.message, 'error');
+    } finally {
+      setBulkDeleting(false);
+    }
   }
 
   const totalPages = Math.max(1, Math.ceil(result.total / PAGE_SIZE));
@@ -70,17 +114,46 @@ export default function Leads() {
         </select>
       </div>
 
+      {canDelete && selectedCount > 0 && (
+        <div className="card mb12 hstack" style={{ justifyContent: 'space-between', background: 'var(--accent-soft)' }}>
+          <div className="small" style={{ fontWeight: 700 }}>
+            {selectedCount} lead(s) selecionado(s)
+            {!selectAllMatching && wholePageSelected && result.total > result.leads.length && (
+              <button type="button" className="link-btn" style={{ marginLeft: 10 }} onClick={() => setSelectAllMatching(true)}>
+                Selecionar todos os {result.total} que correspondem ao filtro
+              </button>
+            )}
+          </div>
+          <div className="hstack">
+            <button className="btn btn-ghost btn-sm" onClick={() => { setSelected(new Set()); setSelectAllMatching(false); }}>Limpar seleção</button>
+            <button className="btn btn-primary btn-sm" style={{ background: 'var(--danger)', borderColor: 'var(--danger)' }} disabled={bulkDeleting} onClick={bulkDelete}>
+              {bulkDeleting ? 'Excluindo…' : 'Excluir selecionados'}
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="table-wrap">
         <div className="table-scroll">
           <table className="data-table">
             <thead>
               <tr>
+                {canDelete && (
+                  <th style={{ width: 36 }}>
+                    <input type="checkbox" checked={wholePageSelected} onChange={togglePage} onClick={(e) => e.stopPropagation()} />
+                  </th>
+                )}
                 <th>Lead</th><th>Etapa</th><th>Origem</th><th>Atendente</th><th>Último contato</th><th>Próxima ação</th>
               </tr>
             </thead>
             <tbody>
               {result.leads.map((l) => (
                 <tr key={l.id} onClick={() => navigate(`/leads/${l.id}`)}>
+                  {canDelete && (
+                    <td onClick={(e) => e.stopPropagation()}>
+                      <input type="checkbox" checked={selected.has(l.id)} onChange={() => toggleOne(l.id)} />
+                    </td>
+                  )}
                   <td>
                     <div className="name-cell">
                       <span className="avatar-sm">{initials(l.name)}</span>
