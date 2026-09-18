@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { api } from '../api.js';
 import { fmtDate, todayISO } from '../lib/format.js';
 import { useAuth } from '../context/AuthContext.jsx';
+import { useToast } from '../context/ToastContext.jsx';
 import TaskFormModal from '../components/TaskFormModal.jsx';
 
 const GROUP_ORDER = ['Primeiro contato', 'Confirmar experimental', 'Follow-up de proposta', 'Recuperação', 'Outro'];
@@ -21,6 +22,7 @@ export default function Tasks() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { push } = useToast();
 
   async function load() {
     setLoading(true);
@@ -47,8 +49,23 @@ export default function Tasks() {
   }, [tasks]);
 
   async function complete(t) {
-    await api.put(`/tasks/${t.id}`, { status: 'Concluída' });
-    load();
+    try {
+      await api.put(`/tasks/${t.id}`, { status: 'Concluída' });
+      load();
+    } catch (err) {
+      push(err.message, 'error');
+    }
+  }
+
+  async function remove(t) {
+    if (!confirm(`Excluir a tarefa "${t.title}"?`)) return;
+    try {
+      await api.del(`/tasks/${t.id}`);
+      push('Tarefa excluída', 'success');
+      load();
+    } catch (err) {
+      push(err.message, 'error');
+    }
   }
 
   return (
@@ -95,6 +112,7 @@ export default function Tasks() {
                         {t.note && ` — ${t.note}`}
                       </div>
                     </div>
+                    <button className="btn btn-ghost btn-sm" style={{ color: 'var(--danger)' }} onClick={() => remove(t)}>Excluir</button>
                   </div>
                 ))}
               </div>

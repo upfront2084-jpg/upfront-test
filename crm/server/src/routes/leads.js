@@ -190,7 +190,13 @@ router.put('/leads/:id', (req, res) => {
 router.delete('/leads/:id', requireRole('admin', 'manager'), (req, res) => {
   const lead = one('SELECT id FROM leads WHERE id = ?', [req.params.id]);
   if (!lead) return res.status(404).json({ error: 'Lead não encontrado' });
-  run('DELETE FROM leads WHERE id = ?', [lead.id]);
+  try {
+    run('DELETE FROM leads WHERE id = ?', [lead.id]);
+  } catch {
+    return res.status(409).json({
+      error: 'Este lead já virou aluno matriculado ou participou de campanhas, então não pode ser excluído sem perder esse histórico.',
+    });
+  }
   res.json({ ok: true });
 });
 

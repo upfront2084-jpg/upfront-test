@@ -17,30 +17,48 @@ export default function Catalog() {
   async function addSource(e) {
     e.preventDefault();
     if (!newSource.name.trim()) return;
-    await api.post('/sources', newSource);
-    setNewSource({ name: '', icon: '✨' });
-    push('Fonte adicionada', 'success');
-    reload();
+    try {
+      await api.post('/sources', newSource);
+      setNewSource({ name: '', icon: '✨' });
+      push('Fonte adicionada', 'success');
+      reload();
+    } catch (err) {
+      push(err.message, 'error');
+    }
   }
   async function removeSource(id) {
-    await api.del(`/sources/${id}`);
-    reload();
+    if (!confirm('Remover esta fonte?')) return;
+    try {
+      await api.del(`/sources/${id}`);
+      push('Fonte removida', 'success');
+      reload();
+    } catch (err) {
+      push(err.message, 'error');
+    }
   }
   async function addTeacher(e) {
     e.preventDefault();
     if (!newTeacher.name.trim()) return;
-    await api.post('/teachers', newTeacher);
-    setNewTeacher({ name: '', email: '', levels: '' });
-    push('Professor adicionado', 'success');
-    reload();
+    try {
+      await api.post('/teachers', newTeacher);
+      setNewTeacher({ name: '', email: '', levels: '' });
+      push('Professor adicionado', 'success');
+      reload();
+    } catch (err) {
+      push(err.message, 'error');
+    }
   }
   async function addPackage(e) {
     e.preventDefault();
     if (!newPackage.name.trim()) return;
-    await api.post('/packages', { ...newPackage, hoursPerWeek: Number(newPackage.hoursPerWeek) || null, durationMonths: Number(newPackage.durationMonths) || null, price: Number(newPackage.price) || null });
-    setNewPackage({ name: '', description: '', hoursPerWeek: '', durationMonths: '', price: '' });
-    push('Pacote adicionado', 'success');
-    reload();
+    try {
+      await api.post('/packages', { ...newPackage, hoursPerWeek: Number(newPackage.hoursPerWeek) || null, durationMonths: Number(newPackage.durationMonths) || null, price: Number(newPackage.price) || null });
+      setNewPackage({ name: '', description: '', hoursPerWeek: '', durationMonths: '', price: '' });
+      push('Pacote adicionado', 'success');
+      reload();
+    } catch (err) {
+      push(err.message, 'error');
+    }
   }
 
   return (

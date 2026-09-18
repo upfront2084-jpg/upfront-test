@@ -21,9 +21,13 @@ export default function Segments() {
 
   async function remove(id) {
     if (!confirm('Excluir este segmento?')) return;
-    await api.del(`/segments/${id}`);
-    push('Segmento excluído', 'success');
-    load();
+    try {
+      await api.del(`/segments/${id}`);
+      push('Segmento excluído', 'success');
+      load();
+    } catch (err) {
+      push(err.message, 'error');
+    }
   }
 
   return (

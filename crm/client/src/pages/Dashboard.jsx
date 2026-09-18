@@ -8,6 +8,7 @@ import { api, qs } from '../api.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import { fmtDate, fmtMonthLabel, todayISO, initials } from '../lib/format.js';
 import StageBadge from '../components/StageBadge.jsx';
+import { useToast } from '../context/ToastContext.jsx';
 
 const KPI_DEFS = [
   { key: 'leadsInMonth', label: 'Leads Novos', icon: '👥', color: '#0EA5A4', trendKey: 'leadsInMonth' },
@@ -25,6 +26,7 @@ function firstDayOfMonth() {
 
 export default function Dashboard() {
   const { user } = useAuth();
+  const { push } = useToast();
   const [from, setFrom] = useState(firstDayOfMonth());
   const [to, setTo] = useState(todayISO());
   const [summary, setSummary] = useState(null);
@@ -61,8 +63,12 @@ export default function Dashboard() {
   }
 
   async function toggleTask(task) {
-    await api.put(`/tasks/${task.id}`, { status: task.status === 'Concluída' ? 'Pendente' : 'Concluída' });
-    setTodayTasks((ts) => ts.map((t) => (t.id === task.id ? { ...t, status: t.status === 'Concluída' ? 'Pendente' : 'Concluída' } : t)));
+    try {
+      await api.put(`/tasks/${task.id}`, { status: task.status === 'Concluída' ? 'Pendente' : 'Concluída' });
+      setTodayTasks((ts) => ts.map((t) => (t.id === task.id ? { ...t, status: t.status === 'Concluída' ? 'Pendente' : 'Concluída' } : t)));
+    } catch (err) {
+      push(err.message, 'error');
+    }
   }
 
   const leadsByMonth = useMemo(

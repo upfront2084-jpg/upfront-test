@@ -60,8 +60,21 @@ export default function LeadDetail() {
   }
 
   async function toggleTask(task) {
-    await api.put(`/tasks/${task.id}`, { status: task.status === 'Concluída' ? 'Pendente' : 'Concluída' });
-    load();
+    try {
+      await api.put(`/tasks/${task.id}`, { status: task.status === 'Concluída' ? 'Pendente' : 'Concluída' });
+      load();
+    } catch (err) { push(err.message, 'error'); }
+  }
+
+  const canDelete = ['admin', 'manager'].includes(user.role);
+
+  async function deleteLead() {
+    if (!confirm(`Excluir o lead "${lead.name}"? Isso apaga todo o histórico (notas, tarefas, experimentais, propostas) e não pode ser desfeito.`)) return;
+    try {
+      await api.del(`/leads/${id}`);
+      push('Lead excluído', 'success');
+      navigate('/leads');
+    } catch (err) { push(err.message, 'error'); }
   }
 
   return (
@@ -87,6 +100,7 @@ export default function LeadDetail() {
               </select>
             )}
             {canEdit && <button className="btn btn-secondary btn-sm" onClick={() => setModal('edit')}>Editar</button>}
+            {canDelete && <button className="btn btn-ghost btn-sm" style={{ color: 'var(--danger)' }} onClick={deleteLead}>Excluir</button>}
           </div>
         </div>
 

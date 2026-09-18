@@ -18,7 +18,11 @@ router.post('/sources', requireRole('admin', 'manager'), (req, res) => {
   res.status(201).json({ id });
 });
 router.delete('/sources/:id', requireRole('admin', 'manager'), (req, res) => {
-  run('DELETE FROM sources WHERE id = ?', [req.params.id]);
+  try {
+    run('DELETE FROM sources WHERE id = ?', [req.params.id]);
+  } catch {
+    return res.status(409).json({ error: 'Esta fonte já está sendo usada por leads cadastrados e não pode ser removida.' });
+  }
   res.json({ ok: true });
 });
 

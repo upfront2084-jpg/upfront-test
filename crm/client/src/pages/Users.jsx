@@ -33,8 +33,13 @@ export default function Users() {
   }
 
   async function toggleActive(u) {
-    await api.put(`/users/${u.id}`, { active: !u.active });
-    reload();
+    try {
+      await api.put(`/users/${u.id}`, { active: !u.active });
+      push(u.active ? `"${u.username}" desativado` : `"${u.username}" ativado`, 'success');
+      reload();
+    } catch (err) {
+      push(err.message, 'error');
+    }
   }
 
   async function deleteUser(u) {
