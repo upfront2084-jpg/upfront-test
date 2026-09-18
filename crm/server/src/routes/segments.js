@@ -31,6 +31,13 @@ router.delete('/segments/:id', requireRole('admin', 'manager', 'agent'), (req, r
   res.json({ ok: true });
 });
 
+router.post('/segments/bulk-delete', requireRole('admin', 'manager', 'agent'), (req, res) => {
+  const ids = [...new Set(req.body?.ids || [])];
+  if (!ids.length) return res.status(400).json({ error: 'Nenhum segmento selecionado' });
+  for (const id of ids) run('DELETE FROM segments WHERE id = ?', [id]);
+  res.json({ ok: true, count: ids.length });
+});
+
 router.get('/segments/:id/leads', (req, res) => {
   const s = one('SELECT * FROM segments WHERE id = ?', [req.params.id]);
   if (!s) return res.status(404).json({ error: 'Segmento não encontrado' });

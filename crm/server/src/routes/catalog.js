@@ -14,15 +14,24 @@ router.post('/sources', requireRole('admin', 'manager'), (req, res) => {
   const { name, icon } = req.body || {};
   if (!name) return res.status(400).json({ error: 'Nome obrigatório' });
   const id = uid('src');
-  run('INSERT INTO sources (id, name, icon, created_at) VALUES (?,?,?,?)', [id, name, icon || '✨', nowISO()]);
+  run('INSERT INTO sources (id, name, icon, created_at) VALUES (?,?,?,?)', [id, name, icon || null, nowISO()]);
   res.status(201).json({ id });
 });
+function deleteSourceCascade(id) {
+  run('UPDATE leads SET source_id = NULL WHERE source_id = ?', [id]);
+  run('DELETE FROM sources WHERE id = ?', [id]);
+}
+
 router.delete('/sources/:id', requireRole('admin', 'manager'), (req, res) => {
-  transaction(() => {
-    run('UPDATE leads SET source_id = NULL WHERE source_id = ?', [req.params.id]);
-    run('DELETE FROM sources WHERE id = ?', [req.params.id]);
-  });
+  transaction(() => deleteSourceCascade(req.params.id));
   res.json({ ok: true });
+});
+
+router.post('/sources/bulk-delete', requireRole('admin', 'manager'), (req, res) => {
+  const ids = [...new Set(req.body?.ids || [])];
+  if (!ids.length) return res.status(400).json({ error: 'Nenhuma fonte selecionada' });
+  transaction(() => { for (const id of ids) deleteSourceCascade(id); });
+  res.json({ ok: true, count: ids.length });
 });
 
 // ---- teachers ---------------------------------------------------------------
@@ -47,6 +56,30 @@ router.put('/teachers/:id', requireRole('admin', 'manager'), (req, res) => {
   res.json({ ok: true });
 });
 
+// Deleting a teacher clears the reference from anything that pointed to
+// them (leads, trial classes, enrollments, and any user account linked as
+// this teacher) rather than blocking — those records stay, just without a
+// teacher assigned.
+function deleteTeacherCascade(id) {
+  run('UPDATE leads SET teacher_id = NULL WHERE teacher_id = ?', [id]);
+  run('UPDATE trial_classes SET teacher_id = NULL WHERE teacher_id = ?', [id]);
+  run('UPDATE enrollments SET teacher_id = NULL WHERE teacher_id = ?', [id]);
+  run('UPDATE users SET teacher_id = NULL WHERE teacher_id = ?', [id]);
+  run('DELETE FROM teachers WHERE id = ?', [id]);
+}
+
+router.delete('/teachers/:id', requireRole('admin', 'manager'), (req, res) => {
+  transaction(() => deleteTeacherCascade(req.params.id));
+  res.json({ ok: true });
+});
+
+router.post('/teachers/bulk-delete', requireRole('admin', 'manager'), (req, res) => {
+  const ids = [...new Set(req.body?.ids || [])];
+  if (!ids.length) return res.status(400).json({ error: 'Nenhum professor selecionado' });
+  transaction(() => { for (const id of ids) deleteTeacherCascade(id); });
+  res.json({ ok: true, count: ids.length });
+});
+
 // ---- packages ---------------------------------------------------------------
 router.get('/packages', (req, res) => {
   res.json({ packages: all('SELECT * FROM packages ORDER BY price').map((p) => ({ id: p.id, name: p.name, description: p.description, hoursPerWeek: p.hours_per_week, durationMonths: p.duration_months, price: p.price })) });
@@ -59,6 +92,24 @@ router.post('/packages', requireRole('admin', 'manager'), (req, res) => {
     id, b.name, b.description || '', b.hoursPerWeek || null, b.durationMonths || null, b.price || null, nowISO(),
   ]);
   res.status(201).json({ id });
+});
+
+function deletePackageCascade(id) {
+  run('UPDATE proposals SET package_id = NULL WHERE package_id = ?', [id]);
+  run('UPDATE enrollments SET package_id = NULL WHERE package_id = ?', [id]);
+  run('DELETE FROM packages WHERE id = ?', [id]);
+}
+
+router.delete('/packages/:id', requireRole('admin', 'manager'), (req, res) => {
+  transaction(() => deletePackageCascade(req.params.id));
+  res.json({ ok: true });
+});
+
+router.post('/packages/bulk-delete', requireRole('admin', 'manager'), (req, res) => {
+  const ids = [...new Set(req.body?.ids || [])];
+  if (!ids.length) return res.status(400).json({ error: 'Nenhum pacote selecionado' });
+  transaction(() => { for (const id of ids) deletePackageCascade(id); });
+  res.json({ ok: true, count: ids.length });
 });
 
 // ---- tags ---------------------------------------------------------------------

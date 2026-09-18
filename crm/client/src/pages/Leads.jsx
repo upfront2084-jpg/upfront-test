@@ -8,6 +8,8 @@ import StageBadge from '../components/StageBadge.jsx';
 import LeadFormModal from '../components/LeadFormModal.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useToast } from '../context/ToastContext.jsx';
+import Icon from '../components/Icon.jsx';
+import SourceIcon from '../components/SourceIcon.jsx';
 
 const PAGE_SIZE = 25;
 
@@ -164,7 +166,7 @@ export default function Leads() {
                     </div>
                   </td>
                   <td><StageBadge status={l.status} /></td>
-                  <td>{l.sourceIcon} {l.sourceName || '—'}</td>
+                  <td className="hstack">{l.sourceName && <SourceIcon name={l.sourceName} />} {l.sourceName || '—'}</td>
                   <td>{l.ownerName || '—'}</td>
                   <td>{fmtDate(l.lastContactDate)} <span className="muted small">({daysSince(l.lastContactDate)}d)</span></td>
                   <td className="small">{l.nextAction || '—'}</td>
@@ -174,13 +176,13 @@ export default function Leads() {
           </table>
         </div>
         {!loading && result.leads.length === 0 && (
-          <div className="empty-state"><div className="big">🔍</div>Nenhum lead encontrado com esses filtros.</div>
+          <div className="empty-state"><div className="big"><Icon name="search" size={32} /></div>Nenhum lead encontrado com esses filtros.</div>
         )}
         <div className="pagination">
           <span>Página {page} de {totalPages}</span>
           <div className="hstack">
-            <button className="btn btn-secondary btn-sm" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>← Anterior</button>
-            <button className="btn btn-secondary btn-sm" disabled={page >= totalPages} onClick={() => setPage((p) => p + 1)}>Próxima →</button>
+            <button className="btn btn-secondary btn-sm hstack" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}><Icon name="arrow-left" size={14} /> Anterior</button>
+            <button className="btn btn-secondary btn-sm hstack" disabled={page >= totalPages} onClick={() => setPage((p) => p + 1)}>Próxima <Icon name="arrow-right" size={14} /></button>
           </div>
         </div>
       </div>

@@ -5,14 +5,23 @@ import { fmtDate, todayISO } from '../lib/format.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useToast } from '../context/ToastContext.jsx';
 import TaskFormModal from '../components/TaskFormModal.jsx';
+import { useBulkSelect } from '../hooks/useBulkSelect.js';
+import Icon from '../components/Icon.jsx';
 
 const GROUP_ORDER = ['Primeiro contato', 'Confirmar experimental', 'Follow-up de proposta', 'Recuperação', 'Outro'];
 const GROUP_LABELS = {
-  'Primeiro contato': '📞 Leads para contatar',
-  'Confirmar experimental': '🎓 Experimentais para confirmar',
-  'Follow-up de proposta': '📄 Propostas para acompanhar',
-  'Recuperação': '♻️ Recuperação',
-  'Outro': '📌 Outras tarefas',
+  'Primeiro contato': 'Leads para contatar',
+  'Confirmar experimental': 'Experimentais para confirmar',
+  'Follow-up de proposta': 'Propostas para acompanhar',
+  'Recuperação': 'Recuperação',
+  'Outro': 'Outras tarefas',
+};
+const GROUP_ICONS = {
+  'Primeiro contato': 'phone',
+  'Confirmar experimental': 'graduation-cap',
+  'Follow-up de proposta': 'file-text',
+  'Recuperação': 'refresh-cw',
+  'Outro': 'more-horizontal',
 };
 
 export default function Tasks() {
@@ -23,6 +32,8 @@ export default function Tasks() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { push } = useToast();
+  const { selected, toggle, toggleAll, clear } = useBulkSelect();
+  const [bulkDeleting, setBulkDeleting] = useState(false);
 
   async function load() {
     setLoading(true);
@@ -68,6 +79,21 @@ export default function Tasks() {
     }
   }
 
+  async function bulkDelete() {
+    if (!confirm(`Excluir ${selected.size} tarefa(s) selecionada(s)?`)) return;
+    setBulkDeleting(true);
+    try {
+      const { count } = await api.post('/tasks/bulk-delete', { ids: [...selected] });
+      push(`${count} tarefa(s) excluída(s)`, 'success');
+      clear();
+      load();
+    } catch (err) {
+      push(err.message, 'error');
+    } finally {
+      setBulkDeleting(false);
+    }
+  }
+
   return (
     <div>
       <div className="topbar">
@@ -82,28 +108,49 @@ export default function Tasks() {
 
       {loading ? <div className="page-loading">Carregando tarefas…</div> : (
         <>
+          {tasks.length > 0 && (
+            <div className="hstack mb12" style={{ justifyContent: 'space-between' }}>
+              <label className="hstack small" style={{ cursor: 'pointer' }}>
+                <input type="checkbox" checked={tasks.length > 0 && tasks.every((t) => selected.has(t.id))} onChange={() => toggleAll(tasks.map((t) => t.id))} />
+                Selecionar todas
+              </label>
+              {selected.size > 0 && (
+                <div className="hstack">
+                  <span className="small muted">{selected.size} selecionada(s)</span>
+                  <button className="btn btn-ghost btn-sm" onClick={clear}>Limpar</button>
+                  <button className="btn btn-primary btn-sm" style={{ background: 'var(--danger)', borderColor: 'var(--danger)' }} disabled={bulkDeleting} onClick={bulkDelete}>
+                    {bulkDeleting ? 'Excluindo…' : 'Excluir selecionadas'}
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
           {overdue.length > 0 && (
             <div className="card mb12" style={{ borderColor: 'var(--danger)' }}>
               <div className="hstack" style={{ justifyContent: 'space-between' }}>
-                <div style={{ fontWeight: 800, color: 'var(--danger)' }}>⚠️ {overdue.length} tarefas atrasadas precisam de atenção</div>
+                <div className="hstack" style={{ fontWeight: 800, color: 'var(--danger)' }}>
+                  <Icon name="alert-triangle" size={16} /> {overdue.length} tarefas atrasadas precisam de atenção
+                </div>
               </div>
             </div>
           )}
 
           {recoveryCount !== null && recoveryCount > 0 && (
             <div className="card mb12 hstack" style={{ justifyContent: 'space-between', cursor: 'pointer' }} onClick={() => navigate('/recovery')}>
-              <div>♻️ <b>{recoveryCount}</b> leads disponíveis para campanhas de recuperação</div>
-              <span className="link-btn">Ver recuperação →</span>
+              <div className="hstack"><Icon name="refresh-cw" size={15} /> <b>{recoveryCount}</b> leads disponíveis para campanhas de recuperação</div>
+              <span className="link-btn hstack">Ver recuperação <Icon name="arrow-right" size={13} /></span>
             </div>
           )}
 
           {GROUP_ORDER.filter((g) => grouped[g]?.length).map((g) => (
             <div key={g}>
-              <div className="section-title">{GROUP_LABELS[g]} ({grouped[g].length})</div>
+              <div className="section-title hstack"><Icon name={GROUP_ICONS[g]} size={15} /> {GROUP_LABELS[g]} ({grouped[g].length})</div>
               <div className="stack">
                 {grouped[g].map((t) => (
                   <div key={t.id} className={`checklist-item ${t.dueDate < today ? 'overdue' : ''}`}>
-                    <input type="checkbox" onChange={() => complete(t)} />
+                    <input type="checkbox" checked={selected.has(t.id)} onChange={() => toggle(t.id)} title="Selecionar" />
+                    <input type="checkbox" onChange={() => complete(t)} title="Concluir" />
                     <div style={{ flex: 1, cursor: t.leadId ? 'pointer' : 'default' }} onClick={() => t.leadId && navigate(`/leads/${t.leadId}`)}>
                       <div style={{ fontWeight: 700 }}>{t.title}</div>
                       <div className="small muted">
@@ -120,7 +167,7 @@ export default function Tasks() {
           ))}
 
           {tasks.length === 0 && (
-            <div className="empty-state"><div className="big">🎉</div>Nenhuma tarefa pendente para hoje. Bom trabalho!</div>
+            <div className="empty-state"><div className="big"><Icon name="check-circle" size={32} /></div>Nenhuma tarefa pendente para hoje. Bom trabalho!</div>
           )}
         </>
       )}

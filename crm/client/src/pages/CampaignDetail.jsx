@@ -4,6 +4,7 @@ import { api } from '../api.js';
 import { fmtDate } from '../lib/format.js';
 import StageBadge from '../components/StageBadge.jsx';
 import { useToast } from '../context/ToastContext.jsx';
+import Icon from '../components/Icon.jsx';
 
 const OUTCOME_FIELDS = [
   { key: 'responded', label: 'Respondeu' },
@@ -37,7 +38,7 @@ export default function CampaignDetail() {
 
   return (
     <div>
-      <button className="link-btn mb12" onClick={() => navigate('/campaigns')}>← Voltar para campanhas</button>
+      <button className="link-btn mb12 hstack" onClick={() => navigate('/campaigns')}><Icon name="arrow-left" size={14} /> Voltar para campanhas</button>
       <div className="card mb12">
         <div className="hstack" style={{ justifyContent: 'space-between', flexWrap: 'wrap' }}>
           <div>
@@ -51,7 +52,11 @@ export default function CampaignDetail() {
           <div className="s"><div className="v small">{fmtDate(campaign.date)}</div><div className="l">Data de envio</div></div>
           <div className="s"><div className="v small">{recipients.length}</div><div className="l">Contatos</div></div>
         </div>
-        {campaign.message && <div className="mt16 small" style={{ background: 'var(--surface-2)', padding: 10, borderRadius: 10 }}>💬 {campaign.message}</div>}
+        {campaign.message && (
+          <div className="hstack mt16 small" style={{ background: 'var(--surface-2)', padding: 10, borderRadius: 10 }}>
+            <Icon name="message-circle" size={14} /> {campaign.message}
+          </div>
+        )}
       </div>
 
       <div className="section-title">Leads participantes ({recipients.length})</div>

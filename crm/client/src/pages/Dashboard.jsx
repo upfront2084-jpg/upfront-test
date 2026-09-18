@@ -9,12 +9,14 @@ import { useAuth } from '../context/AuthContext.jsx';
 import { fmtDate, fmtMonthLabel, todayISO, initials } from '../lib/format.js';
 import StageBadge from '../components/StageBadge.jsx';
 import { useToast } from '../context/ToastContext.jsx';
+import Icon from '../components/Icon.jsx';
+import SourceIcon from '../components/SourceIcon.jsx';
 
 const KPI_DEFS = [
-  { key: 'leadsInMonth', label: 'Leads Novos', icon: '👥', color: '#0EA5A4', trendKey: 'leadsInMonth' },
-  { key: 'enrollments', label: 'Matrículas', icon: '🎓', color: '#16A34A', trendKey: 'enrollments' },
-  { key: 'conversionRate', label: 'Taxa de Conversão', icon: '📈', color: '#F5A524', trendKey: 'conversionRate', suffix: '%' },
-  { key: 'needFollowUp', label: 'Tarefas Pendentes', icon: '⏰', color: '#8B5CF6' },
+  { key: 'leadsInMonth', label: 'Leads Novos', icon: 'users', color: '#0EA5A4', trendKey: 'leadsInMonth' },
+  { key: 'enrollments', label: 'Matrículas', icon: 'graduation-cap', color: '#16A34A', trendKey: 'enrollments' },
+  { key: 'conversionRate', label: 'Taxa de Conversão', icon: 'trending-up', color: '#F5A524', trendKey: 'conversionRate', suffix: '%' },
+  { key: 'needFollowUp', label: 'Tarefas Pendentes', icon: 'clock', color: '#8B5CF6' },
 ];
 
 const PIE_COLORS = ['#2F6FED', '#16A34A', '#F5A524', '#8B5CF6', '#0EA5A4', '#E1425B', '#5B93FF', '#C026D3', '#EA8C00'];
@@ -82,7 +84,7 @@ export default function Dashboard() {
     <div>
       <div className="topbar">
         <div>
-          <h1>Olá, {firstName}! 👋</h1>
+          <h1>Olá, {firstName}!</h1>
           <div className="sub">Aqui é onde grandes conversas começam.</div>
         </div>
         <div className="topbar-right">
@@ -106,10 +108,10 @@ export default function Dashboard() {
               return (
                 <div className="kpi-card-2" key={k.key}>
                   <div className="kpi-top">
-                    <span className="kpi-icon" style={{ background: k.color + '1e', color: k.color }}>{k.icon}</span>
+                    <span className="kpi-icon" style={{ background: k.color + '1e', color: k.color }}><Icon name={k.icon} size={18} /></span>
                     {trend !== null && trend !== undefined && (
-                      <span className={`trend-badge ${trend >= 0 ? 'up' : 'down'}`}>
-                        {trend >= 0 ? '↑' : '↓'} {Math.abs(trend)}%
+                      <span className={`trend-badge hstack ${trend >= 0 ? 'up' : 'down'}`}>
+                        <Icon name={trend >= 0 ? 'arrow-up' : 'arrow-down'} size={12} /> {Math.abs(trend)}%
                       </span>
                     )}
                   </div>
@@ -124,7 +126,7 @@ export default function Dashboard() {
             <div className="chart-card">
               <div className="hstack" style={{ justifyContent: 'space-between' }}>
                 <h3>Funil de Vendas</h3>
-                <a className="link-btn" onClick={() => navigate('/pipeline')}>Ver detalhes →</a>
+                <a className="link-btn hstack" onClick={() => navigate('/pipeline')}>Ver detalhes <Icon name="arrow-right" size={13} /></a>
               </div>
               <div className="funnel-list">
                 {charts.funnel.map((f, i) => (
@@ -188,7 +190,7 @@ export default function Dashboard() {
             <div className="chart-card">
               <div className="hstack" style={{ justifyContent: 'space-between' }}>
                 <h3>Leads Recentes</h3>
-                <a className="link-btn" onClick={() => navigate('/leads')}>Ver todos →</a>
+                <a className="link-btn hstack" onClick={() => navigate('/leads')}>Ver todos <Icon name="arrow-right" size={13} /></a>
               </div>
               <div className="table-scroll">
                 <table className="data-table mini-table">
@@ -199,7 +201,7 @@ export default function Dashboard() {
                     {recentLeads.map((l) => (
                       <tr key={l.id} onClick={() => navigate(`/leads/${l.id}`)}>
                         <td style={{ fontWeight: 700 }}>{l.name}</td>
-                        <td>{l.sourceIcon} {l.sourceName || '—'}</td>
+                        <td className="hstack">{l.sourceName && <SourceIcon name={l.sourceName} size={13} />} {l.sourceName || '—'}</td>
                         <td><StageBadge status={l.status} /></td>
                         <td className="small">{fmtDate(l.lastContactDate)}</td>
                         <td>
@@ -218,7 +220,7 @@ export default function Dashboard() {
             <div className="chart-card">
               <div className="hstack" style={{ justifyContent: 'space-between' }}>
                 <h3>Tarefas de Hoje</h3>
-                <a className="link-btn" onClick={() => navigate('/tasks')}>Ver todas →</a>
+                <a className="link-btn hstack" onClick={() => navigate('/tasks')}>Ver todas <Icon name="arrow-right" size={13} /></a>
               </div>
               <div className="stack">
                 {todayTasks.map((t) => (
@@ -228,7 +230,7 @@ export default function Dashboard() {
                     <span className="muted small">{t.dueTime || ''}</span>
                   </label>
                 ))}
-                {todayTasks.length === 0 && <div className="muted small" style={{ padding: '10px 0' }}>Nenhuma tarefa para hoje 🎉</div>}
+                {todayTasks.length === 0 && <div className="muted small" style={{ padding: '10px 0' }}>Nenhuma tarefa para hoje.</div>}
               </div>
             </div>
           </div>

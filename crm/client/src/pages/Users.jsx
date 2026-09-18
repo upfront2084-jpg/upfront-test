@@ -5,6 +5,7 @@ import { useToast } from '../context/ToastContext.jsx';
 import { ROLE_LABELS } from '../lib/constants.js';
 import { initials } from '../lib/format.js';
 import Modal from '../components/Modal.jsx';
+import { useBulkSelect } from '../hooks/useBulkSelect.js';
 
 const EMPTY_FORM = { name: '', username: '', email: '', role: 'agent', password: '', teacherId: '' };
 
@@ -16,9 +17,10 @@ export default function Users() {
   const [resetTarget, setResetTarget] = useState(null); // user being reset
   const [newPassword, setNewPassword] = useState('');
   const [resetting, setResetting] = useState(false);
-  const [deleteTarget, setDeleteTarget] = useState(null); // user being deleted
+  const [deleteTargets, setDeleteTargets] = useState(null); // array of users being deleted (1 or many)
   const [reassignTo, setReassignTo] = useState('');
   const [deleting, setDeleting] = useState(false);
+  const { selected, toggle, toggleAll, clear } = useBulkSelect();
 
   async function submit(e) {
     e.preventDefault();
@@ -49,9 +51,18 @@ export default function Users() {
     e.preventDefault();
     setDeleting(true);
     try {
-      await api.del(`/users/${deleteTarget.id}`, reassignTo ? { reassignToUserId: reassignTo } : undefined);
-      push(`Usuário "${deleteTarget.username}" excluído`, 'success');
-      setDeleteTarget(null);
+      if (deleteTargets.length === 1) {
+        await api.del(`/users/${deleteTargets[0].id}`, reassignTo ? { reassignToUserId: reassignTo } : undefined);
+        push(`Usuário "${deleteTargets[0].username}" excluído`, 'success');
+      } else {
+        const { count } = await api.post('/users/bulk-delete', {
+          ids: deleteTargets.map((u) => u.id),
+          ...(reassignTo ? { reassignToUserId: reassignTo } : {}),
+        });
+        push(`${count} usuário(s) excluído(s)`, 'success');
+      }
+      setDeleteTargets(null);
+      clear();
       reload();
     } catch (err) {
       push(err.message, 'error');
@@ -86,12 +97,35 @@ export default function Users() {
 
       <div className="grid-2">
         <div className="table-wrap">
+          {selected.size > 0 && (
+            <div className="hstack mb12" style={{ justifyContent: 'space-between' }}>
+              <span className="small muted">{selected.size} selecionado(s)</span>
+              <div className="hstack">
+                <button className="btn btn-ghost btn-sm" onClick={clear}>Limpar</button>
+                <button
+                  className="btn btn-primary btn-sm"
+                  style={{ background: 'var(--danger)', borderColor: 'var(--danger)' }}
+                  onClick={() => { setDeleteTargets(users.filter((u) => selected.has(u.id))); setReassignTo(''); }}
+                >
+                  Excluir selecionados
+                </button>
+              </div>
+            </div>
+          )}
           <div className="table-scroll">
             <table className="data-table">
-              <thead><tr><th>Usuário</th><th>Login</th><th>Perfil</th><th>Status</th><th></th></tr></thead>
+              <thead>
+                <tr>
+                  <th style={{ width: 36 }}>
+                    <input type="checkbox" checked={users.length > 0 && users.every((u) => selected.has(u.id))} onChange={() => toggleAll(users.map((u) => u.id))} />
+                  </th>
+                  <th>Usuário</th><th>Login</th><th>Perfil</th><th>Status</th><th></th>
+                </tr>
+              </thead>
               <tbody>
                 {users.map((u) => (
                   <tr key={u.id} style={{ cursor: 'default' }}>
+                    <td><input type="checkbox" checked={selected.has(u.id)} onChange={() => toggle(u.id)} /></td>
                     <td>
                       <div className="name-cell">
                         <span className="avatar-sm">{initials(u.name)}</span>
@@ -105,7 +139,7 @@ export default function Users() {
                       <div className="hstack">
                         <button className="btn btn-ghost btn-sm" onClick={() => { setResetTarget(u); setNewPassword(''); }}>Redefinir senha</button>
                         <button className="btn btn-ghost btn-sm" onClick={() => toggleActive(u)}>{u.active ? 'Desativar' : 'Ativar'}</button>
-                        <button className="btn btn-ghost btn-sm" style={{ color: 'var(--danger)' }} onClick={() => { setDeleteTarget(u); setReassignTo(''); }}>Excluir</button>
+                        <button className="btn btn-ghost btn-sm" style={{ color: 'var(--danger)' }} onClick={() => { setDeleteTargets([u]); setReassignTo(''); }}>Excluir</button>
                       </div>
                     </td>
                   </tr>
@@ -177,24 +211,29 @@ export default function Users() {
         </Modal>
       )}
 
-      {deleteTarget && (
+      {deleteTargets && (
         <Modal
-          title={`Excluir ${deleteTarget.name}`}
-          onClose={() => setDeleteTarget(null)}
+          title={deleteTargets.length === 1 ? `Excluir ${deleteTargets[0].name}` : `Excluir ${deleteTargets.length} usuários`}
+          onClose={() => setDeleteTargets(null)}
           footer={<>
-            <button className="btn btn-secondary" onClick={() => setDeleteTarget(null)}>Cancelar</button>
-            <button className="btn btn-primary" style={{ background: 'var(--danger)', borderColor: 'var(--danger)' }} form="delete-user-form" disabled={deleting}>{deleting ? 'Excluindo…' : 'Excluir usuário'}</button>
+            <button className="btn btn-secondary" onClick={() => setDeleteTargets(null)}>Cancelar</button>
+            <button className="btn btn-primary" style={{ background: 'var(--danger)', borderColor: 'var(--danger)' }} form="delete-user-form" disabled={deleting}>
+              {deleting ? 'Excluindo…' : deleteTargets.length === 1 ? 'Excluir usuário' : 'Excluir usuários'}
+            </button>
           </>}
         >
           <form id="delete-user-form" onSubmit={submitDelete}>
             <div className="small muted mb12">
-              Os leads, tarefas e campanhas de "{deleteTarget.username}" continuam no sistema — eles são do CRM, não da conta dele. Escolha quem passa a ser o responsável por eles a partir de agora, ou deixe em aberto.
+              {deleteTargets.length === 1
+                ? `Os leads, tarefas e campanhas de "${deleteTargets[0].username}" continuam no sistema — eles são do CRM, não da conta dele.`
+                : `Os leads, tarefas e campanhas dessas ${deleteTargets.length} pessoas continuam no sistema — eles são do CRM, não das contas delas.`}
+              {' '}Escolha quem passa a ser o responsável por eles a partir de agora, ou deixe em aberto.
             </div>
             <div className="field">
               <label>Transferir leads e tarefas para</label>
               <select className="input" value={reassignTo} onChange={(e) => setReassignTo(e.target.value)}>
                 <option value="">Deixar sem responsável</option>
-                {users.filter((u) => u.id !== deleteTarget.id && u.active).map((u) => (
+                {users.filter((u) => !deleteTargets.some((d) => d.id === u.id) && u.active).map((u) => (
                   <option key={u.id} value={u.id}>{u.name} ({ROLE_LABELS[u.role]})</option>
                 ))}
               </select>

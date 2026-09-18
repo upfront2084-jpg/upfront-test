@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { all, one, run } from '../db.js';
+import { all, one, run, transaction } from '../db.js';
 import { uid, nowISO, todayISO } from '../lib/util.js';
 import { scopeForUser } from '../lib/authMiddleware.js';
 
@@ -68,6 +68,15 @@ router.put('/tasks/:id', (req, res) => {
 router.delete('/tasks/:id', (req, res) => {
   run('DELETE FROM tasks WHERE id = ?', [req.params.id]);
   res.json({ ok: true });
+});
+
+router.post('/tasks/bulk-delete', (req, res) => {
+  const ids = [...new Set(req.body?.ids || [])];
+  if (!ids.length) return res.status(400).json({ error: 'Nenhuma tarefa selecionada' });
+  transaction(() => {
+    for (const id of ids) run('DELETE FROM tasks WHERE id = ?', [id]);
+  });
+  res.json({ ok: true, count: ids.length });
 });
 
 export default router;

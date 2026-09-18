@@ -11,6 +11,8 @@ import TrialFormModal from '../components/TrialFormModal.jsx';
 import ProposalFormModal from '../components/ProposalFormModal.jsx';
 import EnrollModal from '../components/EnrollModal.jsx';
 import TaskFormModal from '../components/TaskFormModal.jsx';
+import Icon from '../components/Icon.jsx';
+import SourceIcon from '../components/SourceIcon.jsx';
 
 const TABS = ['Linha do tempo', 'Aula experimental', 'Proposta', 'Matrícula', 'Tarefas', 'Notas'];
 
@@ -79,7 +81,7 @@ export default function LeadDetail() {
 
   return (
     <div>
-      <button className="link-btn mb12" onClick={() => navigate(-1)}>← Voltar</button>
+      <button className="link-btn mb12 hstack" onClick={() => navigate(-1)}><Icon name="arrow-left" size={14} /> Voltar</button>
 
       <div className="card" style={{ marginBottom: 18 }}>
         <div className="hstack" style={{ justifyContent: 'space-between', flexWrap: 'wrap', gap: 14 }}>
@@ -107,7 +109,7 @@ export default function LeadDetail() {
         <div className="grid-2 mt20">
           <div>
             <div className="stat-inline">
-              <div className="s"><div className="v small">{lead.sourceIcon} {lead.sourceName || '—'}</div><div className="l">Origem</div></div>
+              <div className="s"><div className="v small hstack">{lead.sourceName && <SourceIcon name={lead.sourceName} size={13} />} {lead.sourceName || '—'}</div><div className="l">Origem</div></div>
               <div className="s"><div className="v small">{lead.ownerName || '—'}</div><div className="l">Atendente</div></div>
               <div className="s"><div className="v small">{lead.teacherName || '—'}</div><div className="l">Professor</div></div>
               <div className="s"><div className="v small">{lead.englishLevel || '—'}</div><div className="l">Nível</div></div>
@@ -124,15 +126,19 @@ export default function LeadDetail() {
             </div>
           </div>
         </div>
-        {lead.notes && <div className="mt16 small" style={{ background: 'var(--surface-2)', padding: 10, borderRadius: 10 }}>📝 {lead.notes}</div>}
+        {lead.notes && (
+          <div className="hstack mt16 small" style={{ background: 'var(--surface-2)', padding: 10, borderRadius: 10 }}>
+            <Icon name="edit" size={14} /> {lead.notes}
+          </div>
+        )}
 
         {canEdit && (
           <div className="hstack mt16" style={{ flexWrap: 'wrap' }}>
-            <button className="btn btn-secondary btn-sm" onClick={() => { setEditingTrial(null); setModal('trial'); }}>🎓 Agendar experimental</button>
-            <button className="btn btn-secondary btn-sm" onClick={() => { setEditingProposal(null); setModal('proposal'); }}>📄 Enviar proposta</button>
-            <button className="btn btn-secondary btn-sm" onClick={() => setModal('task')}>✅ Nova tarefa</button>
+            <button className="btn btn-secondary btn-sm hstack" onClick={() => { setEditingTrial(null); setModal('trial'); }}><Icon name="graduation-cap" size={14} /> Agendar experimental</button>
+            <button className="btn btn-secondary btn-sm hstack" onClick={() => { setEditingProposal(null); setModal('proposal'); }}><Icon name="file-text" size={14} /> Enviar proposta</button>
+            <button className="btn btn-secondary btn-sm hstack" onClick={() => setModal('task')}><Icon name="check-circle" size={14} /> Nova tarefa</button>
             {lead.status !== 'matriculado' && (
-              <button className="btn btn-primary btn-sm" onClick={() => setModal('enroll')}>🎉 Confirmar matrícula</button>
+              <button className="btn btn-primary btn-sm hstack" onClick={() => setModal('enroll')}><Icon name="award" size={14} /> Confirmar matrícula</button>
             )}
           </div>
         )}
@@ -150,7 +156,7 @@ export default function LeadDetail() {
             <div className="timeline">
               {[...lead.timeline].reverse().map((ev) => (
                 <div className="timeline-item" key={ev.id}>
-                  <span className="timeline-icon">{INTERACTION_ICONS[ev.type] || '•'}</span>
+                  <span className="timeline-icon"><Icon name={INTERACTION_ICONS[ev.type] || 'more-horizontal'} size={14} /></span>
                   <div className="ti-note">{ev.note}</div>
                   <div className="ti-meta">{fmtDateTime(ev.datetime)}</div>
                 </div>
@@ -179,7 +185,7 @@ export default function LeadDetail() {
                 <div><b>Nível identificado:</b> {t.levelIdentified || '—'}</div>
                 <div><b>Resultado:</b> {t.result || '—'}</div>
               </div>
-              {t.teacherNotes && <div className="mt12 small">🗒️ {t.teacherNotes}</div>}
+              {t.teacherNotes && <div className="hstack mt12 small"><Icon name="clipboard" size={14} /> {t.teacherNotes}</div>}
             </div>
           ))}
         </div>

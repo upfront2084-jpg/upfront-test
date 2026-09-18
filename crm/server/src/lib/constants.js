@@ -48,15 +48,15 @@ export const TASK_STATUS = ['Pendente', 'Concluída', 'Cancelada'];
 export const CAMPAIGN_CHANNELS = ['WhatsApp', 'E-mail', 'SMS', 'Ligação'];
 export const CAMPAIGN_STATUS = ['Rascunho', 'Enviada', 'Em andamento', 'Concluída'];
 export const DEFAULT_SOURCES = [
-  { name: 'Instagram', icon: '📷' },
-  { name: 'Facebook', icon: '📘' },
-  { name: 'Google', icon: '🔍' },
-  { name: 'TikTok', icon: '🎵' },
-  { name: 'YouTube', icon: '▶️' },
-  { name: 'Indicação', icon: '🤝' },
-  { name: 'Site', icon: '🌐' },
-  { name: 'WhatsApp', icon: '💬' },
-  { name: 'Outros', icon: '✨' },
+  { name: 'Instagram' },
+  { name: 'Facebook' },
+  { name: 'Google' },
+  { name: 'TikTok' },
+  { name: 'YouTube' },
+  { name: 'Indicação' },
+  { name: 'Site' },
+  { name: 'WhatsApp' },
+  { name: 'Outros' },
 ];
 export const RECOVERY_BUCKETS = [
   { key: '7', label: '7 dias', min: 7, max: 14 },

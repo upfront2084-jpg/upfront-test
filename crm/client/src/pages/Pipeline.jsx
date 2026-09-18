@@ -4,6 +4,7 @@ import { api } from '../api.js';
 import { STAGES } from '../lib/constants.js';
 import { fmtDate, initials, daysSince } from '../lib/format.js';
 import { useToast } from '../context/ToastContext.jsx';
+import SourceIcon from '../components/SourceIcon.jsx';
 
 export default function Pipeline() {
   const [leads, setLeads] = useState([]);
@@ -85,7 +86,7 @@ export default function Pipeline() {
                         <div className="kc-name">{lead.name}</div>
                       </div>
                       <div className="kc-meta">
-                        <span>{lead.sourceIcon} {lead.sourceName || '—'}</span>
+                        <span className="hstack">{lead.sourceName && <SourceIcon name={lead.sourceName} size={13} />} {lead.sourceName || '—'}</span>
                         <span>· {daysSince(lead.lastContactDate)}d sem contato</span>
                       </div>
                       <div className="kc-foot">

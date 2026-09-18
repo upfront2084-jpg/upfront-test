@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { api, qs } from '../api.js';
 import { REPORT_TYPES } from '../lib/constants.js';
 import { downloadCSV, todayISO } from '../lib/format.js';
+import Icon from '../components/Icon.jsx';
 
 export default function Reports() {
   const [type, setType] = useState(REPORT_TYPES[0].key);
@@ -35,11 +36,11 @@ export default function Reports() {
         <input type="date" className="input" style={{ width: 145 }} value={from} onChange={(e) => setFrom(e.target.value)} />
         <input type="date" className="input" style={{ width: 145 }} value={to} onChange={(e) => setTo(e.target.value)} />
         <button
-          className="btn btn-secondary"
+          className="btn btn-secondary hstack"
           disabled={!report || report.rows.length === 0}
           onClick={() => downloadCSV(`${type}.csv`, report.columns, report.rows)}
         >
-          ⬇️ Exportar CSV
+          <Icon name="download" size={14} /> Exportar CSV
         </button>
       </div>
 
@@ -55,7 +56,7 @@ export default function Reports() {
               </tbody>
             </table>
           </div>
-          {report.rows.length === 0 && <div className="empty-state"><div className="big">📈</div>Sem dados para este período.</div>}
+          {report.rows.length === 0 && <div className="empty-state"><div className="big"><Icon name="trending-up" size={32} /></div>Sem dados para este período.</div>}
         </div>
       )}
     </div>

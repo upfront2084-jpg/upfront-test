@@ -54,16 +54,16 @@ export const RECOVERY_BUCKETS = [
 ];
 
 export const INTERACTION_ICONS = {
-  criacao: '✨',
-  contato: '📞',
-  etapa: '🔀',
-  experimental: '🎓',
-  proposta: '📄',
-  matricula: '🎉',
-  nota: '📝',
-  campanha: '📣',
-  tarefa: '✅',
-  sistema: '⚙️',
+  criacao: 'star',
+  contato: 'phone',
+  etapa: 'shuffle',
+  experimental: 'graduation-cap',
+  proposta: 'file-text',
+  matricula: 'award',
+  nota: 'edit',
+  campanha: 'send',
+  tarefa: 'check-circle',
+  sistema: 'sliders',
 };
 
 export const REPORT_TYPES = [

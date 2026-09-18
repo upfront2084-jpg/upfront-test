@@ -6,6 +6,7 @@ import { fmtDate, initials } from '../lib/format.js';
 import StageBadge from '../components/StageBadge.jsx';
 import CampaignCreateModal from '../components/CampaignCreateModal.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
+import Icon from '../components/Icon.jsx';
 
 export default function Recovery() {
   const [bucket, setBucket] = useState('30');
@@ -54,8 +55,8 @@ export default function Recovery() {
         </div>
         <div className="topbar-right">
           {selected.size > 0 && (
-            <button className="btn btn-primary" onClick={() => setShowCampaign(true)}>
-              📣 Criar campanha com {selected.size} leads
+            <button className="btn btn-primary hstack" onClick={() => setShowCampaign(true)}>
+              <Icon name="send" size={14} /> Criar campanha com {selected.size} leads
             </button>
           )}
         </div>
@@ -102,7 +103,7 @@ export default function Recovery() {
           </table>
         </div>
         {!loading && leads.length === 0 && (
-          <div className="empty-state"><div className="big">♻️</div>Nenhum lead parado há {bucketLabel?.toLowerCase()} no momento.</div>
+          <div className="empty-state"><div className="big"><Icon name="refresh-cw" size={32} /></div>Nenhum lead parado há {bucketLabel?.toLowerCase()} no momento.</div>
         )}
       </div>
 

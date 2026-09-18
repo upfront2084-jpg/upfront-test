@@ -6,26 +6,27 @@ import { initials } from '../lib/format.js';
 import { api } from '../api.js';
 import GlobalSearch from './GlobalSearch.jsx';
 import BrandMark from './BrandMark.jsx';
+import Icon from './Icon.jsx';
 
 const NAV = [
-  { group: 'Visão geral', items: [{ to: '/', label: 'Dashboard', icon: '📊', roles: ['admin', 'manager', 'agent', 'teacher'] }] },
+  { group: 'Visão geral', items: [{ to: '/', label: 'Dashboard', icon: 'bar-chart', roles: ['admin', 'manager', 'agent', 'teacher'] }] },
   {
     group: 'Vendas',
     items: [
-      { to: '/leads', label: 'Leads', icon: '🧑‍🎓', roles: ['admin', 'manager', 'agent', 'teacher'] },
-      { to: '/pipeline', label: 'Funil de Vendas', icon: '🗂️', roles: ['admin', 'manager', 'agent'] },
-      { to: '/tasks', label: 'Tarefas de Hoje', icon: '✅', roles: ['admin', 'manager', 'agent', 'teacher'] },
-      { to: '/recovery', label: 'Recuperação', icon: '♻️', roles: ['admin', 'manager', 'agent'] },
-      { to: '/campaigns', label: 'Campanhas', icon: '📣', roles: ['admin', 'manager'] },
-      { to: '/segments', label: 'Segmentos', icon: '🧩', roles: ['admin', 'manager'] },
+      { to: '/leads', label: 'Leads', icon: 'users', roles: ['admin', 'manager', 'agent', 'teacher'] },
+      { to: '/pipeline', label: 'Funil de Vendas', icon: 'kanban', roles: ['admin', 'manager', 'agent'] },
+      { to: '/tasks', label: 'Tarefas de Hoje', icon: 'check-circle', roles: ['admin', 'manager', 'agent', 'teacher'] },
+      { to: '/recovery', label: 'Recuperação', icon: 'refresh-cw', roles: ['admin', 'manager', 'agent'] },
+      { to: '/campaigns', label: 'Campanhas', icon: 'send', roles: ['admin', 'manager'] },
+      { to: '/segments', label: 'Segmentos', icon: 'filter', roles: ['admin', 'manager'] },
     ],
   },
   {
     group: 'Administração',
     items: [
-      { to: '/reports', label: 'Relatórios', icon: '📈', roles: ['admin', 'manager'] },
-      { to: '/catalog', label: 'Fontes, Professores & Pacotes', icon: '⚙️', roles: ['admin', 'manager'] },
-      { to: '/users', label: 'Usuários', icon: '👥', roles: ['admin'] },
+      { to: '/reports', label: 'Relatórios', icon: 'trending-up', roles: ['admin', 'manager'] },
+      { to: '/catalog', label: 'Fontes, Professores & Pacotes', icon: 'sliders', roles: ['admin', 'manager'] },
+      { to: '/users', label: 'Usuários', icon: 'users', roles: ['admin'] },
     ],
   },
 ];
@@ -71,7 +72,7 @@ export default function Layout() {
                     className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
                     onClick={() => setOpen(false)}
                   >
-                    <span className="ic">{it.icon}</span>
+                    <span className="ic"><Icon name={it.icon} size={18} /></span>
                     <span className="lbl">{it.label}</span>
                     {it.to === '/tasks' && overdueCount > 0 && <span className="badge-count">{overdueCount}</span>}
                   </NavLink>
@@ -82,7 +83,7 @@ export default function Layout() {
         </nav>
 
         <div className="sidebar-promo">
-          <div className="sidebar-promo-icon">✈️</div>
+          <div className="sidebar-promo-icon"><Icon name="globe" size={22} /></div>
           <div className="sidebar-promo-title">Mais pessoas, mais histórias em inglês.</div>
           <div className="sidebar-promo-brand">UPFRONT</div>
         </div>
@@ -100,11 +101,11 @@ export default function Layout() {
       </aside>
       <main className="main">
         <div className="topbar-strip">
-          <button className="mobile-menu-btn" onClick={() => setOpen(true)} aria-label="Abrir menu">☰</button>
+          <button className="mobile-menu-btn" onClick={() => setOpen(true)} aria-label="Abrir menu"><Icon name="menu" size={20} /></button>
           <GlobalSearch />
           <div style={{ flex: 1 }} />
           <button className="icon-btn" onClick={() => navigate('/tasks')} aria-label="Tarefas atrasadas" style={{ position: 'relative' }}>
-            🔔
+            <Icon name="bell" size={18} />
             {overdueCount > 0 && <span className="notif-dot">{overdueCount}</span>}
           </button>
           <div className="topbar-user hide-mobile">

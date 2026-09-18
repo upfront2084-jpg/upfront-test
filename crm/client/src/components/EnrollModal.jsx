@@ -25,7 +25,7 @@ export default function EnrollModal({ leadId, onClose, onSaved }) {
     setSaving(true);
     try {
       await api.post(`/leads/${leadId}/enroll`, { ...form, monthlyValue: form.monthlyValue ? Number(form.monthlyValue) : null });
-      push('Matrícula confirmada! 🎉', 'success');
+      push('Matrícula confirmada', 'success');
       onSaved?.();
     } catch (err) {
       push(err.message, 'error');

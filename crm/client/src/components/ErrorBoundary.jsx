@@ -1,4 +1,5 @@
 import { Component } from 'react';
+import Icon from './Icon.jsx';
 
 export default class ErrorBoundary extends Component {
   constructor(props) {
@@ -19,7 +20,7 @@ export default class ErrorBoundary extends Component {
       return (
         <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24, fontFamily: 'sans-serif' }}>
           <div style={{ maxWidth: 480, textAlign: 'center' }}>
-            <div style={{ fontSize: 32, marginBottom: 12 }}>⚠️</div>
+            <div style={{ marginBottom: 12, color: '#E1425B' }}><Icon name="alert-triangle" size={32} /></div>
             <h1 style={{ fontSize: 18, marginBottom: 8 }}>Algo deu errado</h1>
             <p style={{ color: '#666', fontSize: 14, marginBottom: 16 }}>{String(this.state.error?.message || this.state.error)}</p>
             <button

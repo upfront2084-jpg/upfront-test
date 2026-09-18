@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { all, one, run } from '../db.js';
+import { all, one, run, transaction } from '../db.js';
 import { uid, nowISO, todayISO } from '../lib/util.js';
 import { queryLeads, countLeads, recoveryEligibleFilters } from '../lib/leadQuery.js';
 import { requireRole } from '../lib/authMiddleware.js';
@@ -125,6 +125,27 @@ router.put('/campaigns/:id/recipients/:recipientId', (req, res) => {
     }
   }
   res.json({ ok: true });
+});
+
+function deleteCampaignCascade(id) {
+  run('DELETE FROM campaign_recipients WHERE campaign_id = ?', [id]);
+  run('DELETE FROM campaigns WHERE id = ?', [id]);
+}
+
+router.delete('/campaigns/:id', requireRole('admin', 'manager'), (req, res) => {
+  const c = one('SELECT id FROM campaigns WHERE id = ?', [req.params.id]);
+  if (!c) return res.status(404).json({ error: 'Campanha não encontrada' });
+  transaction(() => deleteCampaignCascade(c.id));
+  res.json({ ok: true });
+});
+
+router.post('/campaigns/bulk-delete', requireRole('admin', 'manager'), (req, res) => {
+  const ids = [...new Set(req.body?.ids || [])];
+  if (!ids.length) return res.status(400).json({ error: 'Nenhuma campanha selecionada' });
+  transaction(() => {
+    for (const id of ids) deleteCampaignCascade(id);
+  });
+  res.json({ ok: true, count: ids.length });
 });
 
 export default router;

@@ -131,7 +131,7 @@ function seedReferenceData() {
 
   const sources = DEFAULT_SOURCES.map((s) => {
     const id = uid('src');
-    db.prepare(`INSERT INTO sources (id, name, icon, created_at) VALUES (?,?,?,?)`).run(id, s.name, s.icon, now);
+    db.prepare(`INSERT INTO sources (id, name, icon, created_at) VALUES (?,?,?,?)`).run(id, s.name, s.icon || null, now);
     return { id, ...s };
   });
 
@@ -596,7 +596,7 @@ function seedCampaigns(ctx, leads) {
       targetDescription: 'Leads com experimental realizada, sem matrícula, 15-60 dias sem contato',
       daysAgo: 5,
       channel: 'WhatsApp',
-      message: 'Oi {{nome}}! Notamos que você fez sua aula experimental com a gente e queremos saber se ainda tem interesse em continuar aprendendo inglês. Temos uma condição especial essa semana 😊',
+      message: 'Oi {{nome}}! Notamos que você fez sua aula experimental com a gente e queremos saber se ainda tem interesse em continuar aprendendo inglês. Temos uma condição especial essa semana.',
       filter: (l) => ['recuperacao', 'experimental_realizada'].includes(l.status) && daysBetween(TODAY, l.lastContactDate) >= 15,
     },
     {

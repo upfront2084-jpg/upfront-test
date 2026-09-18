@@ -88,15 +88,47 @@ router.delete('/users/:id', requireRole('admin'), (req, res) => {
     if (target.id === u.id) return res.status(400).json({ error: 'Escolha um usuário diferente do que está sendo excluído' });
     targetId = target.id;
   }
-  transaction(() => {
-    run('UPDATE leads SET owner_user_id = ? WHERE owner_user_id = ?', [targetId, u.id]);
-    run('UPDATE tasks SET assigned_user_id = ? WHERE assigned_user_id = ?', [targetId, u.id]);
-    run('UPDATE campaigns SET responsible_user_id = ? WHERE responsible_user_id = ?', [targetId, u.id]);
-    run('UPDATE interactions SET user_id = NULL WHERE user_id = ?', [u.id]);
-    run('UPDATE notes SET user_id = NULL WHERE user_id = ?', [u.id]);
-    run('DELETE FROM users WHERE id = ?', [u.id]);
-  });
+  transaction(() => deleteUserCascade(u.id, targetId));
   res.json({ ok: true });
+});
+
+function deleteUserCascade(id, targetId) {
+  run('UPDATE leads SET owner_user_id = ? WHERE owner_user_id = ?', [targetId, id]);
+  run('UPDATE tasks SET assigned_user_id = ? WHERE assigned_user_id = ?', [targetId, id]);
+  run('UPDATE campaigns SET responsible_user_id = ? WHERE responsible_user_id = ?', [targetId, id]);
+  run('UPDATE interactions SET user_id = NULL WHERE user_id = ?', [id]);
+  run('UPDATE notes SET user_id = NULL WHERE user_id = ?', [id]);
+  run('DELETE FROM users WHERE id = ?', [id]);
+}
+
+router.post('/users/bulk-delete', requireRole('admin'), (req, res) => {
+  const { ids, reassignToUserId } = req.body || {};
+  const uniqueIds = [...new Set(ids || [])];
+  if (!uniqueIds.length) return res.status(400).json({ error: 'Nenhum usuário selecionado' });
+  if (uniqueIds.includes(req.user.id)) return res.status(400).json({ error: 'Você não pode excluir seu próprio usuário' });
+
+  let targetId = null;
+  if (reassignToUserId) {
+    const target = one('SELECT id FROM users WHERE id = ? AND active = 1', [reassignToUserId]);
+    if (!target) return res.status(400).json({ error: 'Usuário de destino inválido' });
+    if (uniqueIds.includes(target.id)) return res.status(400).json({ error: 'O usuário de destino não pode estar entre os selecionados para exclusão' });
+    targetId = target.id;
+  }
+
+  const placeholders = uniqueIds.map(() => '?').join(',');
+  const existingIds = all(`SELECT id FROM users WHERE id IN (${placeholders})`, uniqueIds).map((r) => r.id);
+  if (!existingIds.length) return res.status(400).json({ error: 'Nenhum usuário válido selecionado' });
+
+  const beingDeletedAreAdmins = one(`SELECT COUNT(*) as n FROM users WHERE role = 'admin' AND id IN (${placeholders})`, uniqueIds).n > 0;
+  if (beingDeletedAreAdmins) {
+    const remainingAdmins = one(`SELECT COUNT(*) as n FROM users WHERE role = 'admin' AND active = 1 AND id NOT IN (${placeholders})`, uniqueIds);
+    if (remainingAdmins.n === 0) return res.status(400).json({ error: 'Essa exclusão deixaria o sistema sem nenhum administrador ativo' });
+  }
+
+  transaction(() => {
+    for (const id of existingIds) deleteUserCascade(id, targetId);
+  });
+  res.json({ ok: true, count: existingIds.length });
 });
 
 export default router;
