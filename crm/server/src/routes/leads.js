@@ -282,7 +282,7 @@ router.post('/leads/:id/notes', ah(async (req, res) => {
 router.post('/leads/:id/tags', ah(async (req, res) => {
   const { tagId } = req.body || {};
   if (!tagId) return res.status(400).json({ error: 'tagId obrigatório' });
-  await run('INSERT IGNORE INTO lead_tags (lead_id, tag_id) VALUES (?,?)', [req.params.id, tagId]);
+  await run('INSERT INTO lead_tags (lead_id, tag_id) VALUES (?,?) ON CONFLICT DO NOTHING', [req.params.id, tagId]);
   res.json({ tagIds: await leadTagIds(req.params.id) });
 }));
 router.delete('/leads/:id/tags/:tagId', ah(async (req, res) => {

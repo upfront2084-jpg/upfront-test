@@ -27,7 +27,7 @@ export class SqlSessionStore extends session.Store {
       const maxAge = sessionData.cookie?.originalMaxAge ?? 1000 * 60 * 60 * 24 * 14;
       const expires = Date.now() + maxAge;
       await run(
-        'INSERT INTO sessions (sid, sess, expires) VALUES (?,?,?) ON DUPLICATE KEY UPDATE sess = VALUES(sess), expires = VALUES(expires)',
+        'INSERT INTO sessions (sid, sess, expires) VALUES (?,?,?) ON CONFLICT (sid) DO UPDATE SET sess = EXCLUDED.sess, expires = EXCLUDED.expires',
         [sid, JSON.stringify(sessionData), expires]
       );
       cb?.(null);

@@ -7,7 +7,7 @@ funil visual (Kanban), tarefas, campanhas de recuperação, segmentação,
 relatórios exportáveis e controle de acesso por perfil.
 
 É uma aplicação real, não um mockup estático: **backend Node.js/Express com
-banco de dados MySQL** (persistência de verdade, num banco gerenciado —
+banco de dados PostgreSQL** (persistência de verdade, num banco gerenciado —
 não num arquivo dentro da própria aplicação) e **frontend React (Vite)**
 consumindo uma API REST.
 
@@ -15,11 +15,11 @@ consumindo uma API REST.
 
 ```
 crm/
-  server/            API REST (Node.js + Express + mysql2)
+  server/            API REST (Node.js + Express + pg)
     src/
       schema.sql       schema relacional (users, leads, trial_classes,
                         proposals, enrollments, campaigns, tasks, ...)
-      db.js             conexão MySQL (mysql2/promise, pool + transações)
+      db.js             conexão Postgres (pg, pool + transações)
       seed.js           gera dados fictícios realistas para demonstração
       routes/           endpoints REST (leads, pipeline, tarefas, campanhas,
                          recuperação, segmentos, relatórios, dashboard...)
@@ -32,25 +32,25 @@ crm/
       context/          autenticação, dados de referência (fontes, professores...)
 ```
 
-Por que MySQL e não um arquivo local: em hospedagem compartilhada (como o
+Por que Postgres e não um arquivo local: em hospedagem compartilhada (como o
 Hostinger Web Apps), o processo Node é reiniciado periodicamente e nada
 garante que um arquivo escrito dentro da pasta da aplicação sobreviva a
 esse reinício — um banco de dados gerenciado, provisionado separadamente
 do código da aplicação, é a única forma de garantir que leads, usuários e
 sessões de login realmente persistam. A camada de acesso a dados fica
 isolada em `server/src/lib/leadQuery.js` e nas rotas, então trocar de
-motor de banco no futuro (Postgres, por exemplo) é uma troca localizada,
-não uma reescrita do sistema.
+motor de banco no futuro é uma troca localizada, não uma reescrita do
+sistema.
 
 ## Como rodar localmente
 
-Pré-requisitos: **Node.js 22+** e um **servidor MySQL/MariaDB** acessível
-(local ou remoto).
+Pré-requisitos: **Node.js 22+** e um **servidor PostgreSQL** acessível
+(local ou remoto — inclusive um projeto Supabase gratuito).
 
 ```bash
 cd crm
 npm run install:all   # instala dependências do server e do client
-# crie o banco antes de seguir, ex.: mysql -u root -e "CREATE DATABASE upfront_crm CHARACTER SET utf8mb4;"
+# crie o banco antes de seguir, ex.: psql -U postgres -c "CREATE DATABASE upfront_crm;"
 # configure server/.env com as credenciais (veja abaixo)
 npm run seed           # cria o schema e popula o banco com dados fictícios
 npm run dev             # sobe API (porta 4000) + frontend Vite (porta 5173)
@@ -104,9 +104,14 @@ PORT=4000
 SESSION_SECRET=uma-string-longa-e-aleatoria
 NODE_ENV=production
 
-# Conexão com o banco MySQL — obrigatórias em produção
+# Conexão com o banco Postgres — obrigatória em produção. Use UMA das duas formas:
+
+# Forma 1 (recomendada): connection string única, como a que o Supabase fornece
+DATABASE_URL=postgresql://usuario:senha@host:5432/nome_do_banco
+
+# Forma 2: variáveis separadas (usadas só se DATABASE_URL não estiver definida)
 DB_HOST=localhost
-DB_PORT=3306
+DB_PORT=5432
 DB_USER=usuario_do_banco
 DB_PASSWORD=senha_do_banco
 DB_NAME=upfront_crm
@@ -114,13 +119,15 @@ DB_NAME=upfront_crm
 
 ## Deploy no Hostinger
 
-### 1. Crie o banco de dados MySQL
+### 1. Crie o banco de dados (Supabase, plano gratuito)
 
-No hPanel, dentro do seu Web App, use o botão **Connect a database** (ou,
-em hospedagem compartilhada tradicional, **Bancos de dados → MySQL**) para
-criar um banco. Anote host, porta, nome do banco, usuário e senha — são
-esses valores que vão nas variáveis `DB_*` abaixo. Isso é essencial: sem
-um banco gerenciado, os dados não sobrevivem a reinícios do aplicativo.
+O Hostinger Web Apps integra com **Supabase** (Postgres) para banco de
+dados — é essencial, porque sem um banco gerenciado os dados não
+sobrevivem a reinícios do aplicativo. No hPanel, dentro do seu Web App, é
+possível usar o botão **Connect a database**, que guia a criação de um
+projeto Supabase. Se esse fluxo não funcionar, crie o projeto direto em
+supabase.com (plano Free, sem custo) e pegue a **connection string**
+(formato URI) em **Project Settings → Database**.
 
 ### Opção A — hPanel → Web App / Node.js App
 
@@ -129,8 +136,8 @@ um banco gerenciado, os dados não sobrevivem a reinícios do aplicativo.
    React — veja "gerando o pacote de deploy" abaixo).
 2. **Startup file**: `src/index.js`.
 3. Defina as variáveis de ambiente da aplicação: `SESSION_SECRET`,
-   `NODE_ENV=production`, e `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`,
-   `DB_NAME` com os dados do banco criado no passo 1.
+   `NODE_ENV=production`, e `DATABASE_URL` com a connection string do
+   Supabase criado no passo 1.
 4. Reinicie a aplicação pelo hPanel. No primeiro boot o schema é criado e
    o banco é populado com dados de demonstração automaticamente.
 
@@ -140,7 +147,7 @@ um banco gerenciado, os dados não sobrevivem a reinícios do aplicativo.
 git clone <repo> && cd upfront-test/crm
 npm run install:all
 npm run build
-# configure server/.env com DB_HOST/DB_PORT/DB_USER/DB_PASSWORD/DB_NAME
+# configure server/.env com DATABASE_URL (ou DB_HOST/DB_PORT/DB_USER/DB_PASSWORD/DB_NAME)
 npm install -g pm2
 pm2 start server/src/index.js --name upfront-crm
 pm2 save && pm2 startup   # mantém rodando após reboot

@@ -67,11 +67,11 @@ export function buildLeadWhere(filters = {}) {
     params.push(filters.entryDateTo);
   }
   if (filters.daysSinceContactMin !== undefined && filters.daysSinceContactMin !== null) {
-    clauses.push(`DATEDIFF(?, leads.last_contact_date) >= ?`);
+    clauses.push(`(?::date - leads.last_contact_date::date) >= ?`);
     params.push(todayISO(), filters.daysSinceContactMin);
   }
   if (filters.daysSinceContactMax !== undefined && filters.daysSinceContactMax !== null && isFinite(filters.daysSinceContactMax)) {
-    clauses.push(`DATEDIFF(?, leads.last_contact_date) <= ?`);
+    clauses.push(`(?::date - leads.last_contact_date::date) <= ?`);
     params.push(todayISO(), filters.daysSinceContactMax);
   }
   if (filters.hadTrial) {
