@@ -1,13 +1,17 @@
 import { one } from '../db.js';
+import { ah } from './asyncHandler.js';
 
-export function requireAuth(req, res, next) {
+// Wrapped with ah() here (rather than at each call site) since this is
+// used directly as app-level middleware, not through a router.METHOD
+// registration — nothing else would catch a rejected lookup.
+export const requireAuth = ah(async (req, res, next) => {
   const userId = req.session?.userId;
   if (!userId) return res.status(401).json({ error: 'Não autenticado' });
-  const user = one('SELECT id, name, username, email, role, teacher_id, active FROM users WHERE id = ?', [userId]);
+  const user = await one('SELECT id, name, username, email, role, teacher_id, active FROM users WHERE id = ?', [userId]);
   if (!user || !user.active) return res.status(401).json({ error: 'Não autenticado' });
   req.user = user;
   next();
-}
+});
 
 export function requireRole(...roles) {
   return (req, res, next) => {

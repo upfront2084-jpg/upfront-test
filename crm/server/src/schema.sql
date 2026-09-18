@@ -1,227 +1,246 @@
--- Upfront CRM relational schema (SQLite for dev/demo; a MySQL/Postgres
--- port only needs trivial type tweaks: TEXT->VARCHAR, INTEGER PK AUTOINCREMENT
--- differences, etc. Foreign keys are enforced so a lead's history can never
--- be deleted out from under it.
+-- Upfront CRM relational schema (MySQL). Foreign keys are declared with
+-- the default RESTRICT action — the app already deletes/unlinks child
+-- rows in the right order before removing a parent (see the *Cascade
+-- helpers in the route files), so RESTRICT here is a safety net against
+-- any path that forgets to, not something the app relies on firing.
 
-PRAGMA foreign_keys = ON;
-
--- Login sessions, persisted here (instead of left in process memory) so
--- a logged-in user stays logged in across server restarts — some hosting
--- runtimes recycle the Node process between requests, which would
--- otherwise silently log everyone back out mid-session.
 CREATE TABLE IF NOT EXISTS sessions (
-  sid TEXT PRIMARY KEY,
+  sid VARCHAR(191) PRIMARY KEY,
   sess TEXT NOT NULL,
-  expires INTEGER NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS users (
-  id TEXT PRIMARY KEY,
-  name TEXT NOT NULL,
-  username TEXT NOT NULL UNIQUE,
-  email TEXT,
-  password_hash TEXT NOT NULL,
-  role TEXT NOT NULL CHECK (role IN ('admin','manager','agent','teacher')),
-  teacher_id TEXT REFERENCES teachers(id),
-  active INTEGER NOT NULL DEFAULT 1,
-  created_at TEXT NOT NULL,
-  updated_at TEXT NOT NULL
-);
+  expires BIGINT NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS teachers (
-  id TEXT PRIMARY KEY,
-  name TEXT NOT NULL,
-  email TEXT,
-  levels TEXT,
-  active INTEGER NOT NULL DEFAULT 1,
-  created_at TEXT NOT NULL,
-  updated_at TEXT NOT NULL
-);
+  id VARCHAR(40) PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  email VARCHAR(255),
+  levels VARCHAR(255),
+  active TINYINT(1) NOT NULL DEFAULT 1,
+  created_at VARCHAR(40) NOT NULL,
+  updated_at VARCHAR(40) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS users (
+  id VARCHAR(40) PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  username VARCHAR(100) NOT NULL UNIQUE,
+  email VARCHAR(255),
+  password_hash VARCHAR(255) NOT NULL,
+  role VARCHAR(20) NOT NULL,
+  teacher_id VARCHAR(40),
+  active TINYINT(1) NOT NULL DEFAULT 1,
+  created_at VARCHAR(40) NOT NULL,
+  updated_at VARCHAR(40) NOT NULL,
+  FOREIGN KEY (teacher_id) REFERENCES teachers(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS sources (
-  id TEXT PRIMARY KEY,
-  name TEXT NOT NULL UNIQUE,
-  icon TEXT,
-  created_at TEXT NOT NULL
-);
+  id VARCHAR(40) PRIMARY KEY,
+  name VARCHAR(255) NOT NULL UNIQUE,
+  icon VARCHAR(40),
+  created_at VARCHAR(40) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS packages (
-  id TEXT PRIMARY KEY,
-  name TEXT NOT NULL,
+  id VARCHAR(40) PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
   description TEXT,
-  hours_per_week REAL,
-  duration_months INTEGER,
-  price REAL,
-  created_at TEXT NOT NULL
-);
+  hours_per_week DOUBLE,
+  duration_months INT,
+  price DOUBLE,
+  created_at VARCHAR(40) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS tags (
-  id TEXT PRIMARY KEY,
-  name TEXT NOT NULL UNIQUE,
-  color TEXT
-);
+  id VARCHAR(40) PRIMARY KEY,
+  name VARCHAR(255) NOT NULL UNIQUE,
+  color VARCHAR(20)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS leads (
-  id TEXT PRIMARY KEY,
-  name TEXT NOT NULL,
-  whatsapp TEXT,
-  email TEXT,
-  entry_date TEXT NOT NULL,
-  source_id TEXT REFERENCES sources(id),
-  campaign_origin TEXT,
-  owner_user_id TEXT REFERENCES users(id),
-  teacher_id TEXT REFERENCES teachers(id),
-  city TEXT,
-  age INTEGER,
-  english_level TEXT,
-  objective TEXT,
+  id VARCHAR(40) PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  whatsapp VARCHAR(40),
+  email VARCHAR(255),
+  entry_date VARCHAR(40) NOT NULL,
+  source_id VARCHAR(40),
+  campaign_origin VARCHAR(255),
+  owner_user_id VARCHAR(40),
+  teacher_id VARCHAR(40),
+  city VARCHAR(255),
+  age INT,
+  english_level VARCHAR(100),
+  objective VARCHAR(255),
   notes TEXT,
-  status TEXT NOT NULL DEFAULT 'novo_lead',
-  last_contact_date TEXT,
-  next_contact_date TEXT,
-  next_action TEXT,
-  opt_out INTEGER NOT NULL DEFAULT 0,
-  last_stage_change_at TEXT,
-  created_at TEXT NOT NULL,
-  updated_at TEXT NOT NULL
-);
-CREATE INDEX IF NOT EXISTS idx_leads_status ON leads(status);
-CREATE INDEX IF NOT EXISTS idx_leads_source ON leads(source_id);
-CREATE INDEX IF NOT EXISTS idx_leads_entry ON leads(entry_date);
+  status VARCHAR(40) NOT NULL DEFAULT 'novo_lead',
+  last_contact_date VARCHAR(40),
+  next_contact_date VARCHAR(40),
+  next_action VARCHAR(255),
+  opt_out TINYINT(1) NOT NULL DEFAULT 0,
+  last_stage_change_at VARCHAR(40),
+  created_at VARCHAR(40) NOT NULL,
+  updated_at VARCHAR(40) NOT NULL,
+  FOREIGN KEY (source_id) REFERENCES sources(id),
+  FOREIGN KEY (owner_user_id) REFERENCES users(id),
+  FOREIGN KEY (teacher_id) REFERENCES teachers(id),
+  INDEX idx_leads_status (status),
+  INDEX idx_leads_source (source_id),
+  INDEX idx_leads_entry (entry_date)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS lead_tags (
-  lead_id TEXT NOT NULL REFERENCES leads(id) ON DELETE CASCADE,
-  tag_id TEXT NOT NULL REFERENCES tags(id) ON DELETE CASCADE,
-  PRIMARY KEY (lead_id, tag_id)
-);
+  lead_id VARCHAR(40) NOT NULL,
+  tag_id VARCHAR(40) NOT NULL,
+  PRIMARY KEY (lead_id, tag_id),
+  FOREIGN KEY (lead_id) REFERENCES leads(id) ON DELETE CASCADE,
+  FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS students (
-  id TEXT PRIMARY KEY,
-  lead_id TEXT NOT NULL UNIQUE REFERENCES leads(id),
-  name TEXT NOT NULL,
-  whatsapp TEXT,
-  email TEXT,
-  created_at TEXT NOT NULL
-);
+  id VARCHAR(40) PRIMARY KEY,
+  lead_id VARCHAR(40) NOT NULL UNIQUE,
+  name VARCHAR(255) NOT NULL,
+  whatsapp VARCHAR(40),
+  email VARCHAR(255),
+  created_at VARCHAR(40) NOT NULL,
+  FOREIGN KEY (lead_id) REFERENCES leads(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS interactions (
-  id TEXT PRIMARY KEY,
-  lead_id TEXT NOT NULL REFERENCES leads(id) ON DELETE CASCADE,
-  type TEXT NOT NULL,
+  id VARCHAR(40) PRIMARY KEY,
+  lead_id VARCHAR(40) NOT NULL,
+  type VARCHAR(40) NOT NULL,
   note TEXT,
-  user_id TEXT REFERENCES users(id),
-  datetime TEXT NOT NULL
-);
-CREATE INDEX IF NOT EXISTS idx_interactions_lead ON interactions(lead_id);
+  user_id VARCHAR(40),
+  datetime VARCHAR(40) NOT NULL,
+  FOREIGN KEY (lead_id) REFERENCES leads(id) ON DELETE CASCADE,
+  FOREIGN KEY (user_id) REFERENCES users(id),
+  INDEX idx_interactions_lead (lead_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS notes (
-  id TEXT PRIMARY KEY,
-  lead_id TEXT NOT NULL REFERENCES leads(id) ON DELETE CASCADE,
-  user_id TEXT REFERENCES users(id),
+  id VARCHAR(40) PRIMARY KEY,
+  lead_id VARCHAR(40) NOT NULL,
+  user_id VARCHAR(40),
   text TEXT NOT NULL,
-  datetime TEXT NOT NULL
-);
+  datetime VARCHAR(40) NOT NULL,
+  FOREIGN KEY (lead_id) REFERENCES leads(id) ON DELETE CASCADE,
+  FOREIGN KEY (user_id) REFERENCES users(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS tasks (
-  id TEXT PRIMARY KEY,
-  lead_id TEXT REFERENCES leads(id) ON DELETE CASCADE,
-  title TEXT NOT NULL,
-  type TEXT,
-  due_date TEXT NOT NULL,
-  due_time TEXT,
-  assigned_user_id TEXT REFERENCES users(id),
+  id VARCHAR(40) PRIMARY KEY,
+  lead_id VARCHAR(40),
+  title VARCHAR(255) NOT NULL,
+  type VARCHAR(60),
+  due_date VARCHAR(40) NOT NULL,
+  due_time VARCHAR(20),
+  assigned_user_id VARCHAR(40),
   note TEXT,
-  status TEXT NOT NULL DEFAULT 'Pendente',
-  created_at TEXT NOT NULL,
-  updated_at TEXT NOT NULL,
-  completed_at TEXT
-);
-CREATE INDEX IF NOT EXISTS idx_tasks_due ON tasks(due_date);
-CREATE INDEX IF NOT EXISTS idx_tasks_assigned ON tasks(assigned_user_id);
+  status VARCHAR(40) NOT NULL DEFAULT 'Pendente',
+  created_at VARCHAR(40) NOT NULL,
+  updated_at VARCHAR(40) NOT NULL,
+  completed_at VARCHAR(40),
+  FOREIGN KEY (lead_id) REFERENCES leads(id) ON DELETE CASCADE,
+  FOREIGN KEY (assigned_user_id) REFERENCES users(id),
+  INDEX idx_tasks_due (due_date),
+  INDEX idx_tasks_assigned (assigned_user_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS trial_classes (
-  id TEXT PRIMARY KEY,
-  lead_id TEXT NOT NULL REFERENCES leads(id) ON DELETE CASCADE,
-  status TEXT NOT NULL DEFAULT 'Não agendada',
-  date TEXT,
-  time TEXT,
-  teacher_id TEXT REFERENCES teachers(id),
-  level_identified TEXT,
-  objective TEXT,
+  id VARCHAR(40) PRIMARY KEY,
+  lead_id VARCHAR(40) NOT NULL,
+  status VARCHAR(40) NOT NULL DEFAULT 'Não agendada',
+  date VARCHAR(40),
+  time VARCHAR(20),
+  teacher_id VARCHAR(40),
+  level_identified VARCHAR(100),
+  objective VARCHAR(255),
   teacher_notes TEXT,
-  result TEXT,
-  created_at TEXT NOT NULL,
-  updated_at TEXT NOT NULL
-);
-CREATE INDEX IF NOT EXISTS idx_trials_lead ON trial_classes(lead_id);
+  result VARCHAR(100),
+  created_at VARCHAR(40) NOT NULL,
+  updated_at VARCHAR(40) NOT NULL,
+  FOREIGN KEY (lead_id) REFERENCES leads(id) ON DELETE CASCADE,
+  FOREIGN KEY (teacher_id) REFERENCES teachers(id),
+  INDEX idx_trials_lead (lead_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS proposals (
-  id TEXT PRIMARY KEY,
-  lead_id TEXT NOT NULL REFERENCES leads(id) ON DELETE CASCADE,
-  date TEXT NOT NULL,
-  package_id TEXT REFERENCES packages(id),
-  package_label TEXT,
-  value REAL,
-  payment_method TEXT,
-  special_condition TEXT,
-  decision_date TEXT,
-  status TEXT NOT NULL DEFAULT 'Enviada',
-  created_at TEXT NOT NULL,
-  updated_at TEXT NOT NULL
-);
-CREATE INDEX IF NOT EXISTS idx_proposals_lead ON proposals(lead_id);
+  id VARCHAR(40) PRIMARY KEY,
+  lead_id VARCHAR(40) NOT NULL,
+  date VARCHAR(40) NOT NULL,
+  package_id VARCHAR(40),
+  package_label VARCHAR(255),
+  value DOUBLE,
+  payment_method VARCHAR(100),
+  special_condition VARCHAR(255),
+  decision_date VARCHAR(40),
+  status VARCHAR(40) NOT NULL DEFAULT 'Enviada',
+  created_at VARCHAR(40) NOT NULL,
+  updated_at VARCHAR(40) NOT NULL,
+  FOREIGN KEY (lead_id) REFERENCES leads(id) ON DELETE CASCADE,
+  FOREIGN KEY (package_id) REFERENCES packages(id),
+  INDEX idx_proposals_lead (lead_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS enrollments (
-  id TEXT PRIMARY KEY,
-  lead_id TEXT NOT NULL REFERENCES leads(id),
-  student_id TEXT NOT NULL REFERENCES students(id),
-  enrollment_date TEXT NOT NULL,
-  start_date TEXT,
-  package_id TEXT REFERENCES packages(id),
-  teacher_id TEXT REFERENCES teachers(id),
-  frequency TEXT,
-  schedule_text TEXT,
-  monthly_value REAL,
-  payment_method TEXT,
-  starting_class TEXT,
+  id VARCHAR(40) PRIMARY KEY,
+  lead_id VARCHAR(40) NOT NULL,
+  student_id VARCHAR(40) NOT NULL,
+  enrollment_date VARCHAR(40) NOT NULL,
+  start_date VARCHAR(40),
+  package_id VARCHAR(40),
+  teacher_id VARCHAR(40),
+  frequency VARCHAR(100),
+  schedule_text VARCHAR(255),
+  monthly_value DOUBLE,
+  payment_method VARCHAR(100),
+  starting_class VARCHAR(255),
   notes TEXT,
-  created_at TEXT NOT NULL
-);
+  created_at VARCHAR(40) NOT NULL,
+  FOREIGN KEY (lead_id) REFERENCES leads(id),
+  FOREIGN KEY (student_id) REFERENCES students(id),
+  FOREIGN KEY (package_id) REFERENCES packages(id),
+  FOREIGN KEY (teacher_id) REFERENCES teachers(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS campaigns (
-  id TEXT PRIMARY KEY,
-  name TEXT NOT NULL,
-  target_description TEXT,
-  date TEXT NOT NULL,
+  id VARCHAR(40) PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  target_description VARCHAR(255),
+  date VARCHAR(40) NOT NULL,
   message TEXT,
-  channel TEXT,
-  responsible_user_id TEXT REFERENCES users(id),
+  channel VARCHAR(40),
+  responsible_user_id VARCHAR(40),
   filters_json TEXT,
-  status TEXT NOT NULL DEFAULT 'Rascunho',
-  created_at TEXT NOT NULL,
-  updated_at TEXT NOT NULL
-);
+  status VARCHAR(40) NOT NULL DEFAULT 'Rascunho',
+  created_at VARCHAR(40) NOT NULL,
+  updated_at VARCHAR(40) NOT NULL,
+  FOREIGN KEY (responsible_user_id) REFERENCES users(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS campaign_recipients (
-  id TEXT PRIMARY KEY,
-  campaign_id TEXT NOT NULL REFERENCES campaigns(id) ON DELETE CASCADE,
-  lead_id TEXT NOT NULL REFERENCES leads(id),
-  sent_status TEXT NOT NULL DEFAULT 'Pendente',
-  responded INTEGER NOT NULL DEFAULT 0,
-  interested INTEGER NOT NULL DEFAULT 0,
-  scheduled_trial INTEGER NOT NULL DEFAULT 0,
-  enrolled INTEGER NOT NULL DEFAULT 0,
-  responded_at TEXT,
-  created_at TEXT NOT NULL
-);
-CREATE INDEX IF NOT EXISTS idx_camprec_campaign ON campaign_recipients(campaign_id);
-CREATE INDEX IF NOT EXISTS idx_camprec_lead ON campaign_recipients(lead_id);
+  id VARCHAR(40) PRIMARY KEY,
+  campaign_id VARCHAR(40) NOT NULL,
+  lead_id VARCHAR(40) NOT NULL,
+  sent_status VARCHAR(40) NOT NULL DEFAULT 'Pendente',
+  responded TINYINT(1) NOT NULL DEFAULT 0,
+  interested TINYINT(1) NOT NULL DEFAULT 0,
+  scheduled_trial TINYINT(1) NOT NULL DEFAULT 0,
+  enrolled TINYINT(1) NOT NULL DEFAULT 0,
+  responded_at VARCHAR(40),
+  created_at VARCHAR(40) NOT NULL,
+  FOREIGN KEY (campaign_id) REFERENCES campaigns(id) ON DELETE CASCADE,
+  FOREIGN KEY (lead_id) REFERENCES leads(id),
+  INDEX idx_camprec_campaign (campaign_id),
+  INDEX idx_camprec_lead (lead_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS segments (
-  id TEXT PRIMARY KEY,
-  name TEXT NOT NULL,
-  description TEXT,
+  id VARCHAR(40) PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  description VARCHAR(255),
   filters_json TEXT NOT NULL,
-  created_at TEXT NOT NULL,
-  updated_at TEXT NOT NULL
-);
+  created_at VARCHAR(40) NOT NULL,
+  updated_at VARCHAR(40) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

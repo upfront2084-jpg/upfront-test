@@ -2,7 +2,7 @@
 // the recovery module, segment evaluation and campaign audience preview,
 // so every part of the app agrees on what "a lead matching these filters"
 // means.
-import { db } from '../db.js';
+import { all as dbAll, one as dbOne } from '../db.js';
 import { todayISO } from './util.js';
 
 const BASE_SELECT = `
@@ -67,11 +67,11 @@ export function buildLeadWhere(filters = {}) {
     params.push(filters.entryDateTo);
   }
   if (filters.daysSinceContactMin !== undefined && filters.daysSinceContactMin !== null) {
-    clauses.push(`julianday(?) - julianday(leads.last_contact_date) >= ?`);
+    clauses.push(`DATEDIFF(?, leads.last_contact_date) >= ?`);
     params.push(todayISO(), filters.daysSinceContactMin);
   }
   if (filters.daysSinceContactMax !== undefined && filters.daysSinceContactMax !== null && isFinite(filters.daysSinceContactMax)) {
-    clauses.push(`julianday(?) - julianday(leads.last_contact_date) <= ?`);
+    clauses.push(`DATEDIFF(?, leads.last_contact_date) <= ?`);
     params.push(todayISO(), filters.daysSinceContactMax);
   }
   if (filters.hadTrial) {
@@ -110,20 +110,22 @@ export function buildLeadWhere(filters = {}) {
   return { where: clauses.length ? `WHERE ${clauses.join(' AND ')}` : '', params };
 }
 
-export function queryLeads(filters = {}, { orderBy = 'leads.entry_date DESC', limit, offset } = {}) {
+export async function queryLeads(filters = {}, { orderBy = 'leads.entry_date DESC', limit, offset } = {}) {
   const { where, params } = buildLeadWhere(filters);
   let sql = `${BASE_SELECT} ${where} ORDER BY ${orderBy}`;
+  const finalParams = [...params];
   if (limit) {
     sql += ' LIMIT ? OFFSET ?';
-    params.push(limit, offset || 0);
+    finalParams.push(limit, offset || 0);
   }
-  return db.prepare(sql).all(...params);
+  return dbAll(sql, finalParams);
 }
 
-export function countLeads(filters = {}) {
+export async function countLeads(filters = {}) {
   const { where, params } = buildLeadWhere(filters);
   const sql = `SELECT COUNT(*) as n FROM leads LEFT JOIN sources ON sources.id = leads.source_id ${where}`;
-  return db.prepare(sql).get(...params).n;
+  const row = await dbOne(sql, params);
+  return row.n;
 }
 
 // Recovery-specific eligibility: a lead is a recovery candidate when it did

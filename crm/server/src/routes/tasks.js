@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { all, one, run, transaction } from '../db.js';
 import { uid, nowISO, todayISO } from '../lib/util.js';
 import { scopeForUser } from '../lib/authMiddleware.js';
+import { ah } from '../lib/asyncHandler.js';
 
 const router = Router();
 
@@ -13,7 +14,7 @@ function serialize(t) {
   };
 }
 
-router.get('/tasks', (req, res) => {
+router.get('/tasks', ah(async (req, res) => {
   const scope = scopeForUser(req.user);
   const clauses = [];
   const params = [];
@@ -25,30 +26,30 @@ router.get('/tasks', (req, res) => {
   if (req.query.scope === 'overdue') { clauses.push('tasks.due_date < ?'); params.push(todayISO()); clauses.push("tasks.status = 'Pendente'"); }
   if (req.query.scope === 'upcoming') { clauses.push('tasks.due_date > ?'); params.push(todayISO()); clauses.push("tasks.status = 'Pendente'"); }
   const where = clauses.length ? `WHERE ${clauses.join(' AND ')}` : '';
-  const rows = all(
+  const rows = await all(
     `SELECT tasks.*, leads.name as lead_name, u.name as assigned_user_name
      FROM tasks LEFT JOIN leads ON leads.id = tasks.lead_id LEFT JOIN users u ON u.id = tasks.assigned_user_id
      ${where} ORDER BY tasks.due_date ASC`,
     params
   );
   res.json({ tasks: rows.map(serialize) });
-});
+}));
 
-router.post('/tasks', (req, res) => {
+router.post('/tasks', ah(async (req, res) => {
   const b = req.body || {};
   if (!b.title || !b.dueDate) return res.status(400).json({ error: 'Título e data são obrigatórios' });
   const id = uid('tsk');
   const now = nowISO();
-  run(
+  await run(
     `INSERT INTO tasks (id, lead_id, title, type, due_date, due_time, assigned_user_id, note, status, created_at, updated_at, completed_at)
      VALUES (?,?,?,?,?,?,?,?,?,?,?,NULL)`,
     [id, b.leadId || null, b.title, b.type || 'Outro', b.dueDate, b.dueTime || null, b.assignedUserId || req.user.id, b.note || '', 'Pendente', now, now]
   );
   res.status(201).json({ id });
-});
+}));
 
-router.put('/tasks/:id', (req, res) => {
-  const task = one('SELECT * FROM tasks WHERE id = ?', [req.params.id]);
+router.put('/tasks/:id', ah(async (req, res) => {
+  const task = await one('SELECT * FROM tasks WHERE id = ?', [req.params.id]);
   if (!task) return res.status(404).json({ error: 'Tarefa não encontrada' });
   const b = req.body || {};
   const now = nowISO();
@@ -61,22 +62,22 @@ router.put('/tasks/:id', (req, res) => {
   sets.push('updated_at = ?'); params.push(now);
   if (b.status === 'Concluída') { sets.push('completed_at = ?'); params.push(now); }
   params.push(task.id);
-  run(`UPDATE tasks SET ${sets.join(', ')} WHERE id = ?`, params);
+  await run(`UPDATE tasks SET ${sets.join(', ')} WHERE id = ?`, params);
   res.json({ ok: true });
-});
+}));
 
-router.delete('/tasks/:id', (req, res) => {
-  run('DELETE FROM tasks WHERE id = ?', [req.params.id]);
+router.delete('/tasks/:id', ah(async (req, res) => {
+  await run('DELETE FROM tasks WHERE id = ?', [req.params.id]);
   res.json({ ok: true });
-});
+}));
 
-router.post('/tasks/bulk-delete', (req, res) => {
+router.post('/tasks/bulk-delete', ah(async (req, res) => {
   const ids = [...new Set(req.body?.ids || [])];
   if (!ids.length) return res.status(400).json({ error: 'Nenhuma tarefa selecionada' });
-  transaction(() => {
-    for (const id of ids) run('DELETE FROM tasks WHERE id = ?', [id]);
+  await transaction(async () => {
+    for (const id of ids) await run('DELETE FROM tasks WHERE id = ?', [id]);
   });
   res.json({ ok: true, count: ids.length });
-});
+}));
 
 export default router;

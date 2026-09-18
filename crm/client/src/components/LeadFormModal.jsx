@@ -83,7 +83,7 @@ export default function LeadFormModal({ lead, onClose, onSaved }) {
             <label>Origem</label>
             <select className="input" value={form.sourceId} onChange={(e) => set('sourceId', e.target.value)}>
               <option value="">Selecionar…</option>
-              {sources.map((s) => <option key={s.id} value={s.id}>{s.icon} {s.name}</option>)}
+              {sources.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
             </select>
           </div>
           <div className="field">

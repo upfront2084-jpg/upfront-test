@@ -7,18 +7,19 @@ funil visual (Kanban), tarefas, campanhas de recuperação, segmentação,
 relatórios exportáveis e controle de acesso por perfil.
 
 É uma aplicação real, não um mockup estático: **backend Node.js/Express com
-banco de dados SQLite** (persistência de verdade, sem depender do
-navegador) e **frontend React (Vite)** consumindo uma API REST.
+banco de dados MySQL** (persistência de verdade, num banco gerenciado —
+não num arquivo dentro da própria aplicação) e **frontend React (Vite)**
+consumindo uma API REST.
 
 ## Arquitetura
 
 ```
 crm/
-  server/            API REST (Node.js + Express + SQLite embutido)
+  server/            API REST (Node.js + Express + mysql2)
     src/
       schema.sql       schema relacional (users, leads, trial_classes,
                         proposals, enrollments, campaigns, tasks, ...)
-      db.js             conexão SQLite (node:sqlite, sem dependência nativa)
+      db.js             conexão MySQL (mysql2/promise, pool + transações)
       seed.js           gera dados fictícios realistas para demonstração
       routes/           endpoints REST (leads, pipeline, tarefas, campanhas,
                          recuperação, segmentos, relatórios, dashboard...)
@@ -31,22 +32,27 @@ crm/
       context/          autenticação, dados de referência (fontes, professores...)
 ```
 
-Por que essa arquitetura: o banco fica em um único arquivo SQLite
-(`server/src/data/crm.sqlite`), então não é preciso provisionar um MySQL
-separado para rodar — inclusive em hospedagem compartilhada. A camada de
-acesso a dados fica isolada em `server/src/lib/leadQuery.js` e nas rotas,
-então trocar para MySQL/Postgres no futuro é uma troca localizada, não uma
-reescrita do sistema.
+Por que MySQL e não um arquivo local: em hospedagem compartilhada (como o
+Hostinger Web Apps), o processo Node é reiniciado periodicamente e nada
+garante que um arquivo escrito dentro da pasta da aplicação sobreviva a
+esse reinício — um banco de dados gerenciado, provisionado separadamente
+do código da aplicação, é a única forma de garantir que leads, usuários e
+sessões de login realmente persistam. A camada de acesso a dados fica
+isolada em `server/src/lib/leadQuery.js` e nas rotas, então trocar de
+motor de banco no futuro (Postgres, por exemplo) é uma troca localizada,
+não uma reescrita do sistema.
 
 ## Como rodar localmente
 
-Pré-requisitos: **Node.js 22+** (usa o módulo experimental `node:sqlite`,
-já embutido no Node — nenhuma dependência nativa para compilar).
+Pré-requisitos: **Node.js 22+** e um **servidor MySQL/MariaDB** acessível
+(local ou remoto).
 
 ```bash
 cd crm
 npm run install:all   # instala dependências do server e do client
-npm run seed           # popula o banco com dados fictícios de demonstração
+# crie o banco antes de seguir, ex.: mysql -u root -e "CREATE DATABASE upfront_crm CHARACTER SET utf8mb4;"
+# configure server/.env com as credenciais (veja abaixo)
+npm run seed           # cria o schema e popula o banco com dados fictícios
 npm run dev             # sobe API (porta 4000) + frontend Vite (porta 5173)
 ```
 
@@ -79,42 +85,54 @@ Para recriar os dados de demonstração do zero a qualquer momento:
 cd crm
 npm run install:all
 npm run build     # gera client/dist
-npm run seed      # primeira vez, para popular o banco
 node server/src/index.js
 ```
 
 Em produção o próprio Express serve o build do React (arquivos estáticos
 de `client/dist`) e a API, tudo na mesma porta (`PORT`, padrão `4000`) —
-não é preciso um servidor web separado para o frontend.
+não é preciso um servidor web separado para o frontend. O schema é
+aplicado automaticamente no boot (`CREATE TABLE IF NOT EXISTS`, idempotente)
+e, se o banco estiver vazio, os dados de demonstração são gerados
+automaticamente — não é preciso rodar `npm run seed` manualmente em
+produção.
 
-Variáveis de ambiente (opcionais, via `server/.env`):
+Variáveis de ambiente (via `server/.env` ou definidas no painel de
+hospedagem):
 
 ```
 PORT=4000
 SESSION_SECRET=uma-string-longa-e-aleatoria
-CRM_DB_PATH=/caminho/para/crm.sqlite   # padrão: server/src/data/crm.sqlite
 NODE_ENV=production
+
+# Conexão com o banco MySQL — obrigatórias em produção
+DB_HOST=localhost
+DB_PORT=3306
+DB_USER=usuario_do_banco
+DB_PASSWORD=senha_do_banco
+DB_NAME=upfront_crm
 ```
 
 ## Deploy no Hostinger
 
-### Opção A — hPanel → Node.js App (hospedagem com suporte a Node)
+### 1. Crie o banco de dados MySQL
 
-1. No hPanel, vá em **Avançado → Node.js** e crie uma nova aplicação.
-2. Aponte o **diretório da aplicação** para a pasta `crm/` enviada ao
-   servidor (via Gerenciador de Arquivos ou Git).
-3. **Startup file**: `server/src/index.js`.
-4. Defina as variáveis de ambiente da aplicação (`SESSION_SECRET`,
-   `NODE_ENV=production`, e opcionalmente `CRM_DB_PATH` apontando para um
-   caminho gravável fora da pasta pública).
-5. Rode, pelo terminal do Node.js App do hPanel:
-   ```bash
-   npm run install:all
-   npm run build
-   npm run seed   # primeira vez
-   ```
-6. Reinicie a aplicação pelo hPanel. O Hostinger cuida de manter o
-   processo Node rodando (Passenger).
+No hPanel, dentro do seu Web App, use o botão **Connect a database** (ou,
+em hospedagem compartilhada tradicional, **Bancos de dados → MySQL**) para
+criar um banco. Anote host, porta, nome do banco, usuário e senha — são
+esses valores que vão nas variáveis `DB_*` abaixo. Isso é essencial: sem
+um banco gerenciado, os dados não sobrevivem a reinícios do aplicativo.
+
+### Opção A — hPanel → Web App / Node.js App
+
+1. No hPanel, crie o Web App (Node.js) e aponte para a pasta `server/`
+   enviada ao servidor (o `server/public/` já deve conter o build do
+   React — veja "gerando o pacote de deploy" abaixo).
+2. **Startup file**: `src/index.js`.
+3. Defina as variáveis de ambiente da aplicação: `SESSION_SECRET`,
+   `NODE_ENV=production`, e `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`,
+   `DB_NAME` com os dados do banco criado no passo 1.
+4. Reinicie a aplicação pelo hPanel. No primeiro boot o schema é criado e
+   o banco é populado com dados de demonstração automaticamente.
 
 ### Opção B — VPS Hostinger (Node.js "puro")
 
@@ -122,7 +140,7 @@ NODE_ENV=production
 git clone <repo> && cd upfront-test/crm
 npm run install:all
 npm run build
-npm run seed
+# configure server/.env com DB_HOST/DB_PORT/DB_USER/DB_PASSWORD/DB_NAME
 npm install -g pm2
 pm2 start server/src/index.js --name upfront-crm
 pm2 save && pm2 startup   # mantém rodando após reboot

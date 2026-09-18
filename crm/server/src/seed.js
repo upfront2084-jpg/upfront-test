@@ -4,7 +4,7 @@
 // trial classes, proposals, enrollments) plus tasks and a handful of
 // recovery campaigns. Run with `npm run seed`.
 
-import { db, transaction } from './db.js';
+import { run, all, transaction } from './db.js';
 import { uid, nowISO, todayISO, addDaysISO, daysBetween } from './lib/util.js';
 import { hashPassword } from './lib/password.js';
 import { makeRandom } from './lib/rng.js';
@@ -80,19 +80,19 @@ function clampToday(dateStr) {
 // ---------------------------------------------------------------------
 // 1) Wipe existing data (idempotent reseed)
 // ---------------------------------------------------------------------
-function wipe() {
+async function wipe() {
   const tables = [
     'campaign_recipients', 'campaigns', 'enrollments', 'proposals', 'trial_classes',
     'tasks', 'notes', 'interactions', 'lead_tags', 'students', 'leads',
     'segments', 'tags', 'packages', 'sources', 'users', 'teachers',
   ];
-  for (const t of tables) db.exec(`DELETE FROM ${t};`);
+  for (const t of tables) await run(`DELETE FROM ${t}`);
 }
 
 // ---------------------------------------------------------------------
 // 2) Reference data: teachers, users, sources, packages, tags, segments
 // ---------------------------------------------------------------------
-function seedReferenceData() {
+async function seedReferenceData() {
   const now = nowISO();
 
   const teacherDefs = [
@@ -102,13 +102,15 @@ function seedReferenceData() {
     { name: 'Prof. Beatriz Lins', email: 'beatriz.lins@upfrontschool.com', levels: 'Business English' },
     { name: 'Prof. André Falcão', email: 'andre.falcao@upfrontschool.com', levels: 'Conversação, Exames' },
   ];
-  const teachers = teacherDefs.map((t) => {
+  const teachers = [];
+  for (const t of teacherDefs) {
     const id = uid('tch');
-    db.prepare(
-      `INSERT INTO teachers (id, name, email, levels, active, created_at, updated_at) VALUES (?,?,?,?,1,?,?)`
-    ).run(id, t.name, t.email, t.levels, now, now);
-    return { id, ...t };
-  });
+    await run(
+      `INSERT INTO teachers (id, name, email, levels, active, created_at, updated_at) VALUES (?,?,?,?,1,?,?)`,
+      [id, t.name, t.email, t.levels, now, now]
+    );
+    teachers.push({ id, ...t });
+  }
 
   const userDefs = [
     { name: 'Ana Beatriz Souza', username: 'admin', email: 'admin@upfrontschool.com', role: 'admin' },
@@ -120,20 +122,23 @@ function seedReferenceData() {
     { name: 'Prof. Camila Duarte', username: 'camila.duarte', email: 'camila.duarte@upfrontschool.com', role: 'teacher', teacherId: teachers[1].id },
   ];
   const passwordHash = hashPassword('upfront123');
-  const users = userDefs.map((u) => {
+  const users = [];
+  for (const u of userDefs) {
     const id = uid('usr');
-    db.prepare(
+    await run(
       `INSERT INTO users (id, name, username, email, password_hash, role, teacher_id, active, created_at, updated_at)
-       VALUES (?,?,?,?,?,?,?,1,?,?)`
-    ).run(id, u.name, u.username, u.email, passwordHash, u.role, u.teacherId || null, now, now);
-    return { id, ...u };
-  });
+       VALUES (?,?,?,?,?,?,?,1,?,?)`,
+      [id, u.name, u.username, u.email, passwordHash, u.role, u.teacherId || null, now, now]
+    );
+    users.push({ id, ...u });
+  }
 
-  const sources = DEFAULT_SOURCES.map((s) => {
+  const sources = [];
+  for (const s of DEFAULT_SOURCES) {
     const id = uid('src');
-    db.prepare(`INSERT INTO sources (id, name, icon, created_at) VALUES (?,?,?,?)`).run(id, s.name, s.icon || null, now);
-    return { id, ...s };
-  });
+    await run(`INSERT INTO sources (id, name, icon, created_at) VALUES (?,?,?,?)`, [id, s.name, s.icon || null, now]);
+    sources.push({ id, ...s });
+  }
 
   const packageDefs = [
     { name: 'Conversação Flex', description: '2x por semana, foco em fluência', hoursPerWeek: 2, durationMonths: 6, price: 320 },
@@ -142,13 +147,15 @@ function seedReferenceData() {
     { name: 'Business English', description: '2x por semana, inglês corporativo', hoursPerWeek: 2, durationMonths: 6, price: 480 },
     { name: 'Exam Prep (IELTS/TOEFL)', description: '2x por semana, preparatório de exames', hoursPerWeek: 2, durationMonths: 4, price: 550 },
   ];
-  const packages = packageDefs.map((p) => {
+  const packages = [];
+  for (const p of packageDefs) {
     const id = uid('pkg');
-    db.prepare(
-      `INSERT INTO packages (id, name, description, hours_per_week, duration_months, price, created_at) VALUES (?,?,?,?,?,?,?)`
-    ).run(id, p.name, p.description, p.hoursPerWeek, p.durationMonths, p.price, now);
-    return { id, ...p };
-  });
+    await run(
+      `INSERT INTO packages (id, name, description, hours_per_week, duration_months, price, created_at) VALUES (?,?,?,?,?,?,?)`,
+      [id, p.name, p.description, p.hoursPerWeek, p.durationMonths, p.price, now]
+    );
+    packages.push({ id, ...p });
+  }
 
   const tagDefs = [
     { name: 'Inglês para viagem', color: '#2F6FED' },
@@ -158,11 +165,12 @@ function seedReferenceData() {
     { name: 'Indicação VIP', color: '#C026D3' },
     { name: 'Lead antigo', color: '#5B6485' },
   ];
-  const tags = tagDefs.map((t) => {
+  const tags = [];
+  for (const t of tagDefs) {
     const id = uid('tag');
-    db.prepare(`INSERT INTO tags (id, name, color) VALUES (?,?,?)`).run(id, t.name, t.color);
-    return { id, ...t };
-  });
+    await run(`INSERT INTO tags (id, name, color) VALUES (?,?,?)`, [id, t.name, t.color]);
+    tags.push({ id, ...t });
+  }
 
   return { teachers, users, sources, packages, tags };
 }
@@ -520,64 +528,72 @@ function brl(v) {
 // ---------------------------------------------------------------------
 // 4) Persist a simulated lead bundle
 // ---------------------------------------------------------------------
-function persistLead(bundle) {
+async function persistLead(bundle) {
   const { lead, interactions, trial, proposal, enrollment, student, tasks } = bundle;
-  db.prepare(
+  await run(
     `INSERT INTO leads (id, name, whatsapp, email, entry_date, source_id, campaign_origin, owner_user_id,
        teacher_id, city, age, english_level, objective, notes, status, last_contact_date, next_contact_date,
        next_action, opt_out, last_stage_change_at, created_at, updated_at)
-     VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
-  ).run(
-    lead.id, lead.name, lead.whatsapp, lead.email, lead.entryDate, lead.sourceId, lead.campaignOrigin,
-    lead.ownerUserId, lead.teacherId, lead.city, lead.age, lead.englishLevel, lead.objective, lead.notes,
-    lead.status, lead.lastContactDate, lead.nextContactDate, lead.nextAction, lead.optOut,
-    lead.lastStageChangeAt, isoDateTime(lead.entryDate), nowISO()
+     VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+    [
+      lead.id, lead.name, lead.whatsapp, lead.email, lead.entryDate, lead.sourceId, lead.campaignOrigin,
+      lead.ownerUserId, lead.teacherId, lead.city, lead.age, lead.englishLevel, lead.objective, lead.notes,
+      lead.status, lead.lastContactDate, lead.nextContactDate, lead.nextAction, lead.optOut,
+      lead.lastStageChangeAt, isoDateTime(lead.entryDate), nowISO(),
+    ]
   );
 
-  const intStmt = db.prepare(`INSERT INTO interactions (id, lead_id, type, note, user_id, datetime) VALUES (?,?,?,?,?,?)`);
-  for (const i of interactions) intStmt.run(i.id, i.leadId, i.type, i.note, i.userId, i.datetime);
+  for (const i of interactions) {
+    await run(`INSERT INTO interactions (id, lead_id, type, note, user_id, datetime) VALUES (?,?,?,?,?,?)`, [
+      i.id, i.leadId, i.type, i.note, i.userId, i.datetime,
+    ]);
+  }
 
   if (trial) {
-    db.prepare(
+    await run(
       `INSERT INTO trial_classes (id, lead_id, status, date, time, teacher_id, level_identified, objective,
-         teacher_notes, result, created_at, updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`
-    ).run(
-      trial.id, trial.leadId, trial.status, trial.date, trial.time, trial.teacherId, trial.levelIdentified,
-      trial.objective, trial.teacherNotes, trial.result, nowISO(), nowISO()
+         teacher_notes, result, created_at, updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`,
+      [
+        trial.id, trial.leadId, trial.status, trial.date, trial.time, trial.teacherId, trial.levelIdentified,
+        trial.objective, trial.teacherNotes, trial.result, nowISO(), nowISO(),
+      ]
     );
   }
   if (proposal) {
-    db.prepare(
+    await run(
       `INSERT INTO proposals (id, lead_id, date, package_id, package_label, value, payment_method,
-         special_condition, decision_date, status, created_at, updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`
-    ).run(
-      proposal.id, proposal.leadId, proposal.date, proposal.packageId, proposal.packageLabel, proposal.value,
-      proposal.paymentMethod, proposal.specialCondition, proposal.decisionDate, proposal.status, nowISO(), nowISO()
+         special_condition, decision_date, status, created_at, updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`,
+      [
+        proposal.id, proposal.leadId, proposal.date, proposal.packageId, proposal.packageLabel, proposal.value,
+        proposal.paymentMethod, proposal.specialCondition, proposal.decisionDate, proposal.status, nowISO(), nowISO(),
+      ]
     );
   }
   if (student) {
-    db.prepare(`INSERT INTO students (id, lead_id, name, whatsapp, email, created_at) VALUES (?,?,?,?,?,?)`)
-      .run(student.id, student.leadId, student.name, student.whatsapp, student.email, nowISO());
+    await run(`INSERT INTO students (id, lead_id, name, whatsapp, email, created_at) VALUES (?,?,?,?,?,?)`, [
+      student.id, student.leadId, student.name, student.whatsapp, student.email, nowISO(),
+    ]);
   }
   if (enrollment) {
-    db.prepare(
+    await run(
       `INSERT INTO enrollments (id, lead_id, student_id, enrollment_date, start_date, package_id, teacher_id,
          frequency, schedule_text, monthly_value, payment_method, starting_class, notes, created_at)
-       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
-    ).run(
-      enrollment.id, enrollment.leadId, enrollment.studentId, enrollment.enrollmentDate, enrollment.startDate,
-      enrollment.packageId, enrollment.teacherId, enrollment.frequency, enrollment.scheduleText,
-      enrollment.monthlyValue, enrollment.paymentMethod, enrollment.startingClass, enrollment.notes, nowISO()
+       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+      [
+        enrollment.id, enrollment.leadId, enrollment.studentId, enrollment.enrollmentDate, enrollment.startDate,
+        enrollment.packageId, enrollment.teacherId, enrollment.frequency, enrollment.scheduleText,
+        enrollment.monthlyValue, enrollment.paymentMethod, enrollment.startingClass, enrollment.notes, nowISO(),
+      ]
     );
   }
-  const taskStmt = db.prepare(
-    `INSERT INTO tasks (id, lead_id, title, type, due_date, due_time, assigned_user_id, note, status, created_at, updated_at, completed_at)
-     VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`
-  );
   for (const t of tasks) {
-    taskStmt.run(
-      t.id, t.leadId, t.title, t.type, t.dueDate, t.dueTime, t.assignedUserId, t.note, t.status,
-      nowISO(), nowISO(), t.status === 'Concluída' ? nowISO() : null
+    await run(
+      `INSERT INTO tasks (id, lead_id, title, type, due_date, due_time, assigned_user_id, note, status, created_at, updated_at, completed_at)
+       VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`,
+      [
+        t.id, t.leadId, t.title, t.type, t.dueDate, t.dueTime, t.assignedUserId, t.note, t.status,
+        nowISO(), nowISO(), t.status === 'Concluída' ? nowISO() : null,
+      ]
     );
   }
 }
@@ -585,7 +601,7 @@ function persistLead(bundle) {
 // ---------------------------------------------------------------------
 // 5) Campaigns: built from leads already sitting in recovery-like states
 // ---------------------------------------------------------------------
-function seedCampaigns(ctx, leads) {
+async function seedCampaigns(ctx, leads) {
   const { users } = ctx;
   const manager = users.find((u) => u.role === 'manager');
   const now = nowISO();
@@ -635,18 +651,13 @@ function seedCampaigns(ctx, leads) {
 
     const campaignId = uid('cmp');
     const campaignDate = addDaysISO(TODAY, -def.daysAgo);
-    db.prepare(
+    await run(
       `INSERT INTO campaigns (id, name, target_description, date, message, channel, responsible_user_id, filters_json, status, created_at, updated_at)
-       VALUES (?,?,?,?,?,?,?,?,?,?,?)`
-    ).run(
-      campaignId, def.name, def.targetDescription, campaignDate, def.message, def.channel, manager.id,
-      JSON.stringify({ auto: true }), 'Concluída', now, now
+       VALUES (?,?,?,?,?,?,?,?,?,?,?)`,
+      [campaignId, def.name, def.targetDescription, campaignDate, def.message, def.channel, manager.id,
+        JSON.stringify({ auto: true }), 'Concluída', now, now]
     );
 
-    const recStmt = db.prepare(
-      `INSERT INTO campaign_recipients (id, campaign_id, lead_id, sent_status, responded, interested, scheduled_trial, enrolled, responded_at, created_at)
-       VALUES (?,?,?,?,?,?,?,?,?,?)`
-    );
     for (const lead of targets) {
       const outcome = rng.weighted([
         ['nada', 0.42], ['respondeu', 0.24], ['interesse', 0.16], ['agendou', 0.1], ['matriculou', 0.08],
@@ -655,25 +666,29 @@ function seedCampaigns(ctx, leads) {
       const interested = ['interesse', 'agendou', 'matriculou'].includes(outcome) ? 1 : 0;
       const scheduled = ['agendou', 'matriculou'].includes(outcome) ? 1 : 0;
       const enrolled = outcome === 'matriculou' ? 1 : 0;
-      recStmt.run(
-        uid('crc'), campaignId, lead.id, 'Enviado', responded, interested, scheduled, enrolled,
-        responded ? isoDateTime(addDaysISO(campaignDate, rng.int(0, 5))) : null, now
+      await run(
+        `INSERT INTO campaign_recipients (id, campaign_id, lead_id, sent_status, responded, interested, scheduled_trial, enrolled, responded_at, created_at)
+         VALUES (?,?,?,?,?,?,?,?,?,?)`,
+        [uid('crc'), campaignId, lead.id, 'Enviado', responded, interested, scheduled, enrolled,
+          responded ? isoDateTime(addDaysISO(campaignDate, rng.int(0, 5))) : null, now]
       );
       if (enrolled && lead.status !== 'matriculado') {
-        db.prepare(`UPDATE leads SET status='recuperacao' WHERE id=?`).run(lead.id);
-        db.prepare(
-          `INSERT INTO interactions (id, lead_id, type, note, user_id, datetime) VALUES (?,?,?,?,?,?)`
-        ).run(uid('int'), lead.id, 'campanha', `Lead recuperado através da campanha "${def.name}"`, manager.id, isoDateTime(addDaysISO(campaignDate, 3)));
+        await run(`UPDATE leads SET status='recuperacao' WHERE id=?`, [lead.id]);
+        await run(
+          `INSERT INTO interactions (id, lead_id, type, note, user_id, datetime) VALUES (?,?,?,?,?,?)`,
+          [uid('int'), lead.id, 'campanha', `Lead recuperado através da campanha "${def.name}"`, manager.id, isoDateTime(addDaysISO(campaignDate, 3))]
+        );
       } else if (responded) {
-        db.prepare(
-          `INSERT INTO interactions (id, lead_id, type, note, user_id, datetime) VALUES (?,?,?,?,?,?)`
-        ).run(uid('int'), lead.id, 'campanha', `Respondeu à campanha "${def.name}"`, manager.id, isoDateTime(addDaysISO(campaignDate, rng.int(0, 4))));
+        await run(
+          `INSERT INTO interactions (id, lead_id, type, note, user_id, datetime) VALUES (?,?,?,?,?,?)`,
+          [uid('int'), lead.id, 'campanha', `Respondeu à campanha "${def.name}"`, manager.id, isoDateTime(addDaysISO(campaignDate, rng.int(0, 4)))]
+        );
       }
     }
   }
 }
 
-function seedSegments() {
+async function seedSegments() {
   const now = nowISO();
   const defs = [
     { name: 'Experimental realizada + não matriculado', description: 'Fez a aula experimental mas ainda não fechou matrícula', filters: { status: ['experimental_realizada', 'recuperacao'], hadTrial: true, enrolled: false } },
@@ -686,39 +701,48 @@ function seedSegments() {
     { name: 'Vindos de indicação', description: 'Origem: Indicação', filters: { sourceName: 'Indicação' } },
   ];
   for (const d of defs) {
-    db.prepare(`INSERT INTO segments (id, name, description, filters_json, created_at, updated_at) VALUES (?,?,?,?,?,?)`)
-      .run(uid('seg'), d.name, d.description, JSON.stringify(d.filters), now, now);
+    await run(
+      `INSERT INTO segments (id, name, description, filters_json, created_at, updated_at) VALUES (?,?,?,?,?,?)`,
+      [uid('seg'), d.name, d.description, JSON.stringify(d.filters), now, now]
+    );
   }
 }
 
 // ---------------------------------------------------------------------
 // main
 // ---------------------------------------------------------------------
-function main() {
+export async function main() {
   console.log('Seeding Upfront CRM demo database…');
-  transaction(() => {
-    wipe();
-    const ctx = seedReferenceData();
+  await transaction(async () => {
+    await wipe();
+    const ctx = await seedReferenceData();
     const LEAD_COUNT = 165;
     const leadsForCampaigns = [];
     for (let i = 0; i < LEAD_COUNT; i++) {
       const bundle = simulateLead(ctx);
-      persistLead(bundle);
+      await persistLead(bundle);
       leadsForCampaigns.push(bundle.lead);
     }
-    seedCampaigns(ctx, leadsForCampaigns);
-    seedSegments();
+    await seedCampaigns(ctx, leadsForCampaigns);
+    await seedSegments();
   });
 
   const counts = {};
   for (const t of ['users', 'teachers', 'sources', 'packages', 'tags', 'leads', 'students', 'interactions', 'tasks', 'trial_classes', 'proposals', 'enrollments', 'campaigns', 'campaign_recipients', 'segments']) {
-    counts[t] = db.prepare(`SELECT COUNT(*) as n FROM ${t}`).get().n;
+    const row = (await all(`SELECT COUNT(*) as n FROM ${t}`))[0];
+    counts[t] = row.n;
   }
   console.log('Seed concluído:', counts);
   console.log('\nLogin de demonstração (senha para todos: upfront123):');
-  for (const row of db.prepare('SELECT username, role FROM users ORDER BY role').all()) {
+  for (const row of await all('SELECT username, role FROM users ORDER BY role')) {
     console.log(`  ${row.username}  (${row.role})`);
   }
 }
 
-main();
+// Only auto-run when executed directly (`node seed.js` / `npm run seed`) —
+// index.js imports { main } and awaits it itself on first boot instead of
+// relying on this side effect, since a dynamic import already runs the
+// module body once.
+if (import.meta.url === `file://${process.argv[1]}`) {
+  main().then(() => process.exit(0)).catch((err) => { console.error(err); process.exit(1); });
+}
