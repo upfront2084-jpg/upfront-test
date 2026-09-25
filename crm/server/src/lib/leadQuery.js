@@ -86,6 +86,10 @@ export function buildLeadWhere(filters = {}) {
     );
     params.push(filters.proposalStatus);
   }
+  if (filters.lostReason) {
+    clauses.push('leads.lost_reason = ?');
+    params.push(filters.lostReason);
+  }
   if (filters.tagId) {
     clauses.push(`EXISTS (SELECT 1 FROM lead_tags lt WHERE lt.lead_id = leads.id AND lt.tag_id = ?)`);
     params.push(filters.tagId);

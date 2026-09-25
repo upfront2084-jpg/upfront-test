@@ -15,6 +15,7 @@ import {
   OBJECTIVES,
   DEFAULT_SOURCES,
   TASK_STATUS,
+  LOST_REASON_KEYS,
 } from './lib/constants.js';
 
 const rng = makeRandom(2026);
@@ -244,6 +245,7 @@ function simulateLead(ctx) {
   function setStage(stage, date) {
     lead.status = stage;
     lead.lastStageChangeAt = isoDateTime(clampToday(date));
+    if (stage === 'perdido') lead.lostReason = rng.pick(LOST_REASON_KEYS);
   }
   function stillFuture(date) {
     return date > TODAY;
@@ -532,13 +534,13 @@ async function persistLead(bundle) {
   const { lead, interactions, trial, proposal, enrollment, student, tasks } = bundle;
   await run(
     `INSERT INTO leads (id, name, whatsapp, email, entry_date, source_id, campaign_origin, owner_user_id,
-       teacher_id, city, age, english_level, objective, notes, status, last_contact_date, next_contact_date,
+       teacher_id, city, age, english_level, objective, notes, status, lost_reason, last_contact_date, next_contact_date,
        next_action, opt_out, last_stage_change_at, created_at, updated_at)
-     VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+     VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
     [
       lead.id, lead.name, lead.whatsapp, lead.email, lead.entryDate, lead.sourceId, lead.campaignOrigin,
       lead.ownerUserId, lead.teacherId, lead.city, lead.age, lead.englishLevel, lead.objective, lead.notes,
-      lead.status, lead.lastContactDate, lead.nextContactDate, lead.nextAction, lead.optOut,
+      lead.status, lead.lostReason || null, lead.lastContactDate, lead.nextContactDate, lead.nextAction, lead.optOut,
       lead.lastStageChangeAt, isoDateTime(lead.entryDate), nowISO(),
     ]
   );

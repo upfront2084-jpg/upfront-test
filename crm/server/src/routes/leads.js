@@ -3,7 +3,7 @@ import { one, all, run, transaction } from '../db.js';
 import { uid, nowISO, todayISO } from '../lib/util.js';
 import { queryLeads, countLeads } from '../lib/leadQuery.js';
 import { scopeForUser, requireRole } from '../lib/authMiddleware.js';
-import { STAGE_LABELS } from '../lib/constants.js';
+import { STAGE_LABELS, LOST_REASON_KEYS } from '../lib/constants.js';
 import { ah } from '../lib/asyncHandler.js';
 
 const router = Router();
@@ -43,6 +43,7 @@ async function serializeLead(row) {
     objective: row.objective,
     notes: row.notes,
     status: row.status,
+    lostReason: row.lost_reason,
     lastContactDate: row.last_contact_date,
     nextContactDate: row.next_contact_date,
     nextAction: row.next_action,
@@ -75,6 +76,7 @@ function parseListFilters(q) {
   if (q.notEnrolled === 'true') f.notEnrolled = true;
   if (q.proposalStatus) f.proposalStatus = q.proposalStatus;
   if (q.tagId) f.tagId = q.tagId;
+  if (q.lostReason) f.lostReason = q.lostReason;
   if (q.lastCampaignId) f.lastCampaignId = q.lastCampaignId;
   if (q.search) f.search = q.search;
   return f;
@@ -250,12 +252,15 @@ router.post('/leads/:id/stage', ah(async (req, res) => {
   const lead = await one('SELECT * FROM leads WHERE id = ?', [req.params.id]);
   if (!lead) return res.status(404).json({ error: 'Lead não encontrado' });
   if (req.user.role === 'teacher') return res.status(403).json({ error: 'Sem permissão' });
-  const { status, note } = req.body || {};
+  const { status, note, lostReason } = req.body || {};
   const valid = ['novo_lead', 'primeiro_contato', 'em_conversa', 'experimental_agendada', 'experimental_realizada', 'proposta_enviada', 'negociacao', 'matriculado', 'perdido', 'recuperacao'];
   if (!valid.includes(status)) return res.status(400).json({ error: 'Etapa inválida' });
+  if (status === 'perdido' && !lostReason && !LOST_REASON_KEYS.includes(lead.lost_reason)) {
+    return res.status(400).json({ error: 'Selecione o motivo da perda' });
+  }
   const now = nowISO();
-  await run('UPDATE leads SET status = ?, last_stage_change_at = ?, last_contact_date = ?, updated_at = ? WHERE id = ?', [
-    status, now, todayISO(), now, lead.id,
+  await run('UPDATE leads SET status = ?, lost_reason = ?, last_stage_change_at = ?, last_contact_date = ?, updated_at = ? WHERE id = ?', [
+    status, status === 'perdido' ? (lostReason || lead.lost_reason) : lead.lost_reason, now, todayISO(), now, lead.id,
   ]);
   await logInteraction({
     leadId: lead.id, type: 'etapa',

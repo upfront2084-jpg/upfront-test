@@ -23,6 +23,18 @@ export const STAGE_KEYS = STAGES.map((s) => s.key);
 export const STAGE_LABELS = Object.fromEntries(STAGES.map((s) => [s.key, s.label]));
 export const CLOSED_STAGES = ['matriculado', 'perdido'];
 
+export const LOST_REASONS = [
+  { key: 'financeiro', label: 'Financeiro (preço/condição)' },
+  { key: 'nao_respondeu', label: 'Não respondeu / sumiu' },
+  { key: 'metodologia', label: 'Não gostou da metodologia/sistema' },
+  { key: 'concorrencia', label: 'Foi para outra escola' },
+  { key: 'sem_tempo', label: 'Sem tempo / não é prioridade agora' },
+  { key: 'horario', label: 'Incompatibilidade de horário' },
+  { key: 'outro', label: 'Outro' },
+];
+export const LOST_REASON_KEYS = LOST_REASONS.map((r) => r.key);
+export const LOST_REASON_LABELS = Object.fromEntries(LOST_REASONS.map((r) => [r.key, r.label]));
+
 export const TRIAL_STATUS = ['Não agendada', 'Agendada', 'Realizada', 'Faltou', 'Reagendada', 'Cancelada'];
 export const TRIAL_RESULT = [
   'Interessado',

@@ -3,14 +3,15 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { api } from '../api.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useToast } from '../context/ToastContext.jsx';
-import { STAGES, INTERACTION_ICONS } from '../lib/constants.js';
-import { fmtDate, fmtDateTime, fmtMoney, initials, daysSince } from '../lib/format.js';
+import { STAGES, INTERACTION_ICONS, LOST_REASON_LABELS } from '../lib/constants.js';
+import { fmtDate, fmtDateTime, fmtMoney, initials, daysSince, waLink } from '../lib/format.js';
 import StageBadge from '../components/StageBadge.jsx';
 import LeadFormModal from '../components/LeadFormModal.jsx';
 import TrialFormModal from '../components/TrialFormModal.jsx';
 import ProposalFormModal from '../components/ProposalFormModal.jsx';
 import EnrollModal from '../components/EnrollModal.jsx';
 import TaskFormModal from '../components/TaskFormModal.jsx';
+import LostReasonModal from '../components/LostReasonModal.jsx';
 import Icon from '../components/Icon.jsx';
 import SourceIcon from '../components/SourceIcon.jsx';
 
@@ -43,10 +44,15 @@ export default function LeadDetail() {
 
   if (!lead) return <div className="page-loading">Carregando lead…</div>;
 
-  async function changeStage(status) {
+  async function changeStage(status, lostReason) {
+    if (status === 'perdido' && !lostReason) {
+      setModal('lostReason');
+      return;
+    }
     try {
-      await api.post(`/leads/${id}/stage`, { status });
+      await api.post(`/leads/${id}/stage`, { status, lostReason });
       push('Etapa atualizada', 'success');
+      setModal(null);
       load();
     } catch (err) { push(err.message, 'error'); }
   }
@@ -92,9 +98,17 @@ export default function LeadDetail() {
               <div className="hstack small muted" style={{ marginTop: 3 }}>
                 <span>{lead.whatsapp || '—'}</span> · <span>{lead.email || '—'}</span> · <span>{lead.city || '—'}</span>
               </div>
+              {lead.status === 'perdido' && lead.lostReason && (
+                <div className="small" style={{ marginTop: 4, color: 'var(--danger)' }}>Motivo da perda: {LOST_REASON_LABELS[lead.lostReason] || lead.lostReason}</div>
+              )}
             </div>
           </div>
           <div className="hstack">
+            {lead.whatsapp && (
+              <a className="btn btn-secondary btn-sm hstack" href={waLink(lead.whatsapp)} target="_blank" rel="noreferrer">
+                <Icon name="message-circle" size={14} /> Abrir WhatsApp
+              </a>
+            )}
             <StageBadge status={lead.status} />
             {canEdit && (
               <select className="input" style={{ width: 200 }} value={lead.status} onChange={(e) => changeStage(e.target.value)}>
@@ -271,6 +285,7 @@ export default function LeadDetail() {
       {modal === 'proposal' && <ProposalFormModal leadId={lead.id} proposal={editingProposal} onClose={() => setModal(null)} onSaved={() => { setModal(null); load(); }} />}
       {modal === 'enroll' && <EnrollModal leadId={lead.id} onClose={() => setModal(null)} onSaved={() => { setModal(null); load(); }} />}
       {modal === 'task' && <TaskFormModal leadId={lead.id} leadName={lead.name} onClose={() => setModal(null)} onSaved={() => { setModal(null); load(); }} />}
+      {modal === 'lostReason' && <LostReasonModal onClose={() => setModal(null)} onConfirm={(reason) => changeStage('perdido', reason)} />}
     </div>
   );
 }

@@ -10,6 +10,7 @@ import LeadDetail from './pages/LeadDetail.jsx';
 import Pipeline from './pages/Pipeline.jsx';
 import Tasks from './pages/Tasks.jsx';
 import Recovery from './pages/Recovery.jsx';
+import LostLeads from './pages/LostLeads.jsx';
 import Campaigns from './pages/Campaigns.jsx';
 import CampaignDetail from './pages/CampaignDetail.jsx';
 import Segments from './pages/Segments.jsx';
@@ -52,6 +53,7 @@ function AppRoutes() {
         <Route path="pipeline" element={<RequireRole roles={['admin', 'manager', 'agent']}><Pipeline /></RequireRole>} />
         <Route path="tasks" element={<Tasks />} />
         <Route path="recovery" element={<RequireRole roles={['admin', 'manager', 'agent']}><Recovery /></RequireRole>} />
+        <Route path="lost" element={<RequireRole roles={['admin', 'manager', 'agent']}><LostLeads /></RequireRole>} />
         <Route path="campaigns" element={<RequireRole roles={['admin', 'manager']}><Campaigns /></RequireRole>} />
         <Route path="campaigns/:id" element={<RequireRole roles={['admin', 'manager']}><CampaignDetail /></RequireRole>} />
         <Route path="segments" element={<RequireRole roles={['admin', 'manager']}><Segments /></RequireRole>} />

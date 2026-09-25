@@ -13,6 +13,7 @@ import catalogRoutes from './routes/catalog.js';
 import usersRoutes from './routes/users.js';
 import campaignsRoutes from './routes/campaigns.js';
 import recoveryRoutes from './routes/recovery.js';
+import lostRoutes from './routes/lost.js';
 import segmentsRoutes from './routes/segments.js';
 import dashboardRoutes from './routes/dashboard.js';
 import reportsRoutes from './routes/reports.js';
@@ -73,6 +74,7 @@ async function start() {
   app.use('/api', requireAuth, usersRoutes);
   app.use('/api', requireAuth, campaignsRoutes);
   app.use('/api', requireAuth, recoveryRoutes);
+  app.use('/api', requireAuth, lostRoutes);
   app.use('/api', requireAuth, segmentsRoutes);
   app.use('/api', requireAuth, dashboardRoutes);
   app.use('/api', requireAuth, reportsRoutes);

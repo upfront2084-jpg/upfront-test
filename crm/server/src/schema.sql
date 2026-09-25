@@ -73,6 +73,7 @@ CREATE TABLE IF NOT EXISTS leads (
   objective VARCHAR(255),
   notes TEXT,
   status VARCHAR(40) NOT NULL DEFAULT 'novo_lead',
+  lost_reason VARCHAR(60),
   last_contact_date VARCHAR(40),
   next_contact_date VARCHAR(40),
   next_action VARCHAR(255),
@@ -84,9 +85,11 @@ CREATE TABLE IF NOT EXISTS leads (
   FOREIGN KEY (owner_user_id) REFERENCES users(id),
   FOREIGN KEY (teacher_id) REFERENCES teachers(id)
 );
+ALTER TABLE leads ADD COLUMN IF NOT EXISTS lost_reason VARCHAR(60);
 CREATE INDEX IF NOT EXISTS idx_leads_status ON leads(status);
 CREATE INDEX IF NOT EXISTS idx_leads_source ON leads(source_id);
 CREATE INDEX IF NOT EXISTS idx_leads_entry ON leads(entry_date);
+CREATE INDEX IF NOT EXISTS idx_leads_lost_reason ON leads(lost_reason);
 
 CREATE TABLE IF NOT EXISTS lead_tags (
   lead_id VARCHAR(40) NOT NULL,

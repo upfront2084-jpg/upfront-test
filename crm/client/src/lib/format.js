@@ -47,6 +47,23 @@ export function initials(name) {
   return (first + last).toUpperCase();
 }
 
+// Normalizes a Brazilian number for wa.me: strips everything but digits and
+// adds the 55 country code when it looks like a local DDD+number was typed
+// without it (10 or 11 digits — landline or cell with the 9th digit).
+export function waDigits(whatsapp) {
+  const digits = String(whatsapp || '').replace(/\D/g, '');
+  if (!digits) return '';
+  if (digits.length <= 11) return `55${digits}`;
+  return digits;
+}
+
+export function waLink(whatsapp, text) {
+  const digits = waDigits(whatsapp);
+  if (!digits) return null;
+  const query = text ? `?text=${encodeURIComponent(text)}` : '';
+  return `https://wa.me/${digits}${query}`;
+}
+
 export function classNames(...args) {
   return args.filter(Boolean).join(' ');
 }

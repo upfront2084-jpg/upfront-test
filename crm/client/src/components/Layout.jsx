@@ -17,6 +17,7 @@ const NAV = [
       { to: '/pipeline', label: 'Funil de Vendas', icon: 'kanban', roles: ['admin', 'manager', 'agent'] },
       { to: '/tasks', label: 'Tarefas de Hoje', icon: 'check-circle', roles: ['admin', 'manager', 'agent', 'teacher'] },
       { to: '/recovery', label: 'Recuperação', icon: 'refresh-cw', roles: ['admin', 'manager', 'agent'] },
+      { to: '/lost', label: 'Leads Perdidos', icon: 'user-x', roles: ['admin', 'manager', 'agent'] },
       { to: '/campaigns', label: 'Campanhas', icon: 'send', roles: ['admin', 'manager'] },
       { to: '/segments', label: 'Segmentos', icon: 'filter', roles: ['admin', 'manager'] },
     ],

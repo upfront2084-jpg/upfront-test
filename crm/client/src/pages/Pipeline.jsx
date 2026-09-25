@@ -5,12 +5,14 @@ import { STAGES } from '../lib/constants.js';
 import { fmtDate, initials, daysSince } from '../lib/format.js';
 import { useToast } from '../context/ToastContext.jsx';
 import SourceIcon from '../components/SourceIcon.jsx';
+import LostReasonModal from '../components/LostReasonModal.jsx';
 
 export default function Pipeline() {
   const [leads, setLeads] = useState([]);
   const [loading, setLoading] = useState(true);
   const [dragId, setDragId] = useState(null);
   const [dragOverCol, setDragOverCol] = useState(null);
+  const [pendingLostId, setPendingLostId] = useState(null);
   const navigate = useNavigate();
   const { push } = useToast();
 
@@ -29,13 +31,18 @@ export default function Pipeline() {
     return map;
   }, [leads]);
 
-  async function moveLead(leadId, newStatus) {
+  async function moveLead(leadId, newStatus, lostReason) {
     const lead = leads.find((l) => l.id === leadId);
     if (!lead || lead.status === newStatus) return;
+    if (newStatus === 'perdido' && !lostReason) {
+      setPendingLostId(leadId);
+      return;
+    }
     setLeads((ls) => ls.map((l) => (l.id === leadId ? { ...l, status: newStatus } : l)));
     try {
-      await api.post(`/leads/${leadId}/stage`, { status: newStatus });
+      await api.post(`/leads/${leadId}/stage`, { status: newStatus, lostReason });
       push('Lead movido de etapa', 'success');
+      setPendingLostId(null);
     } catch (err) {
       push(err.message, 'error');
       load();
@@ -108,6 +115,13 @@ export default function Pipeline() {
             ))}
           </div>
         </div>
+      )}
+
+      {pendingLostId && (
+        <LostReasonModal
+          onClose={() => setPendingLostId(null)}
+          onConfirm={(reason) => moveLead(pendingLostId, 'perdido', reason)}
+        />
       )}
     </div>
   );

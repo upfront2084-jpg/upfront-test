@@ -43,6 +43,17 @@ export const OBJECTIVES = [
 export const TASK_TYPES = ['Primeiro contato', 'Confirmar experimental', 'Follow-up de proposta', 'Recuperação', 'Outro'];
 export const CAMPAIGN_CHANNELS = ['WhatsApp', 'E-mail', 'SMS', 'Ligação'];
 
+export const LOST_REASONS = [
+  { key: 'financeiro', label: 'Financeiro (preço/condição)' },
+  { key: 'nao_respondeu', label: 'Não respondeu / sumiu' },
+  { key: 'metodologia', label: 'Não gostou da metodologia/sistema' },
+  { key: 'concorrencia', label: 'Foi para outra escola' },
+  { key: 'sem_tempo', label: 'Sem tempo / não é prioridade agora' },
+  { key: 'horario', label: 'Incompatibilidade de horário' },
+  { key: 'outro', label: 'Outro' },
+];
+export const LOST_REASON_LABELS = Object.fromEntries(LOST_REASONS.map((r) => [r.key, r.label]));
+
 export const RECOVERY_BUCKETS = [
   { key: '7', label: '7 dias' },
   { key: '15', label: '15 dias' },
