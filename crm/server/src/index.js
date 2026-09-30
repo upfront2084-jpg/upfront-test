@@ -14,6 +14,7 @@ import usersRoutes from './routes/users.js';
 import campaignsRoutes from './routes/campaigns.js';
 import recoveryRoutes from './routes/recovery.js';
 import lostRoutes from './routes/lost.js';
+import digestRoutes from './routes/digest.js';
 import segmentsRoutes from './routes/segments.js';
 import dashboardRoutes from './routes/dashboard.js';
 import reportsRoutes from './routes/reports.js';
@@ -66,6 +67,9 @@ async function start() {
 
   app.use('/api/auth', authRoutes);
   app.get('/api/health', (req, res) => res.json({ ok: true }));
+  // Token-authenticated, not session-authenticated — must come before the
+  // requireAuth block below, and never gets wrapped by it.
+  app.use('/api', digestRoutes);
 
   // everything else requires a logged-in session
   app.use('/api', requireAuth, leadsRoutes);
