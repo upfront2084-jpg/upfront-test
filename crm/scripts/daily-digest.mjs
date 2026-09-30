@@ -5,10 +5,15 @@
 // in the last 3 days. Run by a scheduled Routine, which relays the output
 // to the CRM owner as a message.
 //
-// Required env var: DIGEST_TOKEN (the platform injects it as the
-// Authorization header for requests to the CRM's allowed site — see the
-// environment's API credentials).
-// Optional: CRM_BASE_URL (default https://crm.upfrontidiomas.com.br)
+// Uses curl (not Node's fetch) to reach the CRM: this environment's network
+// proxy injects the Authorization header for requests to the CRM's allowed
+// site (see the environment's API credentials), and curl honors the
+// HTTPS_PROXY env var automatically where Node's fetch does not.
+//
+// Optional env vars: CRM_BASE_URL (default https://crm.upfrontidiomas.com.br),
+// DIGEST_TOKEN (explicit fallback for local runs with no credential injection).
+
+import { execFileSync } from 'node:child_process';
 
 const BASE_URL = process.env.CRM_BASE_URL || 'https://crm.upfrontidiomas.com.br';
 const TOKEN = process.env.DIGEST_TOKEN;
@@ -31,19 +36,19 @@ function taskLine(t) {
   return `${t.title}${leadSuffix}`;
 }
 
-async function main() {
-  const headers = {};
-  // The platform's environment credentials inject Authorization automatically
-  // for the allowed site; when running locally (no credential injection),
-  // fall back to an explicit DIGEST_TOKEN env var.
-  if (TOKEN) headers.Authorization = `Bearer ${TOKEN}`;
+function fetchDigest() {
+  const args = ['-sS', '-w', '\n%{http_code}', `${BASE_URL}/api/digest`];
+  if (TOKEN) args.push('-H', `Authorization: Bearer ${TOKEN}`);
+  const output = execFileSync('curl', args, { encoding: 'utf8' });
+  const idx = output.lastIndexOf('\n');
+  const body = output.slice(0, idx);
+  const status = Number(output.slice(idx + 1));
+  if (status !== 200) throw new Error(`GET /api/digest falhou (${status}): ${body}`);
+  return JSON.parse(body);
+}
 
-  const res = await fetch(`${BASE_URL}/api/digest`, { headers });
-  if (!res.ok) {
-    const body = await res.text().catch(() => '');
-    throw new Error(`GET /api/digest falhou (${res.status}): ${body}`);
-  }
-  const data = await res.json();
+async function main() {
+  const data = fetchDigest();
   const { tasks, staleLeads, recentLost } = data;
   const totalTasks = tasks.overdue.length + tasks.dueToday.length;
 
