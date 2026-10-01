@@ -197,6 +197,57 @@ router.post('/quick-lead/:id/trial', requireDigestToken, ah(async (req, res) => 
   res.status(201).json({ id, leadId: lead.id, status });
 }));
 
+// Updates the lead's most recent trial class — e.g. moving an "Agendada"
+// one to "Realizada" with a result — instead of logging a second one.
+router.put('/quick-lead/:id/trial', requireDigestToken, ah(async (req, res) => {
+  const lead = await one('SELECT * FROM leads WHERE id = ?', [req.params.id]);
+  if (!lead) return res.status(404).json({ error: 'Lead não encontrado' });
+  const trial = await one('SELECT * FROM trial_classes WHERE lead_id = ? ORDER BY created_at DESC LIMIT 1', [lead.id]);
+  if (!trial) return res.status(404).json({ error: 'Nenhuma aula experimental encontrada para este lead' });
+
+  const b = req.body || {};
+  const now = nowISO();
+  const fields = {
+    status: 'status', date: 'date', time: 'time', teacherId: 'teacher_id', levelIdentified: 'level_identified',
+    objective: 'objective', teacherNotes: 'teacher_notes', result: 'result',
+  };
+  const sets = [];
+  const params = [];
+  for (const [key, col] of Object.entries(fields)) {
+    if (key in b) { sets.push(`${col} = ?`); params.push(b[key]); }
+  }
+  sets.push('updated_at = ?'); params.push(now); params.push(trial.id);
+  if (sets.length > 1) await run(`UPDATE trial_classes SET ${sets.join(', ')} WHERE id = ?`, params);
+
+  if (b.status === 'Realizada' && isForwardStage(lead.status, 'experimental_realizada')) {
+    await run('UPDATE leads SET status = ?, last_stage_change_at = ?, last_contact_date = ?, updated_at = ? WHERE id = ?', [
+      'experimental_realizada', now, todayISO(), now, lead.id,
+    ]);
+    await logQuickInteraction(lead.id, 'experimental', `Aula experimental realizada${b.result ? ' — resultado: ' + b.result : ''} (via assistente Claude)`);
+  } else if (b.status) {
+    await logQuickInteraction(lead.id, 'experimental', `Aula experimental atualizada: ${b.status} (via assistente Claude)`);
+  }
+  res.json({ id: trial.id, leadId: lead.id });
+}));
+
+// Creates a follow-up task for the lead (e.g. "send availability and price
+// table") — TASK_TYPES doesn't have a dedicated category for this, so it
+// defaults to "Outro" unless a specific type is given.
+router.post('/quick-lead/:id/task', requireDigestToken, ah(async (req, res) => {
+  const lead = await one('SELECT * FROM leads WHERE id = ?', [req.params.id]);
+  if (!lead) return res.status(404).json({ error: 'Lead não encontrado' });
+  const b = req.body || {};
+  if (!b.title) return res.status(400).json({ error: 'Título é obrigatório' });
+  const id = uid('tsk');
+  const now = nowISO();
+  await run(
+    `INSERT INTO tasks (id, lead_id, title, type, due_date, due_time, assigned_user_id, note, status, created_at, updated_at, completed_at)
+     VALUES (?,?,?,?,?,?,?,?,?,?,?,NULL)`,
+    [id, lead.id, b.title, b.type || 'Outro', b.dueDate || todayISO(), b.dueTime || null, null, b.note || '', 'Pendente', now, now]
+  );
+  res.status(201).json({ id, leadId: lead.id });
+}));
+
 // Logs a proposal and moves the lead to "Proposta Enviada".
 router.post('/quick-lead/:id/proposal', requireDigestToken, ah(async (req, res) => {
   const lead = await one('SELECT * FROM leads WHERE id = ?', [req.params.id]);
