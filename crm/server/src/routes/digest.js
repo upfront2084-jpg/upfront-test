@@ -7,12 +7,26 @@ import { all, one, run } from '../db.js';
 import { uid, nowISO, todayISO } from '../lib/util.js';
 import { queryLeads } from '../lib/leadQuery.js';
 import { recoveryEligibleFilters } from '../lib/leadQuery.js';
+import { STAGE_KEYS } from '../lib/constants.js';
 import { ah } from '../lib/asyncHandler.js';
 
 async function logQuickInteraction(leadId, type, note) {
   await run('INSERT INTO interactions (id, lead_id, type, note, user_id, datetime) VALUES (?,?,?,?,?,?)', [
     uid('int'), leadId, type, note, null, nowISO(),
   ]);
+}
+
+// Logging something that "already happened" (a trial, a proposal) should
+// never move a lead backward in the pipeline — e.g. the proposal was
+// already sent and now the (earlier) trial gets logged retroactively.
+// "perdido"/"recuperacao" are side branches, not further along the main
+// sequence, so a lead recovering from either always counts as forward.
+function isForwardStage(fromStatus, toStatus) {
+  if (fromStatus === 'perdido' || fromStatus === 'recuperacao') return true;
+  const fromIdx = STAGE_KEYS.indexOf(fromStatus);
+  const toIdx = STAGE_KEYS.indexOf(toStatus);
+  if (fromIdx === -1 || toIdx === -1) return true;
+  return toIdx > fromIdx;
 }
 
 const router = Router();
@@ -169,15 +183,15 @@ router.post('/quick-lead/:id/trial', requireDigestToken, ah(async (req, res) => 
     [id, lead.id, status, b.date || todayISO(), b.time || null, b.teacherId || lead.teacher_id || null,
       b.levelIdentified || null, b.objective || lead.objective || '', b.teacherNotes || null, b.result || null, now, now]
   );
-  if (status === 'Realizada') {
+  const targetStatus = status === 'Realizada' ? 'experimental_realizada' : 'experimental_agendada';
+  if (isForwardStage(lead.status, targetStatus)) {
     await run('UPDATE leads SET status = ?, last_stage_change_at = ?, last_contact_date = ?, updated_at = ? WHERE id = ?', [
-      'experimental_realizada', now, todayISO(), now, lead.id,
+      targetStatus, now, todayISO(), now, lead.id,
     ]);
+  }
+  if (status === 'Realizada') {
     await logQuickInteraction(lead.id, 'experimental', `Aula experimental realizada${b.result ? ' — resultado: ' + b.result : ''} (via assistente Claude)`);
   } else {
-    await run('UPDATE leads SET status = ?, last_stage_change_at = ?, updated_at = ? WHERE id = ?', [
-      'experimental_agendada', now, now, lead.id,
-    ]);
     await logQuickInteraction(lead.id, 'experimental', `Aula experimental agendada para ${b.date || 'data a definir'} (via assistente Claude)`);
   }
   res.status(201).json({ id, leadId: lead.id, status });
@@ -196,9 +210,11 @@ router.post('/quick-lead/:id/proposal', requireDigestToken, ah(async (req, res) 
     [id, lead.id, b.date || todayISO(), b.packageId || null, b.packageLabel || '', b.value || null, b.paymentMethod || '',
       b.specialCondition || '', b.decisionDate || null, b.status || 'Enviada', now, now]
   );
-  await run('UPDATE leads SET status = ?, last_stage_change_at = ?, last_contact_date = ?, updated_at = ? WHERE id = ?', [
-    'proposta_enviada', now, todayISO(), now, lead.id,
-  ]);
+  if (isForwardStage(lead.status, 'proposta_enviada')) {
+    await run('UPDATE leads SET status = ?, last_stage_change_at = ?, last_contact_date = ?, updated_at = ? WHERE id = ?', [
+      'proposta_enviada', now, todayISO(), now, lead.id,
+    ]);
+  }
   await logQuickInteraction(lead.id, 'proposta', `Proposta enviada${b.packageLabel ? ' — ' + b.packageLabel : ''}${b.value ? ' — R$ ' + b.value : ''} (via assistente Claude)`);
   res.status(201).json({ id, leadId: lead.id });
 }));
@@ -226,9 +242,11 @@ router.post('/quick-lead/:id/enroll', requireDigestToken, ah(async (req, res) =>
       b.teacherId || lead.teacher_id || null, b.frequency || '', b.scheduleText || '', b.monthlyValue || null,
       b.discountValue || null, b.paymentMethod || '', b.startingClass || '', b.notes || '', now]
   );
-  await run('UPDATE leads SET status = ?, last_stage_change_at = ?, last_contact_date = ?, updated_at = ? WHERE id = ?', [
-    'matriculado', now, todayISO(), now, lead.id,
-  ]);
+  if (isForwardStage(lead.status, 'matriculado')) {
+    await run('UPDATE leads SET status = ?, last_stage_change_at = ?, last_contact_date = ?, updated_at = ? WHERE id = ?', [
+      'matriculado', now, todayISO(), now, lead.id,
+    ]);
+  }
   await logQuickInteraction(lead.id, 'matricula', 'Matrícula confirmada (via assistente Claude)');
   res.status(201).json({ enrollmentId, studentId: student.id });
 }));
