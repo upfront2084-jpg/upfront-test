@@ -3,7 +3,7 @@
 // creation from a chat with Claude) — both use a static bearer token
 // (DIGEST_TOKEN env var) instead of a user login.
 import { Router } from 'express';
-import { all, one, run } from '../db.js';
+import { all, one, run, transaction } from '../db.js';
 import { uid, nowISO, todayISO } from '../lib/util.js';
 import { queryLeads } from '../lib/leadQuery.js';
 import { recoveryEligibleFilters } from '../lib/leadQuery.js';
@@ -249,6 +249,29 @@ router.post('/quick-lead/:id/enroll', requireDigestToken, ah(async (req, res) =>
   }
   await logQuickInteraction(lead.id, 'matricula', 'Matrícula confirmada (via assistente Claude)');
   res.status(201).json({ enrollmentId, studentId: student.id });
+}));
+
+// Deletes a lead and everything tied to it — mirrors the cascade in
+// routes/leads.js's DELETE /leads/:id, token-authenticated instead of
+// session-based so Claude can remove a lead created by mistake from chat.
+async function cascadeDeleteLead(id) {
+  await run('DELETE FROM campaign_recipients WHERE lead_id = ?', [id]);
+  await run('DELETE FROM enrollments WHERE lead_id = ?', [id]);
+  await run('DELETE FROM students WHERE lead_id = ?', [id]);
+  await run('DELETE FROM proposals WHERE lead_id = ?', [id]);
+  await run('DELETE FROM trial_classes WHERE lead_id = ?', [id]);
+  await run('DELETE FROM tasks WHERE lead_id = ?', [id]);
+  await run('DELETE FROM notes WHERE lead_id = ?', [id]);
+  await run('DELETE FROM interactions WHERE lead_id = ?', [id]);
+  await run('DELETE FROM lead_tags WHERE lead_id = ?', [id]);
+  await run('DELETE FROM leads WHERE id = ?', [id]);
+}
+
+router.delete('/quick-lead/:id', requireDigestToken, ah(async (req, res) => {
+  const lead = await one('SELECT id, name FROM leads WHERE id = ?', [req.params.id]);
+  if (!lead) return res.status(404).json({ error: 'Lead não encontrado' });
+  await transaction(() => cascadeDeleteLead(lead.id));
+  res.json({ ok: true, name: lead.name });
 }));
 
 export default router;
