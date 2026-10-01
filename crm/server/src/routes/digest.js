@@ -9,6 +9,12 @@ import { queryLeads } from '../lib/leadQuery.js';
 import { recoveryEligibleFilters } from '../lib/leadQuery.js';
 import { ah } from '../lib/asyncHandler.js';
 
+async function logQuickInteraction(leadId, type, note) {
+  await run('INSERT INTO interactions (id, lead_id, type, note, user_id, datetime) VALUES (?,?,?,?,?,?)', [
+    uid('int'), leadId, type, note, null, nowISO(),
+  ]);
+}
+
 const router = Router();
 
 function requireDigestToken(req, res, next) {
@@ -89,6 +95,99 @@ router.post('/quick-lead', requireDigestToken, ah(async (req, res) => {
 
   const row = (await queryLeads({ ids: [id] }))[0];
   res.status(201).json({ id, name: row.name, sourceName: row.source_name });
+}));
+
+// Looks up a lead by (partial, case-insensitive) name so Claude can find
+// the right lead from a chat message without needing to remember its id
+// across conversations.
+router.get('/quick-lead/find', requireDigestToken, ah(async (req, res) => {
+  const name = req.query.name;
+  if (!name) return res.status(400).json({ error: 'Parâmetro name é obrigatório' });
+  const rows = await all(
+    "SELECT id, name, whatsapp, status FROM leads WHERE LOWER(name) LIKE LOWER(?) ORDER BY created_at DESC LIMIT 10",
+    [`%${name}%`]
+  );
+  res.json({ leads: rows.map((l) => ({ id: l.id, name: l.name, whatsapp: l.whatsapp, status: l.status })) });
+}));
+
+// Logs a trial class — by default already-completed ("Realizada"), since
+// this is for retroactively recording what Claude is told happened, not
+// scheduling a future one (use the CRM itself for that).
+router.post('/quick-lead/:id/trial', requireDigestToken, ah(async (req, res) => {
+  const lead = await one('SELECT * FROM leads WHERE id = ?', [req.params.id]);
+  if (!lead) return res.status(404).json({ error: 'Lead não encontrado' });
+  const b = req.body || {};
+  const id = uid('trl');
+  const now = nowISO();
+  const status = b.status || 'Realizada';
+  await run(
+    `INSERT INTO trial_classes (id, lead_id, status, date, time, teacher_id, level_identified, objective, teacher_notes, result, created_at, updated_at)
+     VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`,
+    [id, lead.id, status, b.date || todayISO(), b.time || null, b.teacherId || lead.teacher_id || null,
+      b.levelIdentified || null, b.objective || lead.objective || '', b.teacherNotes || null, b.result || null, now, now]
+  );
+  if (status === 'Realizada') {
+    await run('UPDATE leads SET status = ?, last_stage_change_at = ?, last_contact_date = ?, updated_at = ? WHERE id = ?', [
+      'experimental_realizada', now, todayISO(), now, lead.id,
+    ]);
+    await logQuickInteraction(lead.id, 'experimental', `Aula experimental realizada${b.result ? ' — resultado: ' + b.result : ''} (via assistente Claude)`);
+  } else {
+    await run('UPDATE leads SET status = ?, last_stage_change_at = ?, updated_at = ? WHERE id = ?', [
+      'experimental_agendada', now, now, lead.id,
+    ]);
+    await logQuickInteraction(lead.id, 'experimental', `Aula experimental agendada para ${b.date || 'data a definir'} (via assistente Claude)`);
+  }
+  res.status(201).json({ id, leadId: lead.id, status });
+}));
+
+// Logs a proposal and moves the lead to "Proposta Enviada".
+router.post('/quick-lead/:id/proposal', requireDigestToken, ah(async (req, res) => {
+  const lead = await one('SELECT * FROM leads WHERE id = ?', [req.params.id]);
+  if (!lead) return res.status(404).json({ error: 'Lead não encontrado' });
+  const b = req.body || {};
+  const id = uid('prp');
+  const now = nowISO();
+  await run(
+    `INSERT INTO proposals (id, lead_id, date, package_id, package_label, value, payment_method, special_condition, decision_date, status, created_at, updated_at)
+     VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`,
+    [id, lead.id, b.date || todayISO(), b.packageId || null, b.packageLabel || '', b.value || null, b.paymentMethod || '',
+      b.specialCondition || '', b.decisionDate || null, b.status || 'Enviada', now, now]
+  );
+  await run('UPDATE leads SET status = ?, last_stage_change_at = ?, last_contact_date = ?, updated_at = ? WHERE id = ?', [
+    'proposta_enviada', now, todayISO(), now, lead.id,
+  ]);
+  await logQuickInteraction(lead.id, 'proposta', `Proposta enviada${b.packageLabel ? ' — ' + b.packageLabel : ''}${b.value ? ' — R$ ' + b.value : ''} (via assistente Claude)`);
+  res.status(201).json({ id, leadId: lead.id });
+}));
+
+// Confirms enrollment: creates the student record (first time) and the
+// enrollment, and moves the lead to "Matriculado" — mirrors POST
+// /api/leads/:id/enroll, just token-authenticated instead of session-based.
+router.post('/quick-lead/:id/enroll', requireDigestToken, ah(async (req, res) => {
+  const lead = await one('SELECT * FROM leads WHERE id = ?', [req.params.id]);
+  if (!lead) return res.status(404).json({ error: 'Lead não encontrado' });
+  const b = req.body || {};
+  const now = nowISO();
+  let student = await one('SELECT * FROM students WHERE lead_id = ?', [lead.id]);
+  if (!student) {
+    student = { id: uid('stu'), lead_id: lead.id, name: lead.name, whatsapp: lead.whatsapp, email: lead.email };
+    await run('INSERT INTO students (id, lead_id, name, whatsapp, email, created_at) VALUES (?,?,?,?,?,?)', [
+      student.id, student.lead_id, student.name, student.whatsapp, student.email, now,
+    ]);
+  }
+  const enrollmentId = uid('enr');
+  await run(
+    `INSERT INTO enrollments (id, lead_id, student_id, enrollment_date, start_date, package_id, teacher_id, frequency, schedule_text, monthly_value, discount_value, payment_method, starting_class, notes, created_at)
+     VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+    [enrollmentId, lead.id, student.id, b.enrollmentDate || todayISO(), b.startDate || null, b.packageId || null,
+      b.teacherId || lead.teacher_id || null, b.frequency || '', b.scheduleText || '', b.monthlyValue || null,
+      b.discountValue || null, b.paymentMethod || '', b.startingClass || '', b.notes || '', now]
+  );
+  await run('UPDATE leads SET status = ?, last_stage_change_at = ?, last_contact_date = ?, updated_at = ? WHERE id = ?', [
+    'matriculado', now, todayISO(), now, lead.id,
+  ]);
+  await logQuickInteraction(lead.id, 'matricula', 'Matrícula confirmada (via assistente Claude)');
+  res.status(201).json({ enrollmentId, studentId: student.id });
 }));
 
 export default router;
