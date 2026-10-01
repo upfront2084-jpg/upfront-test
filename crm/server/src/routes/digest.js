@@ -110,6 +110,49 @@ router.get('/quick-lead/find', requireDigestToken, ah(async (req, res) => {
   res.json({ leads: rows.map((l) => ({ id: l.id, name: l.name, whatsapp: l.whatsapp, status: l.status })) });
 }));
 
+// Lets Claude resolve a teacher mentioned by name before assigning one on a
+// trial/proposal/enrollment, the same way sourceName is resolved on create.
+router.get('/quick-teachers', requireDigestToken, ah(async (req, res) => {
+  const rows = await all('SELECT id, name FROM teachers ORDER BY name');
+  res.json({ teachers: rows });
+}));
+
+const QUICK_EDITABLE_FIELDS = {
+  whatsapp: 'whatsapp', email: 'email', sourceId: 'source_id', campaignOrigin: 'campaign_origin',
+  teacherId: 'teacher_id', city: 'city', age: 'age', englishLevel: 'english_level', objective: 'objective',
+  notes: 'notes',
+};
+
+// Updates an existing lead's fields — for when a later chat message adds or
+// corrects details on a lead Claude already created (source, level, teacher
+// suggestion, etc.) instead of creating a duplicate.
+router.put('/quick-lead/:id', requireDigestToken, ah(async (req, res) => {
+  const lead = await one('SELECT * FROM leads WHERE id = ?', [req.params.id]);
+  if (!lead) return res.status(404).json({ error: 'Lead não encontrado' });
+  const b = req.body || {};
+
+  let sourceId = b.sourceId;
+  if (!sourceId && b.sourceName) {
+    const src = await one('SELECT id FROM sources WHERE LOWER(name) = LOWER(?)', [b.sourceName]);
+    sourceId = src?.id || null;
+  }
+  if (sourceId !== undefined) b.sourceId = sourceId;
+
+  const sets = [];
+  const params = [];
+  for (const [key, col] of Object.entries(QUICK_EDITABLE_FIELDS)) {
+    if (key in b) { sets.push(`${col} = ?`); params.push(b[key]); }
+  }
+  if (sets.length) {
+    sets.push('updated_at = ?');
+    params.push(nowISO());
+    params.push(lead.id);
+    await run(`UPDATE leads SET ${sets.join(', ')} WHERE id = ?`, params);
+  }
+  const row = (await queryLeads({ ids: [lead.id] }))[0];
+  res.json({ id: lead.id, name: row.name, sourceName: row.source_name, teacherName: row.teacher_name });
+}));
+
 // Logs a trial class — by default already-completed ("Realizada"), since
 // this is for retroactively recording what Claude is told happened, not
 // scheduling a future one (use the CRM itself for that).
