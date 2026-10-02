@@ -157,6 +157,13 @@ router.put('/quick-lead/:id', requireDigestToken, ah(async (req, res) => {
   for (const [key, col] of Object.entries(QUICK_EDITABLE_FIELDS)) {
     if (key in b) { sets.push(`${col} = ?`); params.push(b[key]); }
   }
+  // An explicit status here is the user stating the lead's current stage
+  // (not a retroactive log), so it's set directly — no forward-only gate.
+  if (b.status && STAGE_KEYS.includes(b.status)) {
+    sets.push('status = ?', 'last_stage_change_at = ?', 'last_contact_date = ?');
+    const now = nowISO();
+    params.push(b.status, now, todayISO());
+  }
   if (sets.length) {
     sets.push('updated_at = ?');
     params.push(nowISO());
@@ -164,7 +171,7 @@ router.put('/quick-lead/:id', requireDigestToken, ah(async (req, res) => {
     await run(`UPDATE leads SET ${sets.join(', ')} WHERE id = ?`, params);
   }
   const row = (await queryLeads({ ids: [lead.id] }))[0];
-  res.json({ id: lead.id, name: row.name, sourceName: row.source_name, teacherName: row.teacher_name });
+  res.json({ id: lead.id, name: row.name, sourceName: row.source_name, teacherName: row.teacher_name, status: row.status });
 }));
 
 // Logs a trial class — by default already-completed ("Realizada"), since
