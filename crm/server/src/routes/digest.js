@@ -132,7 +132,7 @@ router.get('/quick-teachers', requireDigestToken, ah(async (req, res) => {
 }));
 
 const QUICK_EDITABLE_FIELDS = {
-  whatsapp: 'whatsapp', email: 'email', sourceId: 'source_id', campaignOrigin: 'campaign_origin',
+  name: 'name', whatsapp: 'whatsapp', email: 'email', sourceId: 'source_id', campaignOrigin: 'campaign_origin',
   teacherId: 'teacher_id', city: 'city', age: 'age', englishLevel: 'english_level', objective: 'objective',
   notes: 'notes',
 };
