@@ -248,6 +248,27 @@ router.post('/quick-lead/:id/task', requireDigestToken, ah(async (req, res) => {
   res.status(201).json({ id, leadId: lead.id });
 }));
 
+// Updates a task created via the chat automation — mainly for marking it
+// done once Claude is told the action happened ("mandei os horários pra
+// ela"). Mirrors PUT /tasks/:id in routes/tasks.js.
+router.put('/quick-task/:id', requireDigestToken, ah(async (req, res) => {
+  const task = await one('SELECT * FROM tasks WHERE id = ?', [req.params.id]);
+  if (!task) return res.status(404).json({ error: 'Tarefa não encontrada' });
+  const b = req.body || {};
+  const now = nowISO();
+  const fields = { title: 'title', type: 'type', dueDate: 'due_date', dueTime: 'due_time', note: 'note', status: 'status' };
+  const sets = [];
+  const params = [];
+  for (const [key, col] of Object.entries(fields)) {
+    if (key in b) { sets.push(`${col} = ?`); params.push(b[key]); }
+  }
+  sets.push('updated_at = ?'); params.push(now);
+  if (b.status === 'Concluída') { sets.push('completed_at = ?'); params.push(now); }
+  params.push(task.id);
+  if (sets.length) await run(`UPDATE tasks SET ${sets.join(', ')} WHERE id = ?`, params);
+  res.json({ ok: true });
+}));
+
 // Logs a proposal and moves the lead to "Proposta Enviada".
 router.post('/quick-lead/:id/proposal', requireDigestToken, ah(async (req, res) => {
   const lead = await one('SELECT * FROM leads WHERE id = ?', [req.params.id]);
