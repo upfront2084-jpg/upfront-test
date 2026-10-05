@@ -276,6 +276,22 @@ router.put('/quick-task/:id', requireDigestToken, ah(async (req, res) => {
   res.json({ ok: true });
 }));
 
+// Lists pending tasks due within an arbitrary date range (e.g. "this week")
+// — the /digest endpoint only covers overdue + due-today, which isn't
+// enough for an open-ended "what do I have this week" question from chat.
+router.get('/quick-tasks', requireDigestToken, ah(async (req, res) => {
+  const from = req.query.from || todayISO();
+  const to = req.query.to || from;
+  const rows = await all(
+    `SELECT tasks.*, leads.name as lead_name FROM tasks
+     LEFT JOIN leads ON leads.id = tasks.lead_id
+     WHERE tasks.status = 'Pendente' AND tasks.due_date BETWEEN ? AND ?
+     ORDER BY tasks.due_date ASC`,
+    [from, to]
+  );
+  res.json({ tasks: rows.map((t) => ({ id: t.id, title: t.title, type: t.type, leadName: t.lead_name, dueDate: t.due_date, dueTime: t.due_time })) });
+}));
+
 // Logs a proposal and moves the lead to "Proposta Enviada".
 router.post('/quick-lead/:id/proposal', requireDigestToken, ah(async (req, res) => {
   const lead = await one('SELECT * FROM leads WHERE id = ?', [req.params.id]);
