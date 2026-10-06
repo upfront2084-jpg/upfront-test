@@ -7,7 +7,7 @@ import { all, one, run, transaction } from '../db.js';
 import { uid, nowISO, todayISO } from '../lib/util.js';
 import { queryLeads } from '../lib/leadQuery.js';
 import { recoveryEligibleFilters } from '../lib/leadQuery.js';
-import { STAGE_KEYS } from '../lib/constants.js';
+import { STAGE_KEYS, LOST_REASON_KEYS } from '../lib/constants.js';
 import { ah } from '../lib/asyncHandler.js';
 
 async function logQuickInteraction(leadId, type, note) {
@@ -159,7 +159,16 @@ router.put('/quick-lead/:id', requireDigestToken, ah(async (req, res) => {
   }
   // An explicit status here is the user stating the lead's current stage
   // (not a retroactive log), so it's set directly — no forward-only gate.
-  if (b.status && STAGE_KEYS.includes(b.status)) {
+  // "perdido" mirrors the same rule as the session-based /stage route: a
+  // category is mandatory, so a lost lead is never left uncategorized.
+  if (b.status === 'perdido') {
+    if (!b.lostReason || !LOST_REASON_KEYS.includes(b.lostReason)) {
+      return res.status(400).json({ error: 'Selecione o motivo da perda (lostReason)' });
+    }
+    sets.push('status = ?', 'lost_reason = ?', 'last_stage_change_at = ?', 'last_contact_date = ?');
+    const now = nowISO();
+    params.push(b.status, b.lostReason, now, todayISO());
+  } else if (b.status && STAGE_KEYS.includes(b.status)) {
     sets.push('status = ?', 'last_stage_change_at = ?', 'last_contact_date = ?');
     const now = nowISO();
     params.push(b.status, now, todayISO());
