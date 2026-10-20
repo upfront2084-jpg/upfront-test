@@ -1047,6 +1047,7 @@ let currentHomeworkItems = [];
 function buildLessonHomeworkItems(l){
   const items = (l.sentenceDrills||[]).map(d=>({pt:d.pt, en:d.en, tokens:d.tokens}));
   (EXPRESSIONS[l.topic]||[]).forEach(e=>items.push({pt:e.pt, en:e.en, tokens:e.en.split(' ')}));
+  (l.expr_drills||[]).forEach(d=>items.push({pt:d.pt, en:d.en, tokens:d.tokens}));
   return items;
 }
 
@@ -1240,17 +1241,27 @@ function renderDrillsSection(l, id){
         <div class="tdr-num">★</div>
         <div class="tdr-body"><div class="tdr-pt">🗣️ "${esc(e.pt)}"</div><div class="tdr-en">✅ ${esc(e.en)}</div></div>
       </div>`).join('');
+    const pv = (l.expr_drills||[]).map(d=>`
+      <div class="teacher-drill-row expr">
+        <div class="tdr-num">📚</div>
+        <div class="tdr-body"><div class="tdr-pt">🗣️ "${esc(d.pt)}"</div><div class="tdr-en">✅ ${esc(d.en)}</div></div>
+      </div>`).join('');
     return `<div class="drill-intro">Leia cada frase em português em voz alta para a turma. O aluno monta a frase em inglês com o vocabulário da aula — a resposta já está pronta abaixo para você conduzir.</div>
       ${rows}
       <div class="section-subtitle">★ Expressões prontas do tópico</div>
-      ${expr}`;
+      ${expr}
+      <div class="section-subtitle">📚 Phrasal Verbs da aula</div>
+      ${pv}`;
   }
   const rows = l.sentenceDrills.map((d,i)=>renderDrillBuilder(`drill-${id}-sd-${i}`, d.pt, d.tokens)).join('');
   const expr = (EXPRESSIONS[l.topic]||[]).map((e,i)=>renderDrillBuilder(`drill-${id}-ex-${i}`, e.pt, e.en.split(' '))).join('');
+  const pv = (l.expr_drills||[]).map((d,i)=>renderDrillBuilder(`drill-${id}-pv-${i}`, d.pt, d.tokens)).join('');
   return `<div class="drill-intro">Seu professor vai falar cada frase em português. Clique nas palavras em inglês, na ordem certa, para montar a frase.</div>
     ${rows}
     <div class="section-subtitle">★ Expressões prontas do tópico</div>
-    ${expr}`;
+    ${expr}
+    <div class="section-subtitle">📚 Phrasal Verbs da aula</div>
+    ${pv}`;
 }
 
 function renderLesson(id){
@@ -1277,6 +1288,10 @@ function renderLesson(id){
   const expressionsHtml = (EXPRESSIONS[l.topic]||[]).map(e=>`<div class="vocab-card">
       <div class="en">${esc(e.en)}</div>
       <div class="pt">${esc(e.pt)}</div>
+    </div>`).join('');
+  const phrasalVerbsHtml = (l.expressions||[]).map(e=>`<div class="vocab-card">
+      <div class="en">${esc(e.phrase)}</div>
+      <div class="pt">${esc(e.usage)}</div>
     </div>`).join('');
   const dialogueHtml = l.dialogue.map(d=>`<div class="line"><div class="who">${d.who}</div><div class="bubble"><div class="en">${d.en}</div></div></div>`).join('');
 
@@ -1358,18 +1373,23 @@ function renderLesson(id){
     </div>
 
     <div class="section">
-      <div class="section-title"><span class="num">3</span> Diálogo real</div>
+      <div class="section-title"><span class="num">3</span> Phrasal Verbs</div>
+      <div class="vocab-grid">${phrasalVerbsHtml}</div>
+    </div>
+
+    <div class="section">
+      <div class="section-title"><span class="num">4</span> Diálogo real</div>
       <div class="dialogue">${dialogueHtml}</div>
     </div>
 
     <div class="section">
-      <div class="section-title"><span class="num">4</span> Áudio do diálogo</div>
+      <div class="section-title"><span class="num">5</span> Áudio do diálogo</div>
       ${audioHtml}
       ${scriptHtml}
     </div>
 
     <div class="section">
-      <div class="section-title"><span class="num">5</span> Perguntas de compreensão</div>
+      <div class="section-title"><span class="num">6</span> Perguntas de compreensão</div>
       ${compHtml}
       <div class="score-bar">
         <span>Pontuação — compreensão</span>
@@ -1378,7 +1398,7 @@ function renderLesson(id){
     </div>
 
     <div class="section">
-      <div class="section-title"><span class="num">6</span> Quiz de vocabulário e gramática</div>
+      <div class="section-title"><span class="num">7</span> Quiz de vocabulário e gramática</div>
       ${quizHtml}
       <div class="score-bar">
         <span>Pontuação — quiz</span>
@@ -1387,19 +1407,19 @@ function renderLesson(id){
     </div>
 
     <div class="section">
-      <div class="section-title"><span class="num">7</span> ${currentRole==='teacher' ? 'Drills — guia do professor' : 'Monte a frase'}</div>
+      <div class="section-title"><span class="num">8</span> ${currentRole==='teacher' ? 'Drills — guia do professor' : 'Monte a frase'}</div>
       ${drillsHtml}
     </div>
 
     <div class="section" id="hw-section-${id}">
-      <div class="section-title"><span class="num">8</span> Tarefa de casa</div>
+      <div class="section-title"><span class="num">9</span> Tarefa de casa</div>
       <div class="homework-card"><ol>${homeworkHtml}</ol></div>
       <div class="section-subtitle" style="margin-top:18px;">✍️ Monte e envie as frases desta aula</div>
       ${renderLessonHomeworkSection(l)}
     </div>
 
     <div class="section">
-      <div class="section-title"><span class="num">9</span> Dica cultural / prática</div>
+      <div class="section-title"><span class="num">10</span> Dica cultural / prática</div>
       <div class="tip-card"><div class="stamp">🛂</div><p>${l.tip}</p></div>
     </div>
 
