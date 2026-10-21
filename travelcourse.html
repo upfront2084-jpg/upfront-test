@@ -1230,29 +1230,6 @@ function revealDrill(domId){
 }
 
 function renderDrillsSection(l, id){
-  if(currentRole==='teacher'){
-    const rows = l.sentenceDrills.map((d,i)=>`
-      <div class="teacher-drill-row">
-        <div class="tdr-num">${i+1}</div>
-        <div class="tdr-body"><div class="tdr-pt">🗣️ "${esc(d.pt)}"</div><div class="tdr-en">✅ ${esc(d.en)}</div></div>
-      </div>`).join('');
-    const expr = (EXPRESSIONS[l.topic]||[]).map(e=>`
-      <div class="teacher-drill-row expr">
-        <div class="tdr-num">★</div>
-        <div class="tdr-body"><div class="tdr-pt">🗣️ "${esc(e.pt)}"</div><div class="tdr-en">✅ ${esc(e.en)}</div></div>
-      </div>`).join('');
-    const pv = (l.expr_drills||[]).map(d=>`
-      <div class="teacher-drill-row expr">
-        <div class="tdr-num">📚</div>
-        <div class="tdr-body"><div class="tdr-pt">🗣️ "${esc(d.pt)}"</div><div class="tdr-en">✅ ${esc(d.en)}</div></div>
-      </div>`).join('');
-    return `<div class="drill-intro">Leia cada frase em português em voz alta para a turma. O aluno monta a frase em inglês com o vocabulário da aula — a resposta já está pronta abaixo para você conduzir.</div>
-      ${rows}
-      <div class="section-subtitle">★ Expressões prontas do tópico</div>
-      ${expr}
-      <div class="section-subtitle">📚 Phrasal Verbs da aula</div>
-      ${pv}`;
-  }
   const rows = l.sentenceDrills.map((d,i)=>renderDrillBuilder(`drill-${id}-sd-${i}`, d.pt, d.tokens)).join('');
   const expr = (EXPRESSIONS[l.topic]||[]).map((e,i)=>renderDrillBuilder(`drill-${id}-ex-${i}`, e.pt, e.en.split(' '))).join('');
   const pv = (l.expr_drills||[]).map((d,i)=>renderDrillBuilder(`drill-${id}-pv-${i}`, d.pt, d.tokens)).join('');
@@ -1407,7 +1384,7 @@ function renderLesson(id){
     </div>
 
     <div class="section">
-      <div class="section-title"><span class="num">8</span> ${currentRole==='teacher' ? 'Drills — guia do professor' : 'Monte a frase'}</div>
+      <div class="section-title"><span class="num">8</span> Monte a frase</div>
       ${drillsHtml}
     </div>
 
