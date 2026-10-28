@@ -1,0 +1,2349 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<!-- Portal: hide page until the session check (GET /me.php) resolves, to avoid a gate flash -->
+<script>document.documentElement.style.visibility='hidden';</script>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Water Engineering — Curso Completo</title>
+<!-- No external font/CDN links on purpose: this course must work with zero internet access.
+     Typeface is Arial (with system sans-serif fallback), used consistently everywhere. -->
+<style>
+  :root{
+    --ink:#07162F; --paper:#F7F9FC; --paper-2:#EEF2FA;
+    --blue:#000000; --cyan:#2DD4BF; --coral:#EF4444; --purple:#6C63FF; --warning:#F59E0B;
+    --text:#1F2937; --muted:#667085; --line:#E2E8F0;
+    --navy-bg:#07162F; --navy-surface:#146C43; --navy-surface-2:#1B5B39;
+    --navy-border:rgba(255,255,255,0.08); --navy-text:#EDEFF4; --navy-muted:rgba(237,239,244,0.6);
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--ink);color:var(--text);font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;}
+  ::selection{background:var(--blue);color:#fff;}
+  #app{display:flex;min-height:100vh;}
+  #sidebar{width:350px;min-width:350px;background:#0B3D24;color:#EDEFF4;padding:26px 18px 40px;
+    position:sticky;top:0;height:100vh;overflow-y:auto;border-right:1px solid rgba(255,255,255,0.08);}
+  .brand{display:flex;align-items:center;gap:10px;margin-bottom:2px;}
+  .brand .dot{width:10px;height:10px;border-radius:50%;background:var(--blue);}
+  .brand-logo{width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0;
+    border:2px solid rgba(255,255,255,0.4);}
+  .brand h1{font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;font-size:19px;font-weight:700;margin:0;}
+  .brand-school{font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;font-size:10px;font-weight:700;color:#fff;
+    letter-spacing:1.5px;text-transform:uppercase;margin:2px 0 2px 46px;}
+  .brand-sub{font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;font-size:10.5px;color:#fff;font-weight:700;letter-spacing:1.5px;
+    text-transform:uppercase;margin:2px 0 20px 46px;}
+  .level-tabs{display:flex;gap:6px;margin-bottom:6px;}
+  .level-tab{flex:1;text-align:center;padding:9px 0;border-radius:6px;font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;
+    font-size:12.5px;font-weight:600;cursor:pointer;border:1px solid rgba(255,255,255,0.15);
+    color:rgba(255,255,255,0.6);transition:all .15s ease;background:transparent;}
+  .level-tab:hover{border-color:var(--blue);color:#fff;}
+  .level-tab.active{background:var(--blue);color:#fff;border-color:var(--blue);box-shadow:0 2px 0 rgba(0,0,0,0.4), 0 4px 10px rgba(0,0,0,0.3);}
+  .level-caption{font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;font-size:10.5px;color:rgba(255,255,255,0.45);
+    text-align:center;margin-bottom:16px;letter-spacing:0.5px;}
+  .progress-wrap{margin:0 0 16px;}
+  .progress-label{font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;font-size:10.5px;color:rgba(255,255,255,0.55);
+    display:flex;justify-content:space-between;margin-bottom:6px;text-transform:uppercase;letter-spacing:1px;}
+  .progress-bar{height:6px;background:rgba(255,255,255,0.12);border-radius:99px;overflow:hidden;}
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--cyan),var(--blue));width:0%;transition:width .4s ease;}
+  .lesson-stub{position:relative;display:flex;align-items:center;gap:10px;padding:11px 12px;margin-bottom:8px;
+    background:rgba(255,255,255,0.04);border:1px dashed rgba(255,255,255,0.2);border-radius:9px;
+    cursor:pointer;transition:transform .15s ease,box-shadow .15s ease,background .15s ease,border-color .15s ease;
+    box-shadow:0 2px 6px rgba(0,0,0,0.15);}
+  .lesson-stub:hover{background:rgba(255,255,255,0.09);border-color:var(--blue);transform:translateY(-1px);box-shadow:0 4px 10px rgba(0,0,0,0.22);}
+  .lesson-stub.active{background:rgba(0,0,0,0.15);border-color:var(--blue);box-shadow:0 2px 8px rgba(0,0,0,0.3);}
+  .lesson-stub .icon{font-size:15px;width:32px;height:32px;line-height:32px;text-align:center;border-radius:50%;flex-shrink:0;background:radial-gradient(circle at 35% 30%,rgba(0,0,0,0.38),rgba(0,0,0,0.08));border:1px solid rgba(0,0,0,0.45);box-shadow:0 0 10px rgba(0,0,0,0.3);}
+  .lesson-stub .meta{flex:1;min-width:0;}
+  .lesson-stub .code{font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;font-size:9.5px;font-weight:700;color:#fff;letter-spacing:1px;}
+  .lesson-stub .name{font-size:12.5px;font-weight:600;color:#fff;line-height:1.25;margin-top:1px;}
+  .lesson-stub .check{width:18px;height:18px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.3);
+    display:flex;align-items:center;justify-content:center;font-size:10px;color:transparent;flex-shrink:0;}
+  .lesson-stub.done .check{background:var(--cyan);border-color:var(--cyan);color:#fff;}
+  #main{flex:1;background:var(--paper);min-height:100vh;}
+  .navbar{padding:14px 32px;background:var(--navy-surface);border-bottom:1px solid var(--navy-border);
+    display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:6;gap:16px;}
+  .navbar-left{display:flex;align-items:center;gap:16px;min-width:0;}
+  .navbar-menu-btn{width:34px;height:34px;border-radius:9px;border:1px solid var(--navy-border);background:transparent;
+    color:var(--navy-text);font-size:15px;cursor:pointer;flex-shrink:0;}
+  .navbar-menu-btn:hover{background:rgba(255,255,255,0.06);}
+  .navbar-greeting-main{font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;font-size:15px;font-weight:700;color:#fff;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .navbar-greeting-sub{font-size:11.5px;color:var(--navy-muted);margin-top:1px;white-space:nowrap;}
+  .navbar-right{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+  .navbar-icon-btn{width:34px;height:34px;border-radius:50%;border:1px solid var(--navy-border);background:rgba(255,255,255,0.03);
+    color:var(--navy-text);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+  .navbar-icon-btn:hover{background:rgba(255,255,255,0.08);}
+  .navbar-avatar{display:flex;align-items:center;gap:9px;background:rgba(255,255,255,0.04);border:1px solid var(--navy-border);
+    border-radius:99px;padding:5px 12px 5px 5px;cursor:pointer;margin-left:4px;}
+  .navbar-avatar:hover{background:rgba(255,255,255,0.09);}
+  .navbar-avatar-initials{width:26px;height:26px;border-radius:50%;background:var(--blue);color:#fff;
+    font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .navbar-avatar-meta{display:flex;flex-direction:column;text-align:left;line-height:1.25;}
+  .navbar-avatar-meta b{font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;font-size:11.5px;color:#fff;font-weight:600;}
+  .navbar-avatar-meta small{font-size:10px;color:var(--navy-muted);}
+  .topbar{padding:12px 46px;border-bottom:1px solid var(--navy-border);display:flex;justify-content:space-between;
+    align-items:center;background:var(--navy-surface);position:sticky;top:63px;z-index:5;}
+  .topbar .breadcrumb{font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;font-size:11.5px;color:var(--navy-muted);
+    letter-spacing:1px;text-transform:uppercase;}
+  .topbar .flight-code{font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;font-size:12.5px;color:#fff;font-weight:600;
+    background:rgba(255,255,255,0.06);padding:5px 12px;border-radius:6px;border:1px solid var(--navy-border);}
+  .content{padding:42px 46px 90px;max-width:920px;margin:0 auto;}
+  .content.dash-mode{max-width:1180px;}
+  .dash-inner{padding-top:6px;}
+
+  /* ============ SIDEBAR NAV (Dashboard / Core / Tracks) ============ */
+  .side-nav-item{display:flex;align-items:center;gap:9px;width:100%;font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;
+    font-size:12.5px;font-weight:600;color:rgba(255,255,255,0.82);background:transparent;border:none;
+    border-radius:8px;padding:9px 10px;margin-bottom:3px;cursor:pointer;text-align:left;transition:background .15s ease;}
+  .side-nav-item:hover{background:rgba(255,255,255,0.06);}
+  .side-nav-item.active,.side-nav-item.core-item{background:rgba(0,0,0,0.16);color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,0.08), 0 2px 6px rgba(0,0,0,0.25);}
+  .side-nav-icon{font-size:14px;flex-shrink:0;width:18px;text-align:center;}
+  .side-nav-text{flex:1;}
+  .side-nav-pct{font-size:10.5px;font-weight:700;color:var(--blue);background:rgba(0,0,0,0.18);
+    padding:2px 7px;border-radius:99px;flex-shrink:0;}
+  .side-nav-pct.lock{color:rgba(255,255,255,0.4);background:rgba(255,255,255,0.06);}
+  .side-nav-item.locked{color:rgba(255,255,255,0.45);}
+  .side-section-label{font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;font-size:9.5px;font-weight:700;
+    letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin:16px 4px 6px;}
+  .side-divider{height:1px;background:rgba(255,255,255,0.1);margin:14px 0;}
+
+  /* ============ SIDEBAR PROGRESS RINGS ============ */
+  .side-ring{--pct:0;width:26px;height:26px;border-radius:50%;position:relative;flex-shrink:0;
+    background:conic-gradient(var(--ring-color, var(--blue)) calc(var(--pct)*3.6deg), rgba(255,255,255,0.12) 0);}
+  .side-ring:before{content:"";position:absolute;inset:3px;border-radius:50%;background:#0B3D24;}
+  .side-ring span{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:1;
+    font-size:7px;font-weight:700;color:#fff;}
+  .side-track-icon{width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+    font-size:13px;background:color-mix(in srgb, var(--ring-color, var(--blue)) 30%, transparent);flex-shrink:0;}
+
+  /* ============ DASHBOARD ============ */
+  .dash-hero{background:linear-gradient(120deg,#0B3D24,#146C43 60%,#1E8449);border-radius:16px;
+    padding:0;color:#fff;margin-bottom:32px;position:relative;overflow:hidden;display:flex;align-items:stretch;
+    box-shadow:0 14px 32px -14px rgba(7,45,25,0.45);}
+  .dash-hero:before{content:"";position:absolute;inset:0;
+    background:radial-gradient(circle at 20% 20%,rgba(212,175,55,0.20),transparent 55%);pointer-events:none;}
+  .dash-hero-text{position:relative;padding:36px 34px;flex:1;min-width:260px;display:flex;flex-direction:column;justify-content:center;}
+  .dash-hero-eyebrow{color:#BFF0D1;font-size:11px;letter-spacing:3px;text-transform:uppercase;margin-bottom:10px;font-weight:600;}
+  .dash-hero-text h2{font-size:28px;line-height:1.2;margin:0 0 12px;font-weight:700;}
+  .dash-hero-text h2 b{color:#BFF0D1;font-weight:700;}
+  .dash-hero-text p{max-width:420px;color:rgba(255,255,255,0.72);font-size:13.5px;line-height:1.6;margin:0 0 22px;}
+  .dash-hero-btn{font-size:13px;font-weight:600;
+    padding:12px 22px;border-radius:10px;border:none;background:#D4AF37;color:#12210F;cursor:pointer;width:fit-content;
+    box-shadow:0 3px 0 rgba(0,0,0,0.3), 0 8px 18px rgba(0,0,0,0.28);transition:filter .15s ease,transform .12s ease,box-shadow .12s ease;}
+  .dash-hero-btn:hover{filter:brightness(1.08);transform:translateY(-2px);box-shadow:0 5px 0 rgba(0,0,0,0.3), 0 12px 22px rgba(0,0,0,0.32);}
+  .dash-hero-btn:active{transform:translateY(1px);box-shadow:0 1px 0 rgba(0,0,0,0.3), 0 4px 10px rgba(0,0,0,0.22);}
+  .dash-hero-photo{flex:0 0 42%;min-width:240px;background-color:#0B3D24;background-size:cover;
+    background-repeat:no-repeat;background-position:center;position:relative;}
+  .dash-hero-photo .ph-icon{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:54px;opacity:0.3;}
+  .dash-section-title{font-size:17px;font-weight:700;color:var(--ink);margin:0 0 4px;}
+  .dash-section-sub{font-size:12.5px;color:var(--muted);margin:0 0 16px;}
+  .dash-card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px;margin-bottom:36px;}
+  .dash-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px;position:relative;
+    border-top:3px solid var(--accent);box-shadow:0 6px 18px -12px rgba(7,22,47,0.18);transition:transform .15s ease,box-shadow .15s ease;}
+  .dash-card:hover{transform:translateY(-2px);box-shadow:0 10px 22px -12px rgba(7,22,47,0.25);}
+  .dash-lock{position:absolute;top:16px;right:16px;font-size:12px;opacity:0.45;}
+  .dash-card-icon{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;
+    font-size:17px;background:color-mix(in srgb, var(--accent) 16%, white);margin-bottom:12px;}
+  .dash-card h3{font-size:13.5px;margin:0 0 4px;color:var(--ink);font-weight:700;}
+  .dash-card p{font-size:11px;color:var(--muted);line-height:1.5;margin:0 0 14px;min-height:32px;}
+  .dash-progress{height:5px;background:var(--paper-2);border-radius:99px;overflow:hidden;margin-bottom:10px;}
+  .dash-progress-fill{height:100%;background:var(--accent);border-radius:99px;}
+  .dash-card-foot{display:flex;align-items:center;justify-content:space-between;}
+  .dash-card-foot span{font-size:11px;font-weight:700;color:var(--accent);}
+  .dash-card-foot button{font-size:11px;font-weight:600;padding:7px 13px;
+    border-radius:8px;border:1px solid var(--accent);background:var(--accent);color:#fff;cursor:pointer;transition:filter .15s ease;}
+  .dash-card-foot button:hover{filter:brightness(1.08);}
+  .dash-card-foot button:disabled{background:transparent;color:var(--muted);border-color:var(--line);cursor:not-allowed;}
+  .dash-columns{display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap;}
+  .dash-col-main{flex:2;min-width:320px;}
+  .dash-col-side{flex:1;min-width:220px;}
+  .next-lesson-list{display:flex;flex-direction:column;gap:12px;}
+  .next-lesson-row{display:flex;align-items:center;gap:14px;background:#fff;border:1px solid var(--line);
+    border-radius:14px;padding:10px 18px 10px 10px;cursor:pointer;transition:border-color .15s ease,box-shadow .15s ease;
+    box-shadow:0 4px 14px -12px rgba(7,22,47,0.2);}
+  .next-lesson-row:hover{border-color:var(--blue);box-shadow:0 8px 18px -12px rgba(7,22,47,0.28);}
+  .next-lesson-thumb{width:56px;height:56px;border-radius:11px;background:color-mix(in srgb, var(--blue) 12%, white);display:flex;
+    align-items:center;justify-content:center;font-size:20px;flex-shrink:0;position:relative;}
+  .next-lesson-thumb .play-badge{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    background:rgba(7,22,47,0.35);border-radius:11px;color:#fff;font-size:11px;opacity:0;transition:opacity .15s ease;}
+  .next-lesson-row:hover .play-badge{opacity:1;}
+  .next-lesson-info{flex:1;min-width:0;}
+  .next-lesson-title{font-size:13px;font-weight:600;color:var(--ink);}
+  .next-lesson-sub{font-size:11.5px;color:var(--muted);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .next-lesson-status{font-size:10px;font-weight:700;color:var(--blue);background:color-mix(in srgb, var(--blue) 12%, white);
+    padding:3px 9px;border-radius:99px;flex-shrink:0;white-space:nowrap;}
+  .next-lesson-play{width:32px;height:32px;border-radius:50%;border:none;background:var(--blue);color:#fff;
+    cursor:pointer;flex-shrink:0;font-size:11px;}
+  .next-lesson-empty{background:#fff;border:1px dashed var(--line);border-radius:14px;padding:22px;text-align:center;
+    color:var(--muted);font-size:12.5px;}
+  .dash-widget{background:#fff;border:1px solid var(--line);border-radius:16px;padding:24px;box-shadow:0 6px 18px -12px rgba(7,22,47,0.18);}
+  .dash-widget h4{font-size:12px;text-transform:uppercase;letter-spacing:0.5px;
+    color:var(--muted);margin:0 0 18px;text-align:center;font-weight:700;}
+  .donut{--pct:0;width:130px;height:130px;border-radius:50%;margin:0 auto 20px;position:relative;
+    background:conic-gradient(var(--blue) calc(var(--pct)*3.6deg), var(--paper-2) 0);}
+  .donut:before{content:"";position:absolute;inset:16px;border-radius:50%;background:#fff;}
+  .donut span{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:1;
+    font-weight:700;font-size:22px;color:var(--ink);}
+  .donut-legend{display:flex;flex-direction:column;gap:9px;}
+  .donut-legend-row{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--text);}
+  .donut-legend-row .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+  .donut-legend-row b{margin-left:auto;color:var(--muted);font-weight:700;}
+
+  .board-hero{background:#0B3D24;border-radius:14px;padding:38px 38px 32px;color:#fff;margin-bottom:14px;
+    position:relative;overflow:hidden;}
+  .board-hero-bg{position:absolute;inset:0;z-index:0;}
+  .board-hero-bg img{width:100%;height:100%;object-fit:cover;opacity:0.32;filter:brightness(0.55) saturate(1.1);}
+  .board-hero-bg:after{content:"";position:absolute;inset:0;
+    background:linear-gradient(100deg,rgba(11,61,36,0.96) 30%,rgba(11,61,36,0.55));}
+  .board-hero:before{content:"";position:absolute;inset:0;z-index:1;
+    background:repeating-linear-gradient(0deg,rgba(255,255,255,0.02) 0 2px,transparent 2px 4px);pointer-events:none;}
+  .board-hero > *:not(.board-hero-bg){position:relative;z-index:2;}
+  .board-hero .eyebrow{font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;color:#fff;-webkit-text-stroke:0.5px #000;text-shadow:0 1px 1px rgba(0,0,0,0.6);font-weight:700;font-size:11.5px;
+    letter-spacing:3px;text-transform:uppercase;margin-bottom:10px;}
+  .board-hero h2{font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;font-size:32px;line-height:1.12;margin:0 0 14px;font-weight:700;}
+  .board-hero p{max-width:600px;color:rgba(255,255,255,0.75);font-size:15px;line-height:1.6;margin:0 0 22px;}
+  .home-photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:16px;}
+  .home-photo{position:relative;border-radius:12px;overflow:hidden;border:1px solid var(--line);
+    aspect-ratio:4/3;background:#fff;}
+  .home-photo img{width:100%;height:100%;object-fit:cover;display:block;}
+  .home-photo .label{position:absolute;left:0;right:0;bottom:0;padding:10px 12px 8px;
+    background:linear-gradient(0deg,rgba(0,0,0,0.72),transparent);color:#fff;font-size:12px;font-weight:600;}
+  .photo-card{width:100%;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:#fff;}
+  .photo-card img{width:100%;max-height:320px;object-fit:cover;display:block;}
+  .board-table{font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;font-size:12px;border-top:1px solid rgba(255,255,255,0.18);
+    max-height:460px;overflow-y:auto;}
+  .board-row{display:grid;grid-template-columns:44px 1fr 100px 90px;gap:10px;padding:9px 0;
+    border-bottom:1px solid rgba(255,255,255,0.08);align-items:center;}
+  .board-row.head{color:#fff;-webkit-text-stroke:0.4px #000;text-shadow:0 1px 1px rgba(0,0,0,0.6);font-weight:700;letter-spacing:1px;text-transform:uppercase;font-size:10px;
+    position:sticky;top:0;background:#0B3D24;}
+  .board-row .status{color:var(--cyan);font-size:10.5px;}
+  .lesson-head{display:flex;align-items:flex-start;gap:18px;margin-bottom:8px;}
+  .lesson-head .big-icon{font-size:30px;width:60px;height:60px;line-height:60px;text-align:center;border-radius:50%;flex-shrink:0;background:radial-gradient(circle at 35% 30%,rgba(0,0,0,0.35),rgba(0,0,0,0.07));border:2px solid rgba(0,0,0,0.5);box-shadow:0 0 22px rgba(0,0,0,0.28),0 4px 10px rgba(0,0,0,0.2),inset 0 1px 1px rgba(255,255,255,0.5);}
+  .level-pill{display:inline-block;font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;font-size:10.5px;font-weight:600;
+    letter-spacing:1.5px;padding:4px 10px;border-radius:99px;color:#fff;text-transform:uppercase;margin-bottom:8px;}
+  .lesson-head h2{font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;font-size:25px;margin:0 0 6px;line-height:1.15;}
+  .lesson-head .subtitle{color:var(--muted);font-size:14px;margin:0;}
+  .objective{background:var(--paper-2);border-left:3px solid var(--blue);padding:12px 16px;
+    border-radius:0 8px 8px 0;font-size:13.5px;margin:18px 0 28px;line-height:1.6;}
+  .objective b{color:var(--ink);}
+  .objective ul{margin:6px 0 0;padding-left:20px;}
+  .objective li{margin-bottom:4px;}
+  .lesson-photo{width:100%;aspect-ratio:2/1;border-radius:16px;overflow:hidden;margin:4px 0 28px;box-shadow:0 8px 24px rgba(11,61,36,0.18);}
+  .lesson-photo img{width:100%;height:100%;object-fit:cover;object-position:center;display:block;}
+  .section{margin-bottom:32px;}
+  .section-title{display:flex;align-items:center;gap:10px;font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;font-size:12px;
+    letter-spacing:2px;text-transform:uppercase;color:var(--ink);margin-bottom:13px;font-weight:600;}
+  .section-title .num{background:radial-gradient(circle at 35% 30%,#3A3A3A,#000000);color:#fff;width:22px;height:22px;border-radius:50%;box-shadow:0 0 8px rgba(0,0,0,0.45),0 2px 4px rgba(0,0,0,0.3),inset 0 1px 1px rgba(255,255,255,0.35);
+    display:flex;align-items:center;justify-content:center;font-size:10.5px;flex-shrink:0;}
+  .section-title:after{content:"";flex:1;height:1px;background:var(--line);}
+  .vocab-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+  .vocab-card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:11px 14px;}
+  .vocab-card .en{font-weight:600;font-size:14px;color:var(--ink);}
+  .vocab-card .pt{font-size:12px;color:var(--muted);margin-top:2px;}
+  .dialogue{background:#fff;border:1px solid var(--line);border-radius:12px;padding:20px 22px;}
+  .line{display:flex;gap:12px;margin-bottom:15px;}
+  .line:last-child{margin-bottom:0;}
+  .line .who{width:92px;flex-shrink:0;font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;font-size:10.5px;font-weight:600;
+    color:var(--cyan);padding-top:2px;text-transform:uppercase;}
+  .line .bubble .en{font-size:14px;color:var(--ink);line-height:1.5;}
+  .line .bubble .pt{font-size:12px;color:var(--muted);margin-top:3px;font-style:italic;}
+  .audio-card{display:flex;align-items:flex-start;gap:16px;background:#fff;border:1px solid var(--line);
+    border-radius:12px;padding:16px 20px;flex-wrap:wrap;}
+  .audio-card .play{width:44px;height:44px;border-radius:50%;background:var(--cyan);color:#fff;display:flex;
+    align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+  .audio-card .info{flex:1;min-width:200px;}
+  .audio-card .info b{display:block;font-size:14px;color:var(--ink);margin-bottom:2px;}
+  .audio-card .info span{font-size:12px;color:var(--muted);}
+  .audio-card .actions{display:flex;gap:8px;flex-wrap:wrap;}
+  .audio-card a, .audio-card button{font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;font-size:11.5px;text-decoration:none;
+    color:var(--ink);background:var(--paper-2);padding:8px 14px;border-radius:7px;border:1px solid var(--line);
+    white-space:nowrap;cursor:pointer;}
+  .audio-card a:hover, .audio-card button:hover{background:var(--blue);border-color:var(--blue);}
+  .audio-pending{font-size:11.5px;color:var(--coral);font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;margin-top:4px;display:block;}
+  .script-block{background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin-top:10px;}
+  .script-title{font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;font-size:11px;text-transform:uppercase;
+    letter-spacing:1px;color:var(--muted);margin-bottom:12px;}
+  .script-line{font-size:13.5px;line-height:1.9;color:var(--ink);}
+  .script-line b{font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;color:var(--cyan);text-transform:uppercase;
+    font-size:11px;margin-right:8px;}
+  .quiz-card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin-bottom:12px;}
+  .quiz-q{font-size:14px;font-weight:600;color:var(--ink);margin-bottom:11px;}
+  .quiz-opts{display:flex;flex-direction:column;gap:8px;}
+  .quiz-opt{text-align:left;padding:9px 13px;border:1px solid var(--line);border-radius:8px;background:var(--paper);
+    font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;font-size:13px;cursor:pointer;transition:all .15s ease;color:var(--text);}
+  .quiz-opt:hover{border-color:var(--ink);}
+  .quiz-opt.correct{background:rgba(34,211,196,0.15);border-color:var(--cyan);color:var(--cyan);font-weight:600;}
+  .quiz-opt.wrong{background:rgba(255,90,95,0.12);border-color:var(--coral);color:var(--coral);}
+  .quiz-opt.disabled{cursor:default;}
+  .score-bar{display:flex;align-items:center;justify-content:space-between;background:var(--ink);color:#fff;
+    padding:15px 20px;border-radius:12px;font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;font-size:12.5px;margin-top:4px;}
+  .score-bar .big{font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;font-size:20px;color:var(--blue);}
+  .drill-card{background:#fff;border:1px solid var(--line);border-left:3px solid var(--cyan);border-radius:0 10px 10px 0;
+    padding:14px 18px;margin-bottom:10px;}
+  .drill-card b{display:block;color:var(--ink);font-size:12px;font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;
+    text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;}
+  .drill-card p{margin:0;font-size:13.5px;color:var(--text);line-height:1.6;}
+  .drill-card code{background:var(--paper-2);padding:1px 6px;border-radius:4px;font-weight:700;color:var(--ink);}
+  .homework-card{background:var(--ink);color:#fff;border-radius:12px;padding:20px 22px;}
+  .homework-card ol,.homework-card ul{margin:0;padding-left:20px;}
+  .homework-card li{font-size:13.5px;line-height:1.7;color:rgba(255,255,255,0.9);}
+  .homework-card li::marker{color:var(--blue);font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;}
+  .tip-card{display:flex;gap:14px;background:#E8F3FC;border:1px solid #BFE0F5;border-radius:12px;padding:15px 18px;}
+  .tip-card .stamp{font-size:20px;flex-shrink:0;}
+  .tip-card p{margin:0;font-size:13px;line-height:1.6;color:#123A5C;}
+  .example-box{background:var(--paper-2);border-radius:8px;padding:12px 14px;font-size:13px;color:var(--muted);
+    white-space:pre-line;margin-top:10px;line-height:1.6;}
+  .lesson-nav{display:flex;justify-content:space-between;margin-top:38px;gap:8px;}
+  .nav-btn{font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;font-size:11.5px;padding:11px 18px;border-radius:8px;
+    border:1px solid var(--ink);background:var(--ink);color:#fff;cursor:pointer;letter-spacing:0.5px;
+    box-shadow:0 3px 0 rgba(0,0,0,0.35), 0 6px 14px rgba(0,0,0,0.18);transition:transform .12s ease,box-shadow .12s ease;position:relative;top:0;}
+  .nav-btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 4px 0 rgba(0,0,0,0.35), 0 8px 16px rgba(0,0,0,0.22);}
+  .nav-btn:active:not(:disabled){transform:translateY(2px);box-shadow:0 1px 0 rgba(0,0,0,0.35), 0 2px 6px rgba(0,0,0,0.15);}
+  .nav-btn.ghost{background:transparent;color:var(--ink);box-shadow:none;}
+  .nav-btn.ghost:hover:not(:disabled){transform:none;box-shadow:none;background:var(--paper-2);}
+  .nav-btn.ghost:active:not(:disabled){transform:none;box-shadow:none;}
+  .nav-btn:disabled{opacity:0.3;cursor:default;}
+  .topic-track{display:flex;gap:5px;margin:14px 0 0;flex-wrap:wrap;}
+  .track-dot{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,0.15);}
+  .track-dot.filled{background:var(--blue);}
+  @media (max-width:860px){
+    #app{flex-direction:column;}
+    #sidebar{width:100%;height:auto;position:relative;min-width:0;}
+    .content{padding:26px 18px 70px;}
+    .vocab-grid{grid-template-columns:1fr;}
+    .board-row{grid-template-columns:34px 1fr 70px;}
+  }
+
+  /* ============ ROLE GATE ============ */
+  .role-gate{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    background:var(--ink);color:#fff;padding:40px 20px;position:relative;overflow:hidden;}
+  .gate-mosaic{position:absolute;inset:0;z-index:0;}
+  .gate-mosaic img{width:100%;height:100%;object-fit:cover;display:block;
+    filter:grayscale(8%) brightness(0.6) saturate(1.05);}
+  .gate-overlay{position:absolute;inset:0;z-index:1;
+    background:radial-gradient(circle at 50% 38%,rgba(0,0,0,0.35),transparent 60%),
+      linear-gradient(120deg,rgba(10,12,16,0.95),rgba(24,20,14,0.9));}
+  .role-gate:before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+    background-image:radial-gradient(rgba(0,0,0,0.35) 1px,transparent 1.6px),
+      repeating-linear-gradient(0deg,rgba(255,255,255,0.02) 0 2px,transparent 2px 4px);
+    background-size:28px 28px, auto;}
+  .gate-logo{width:104px;height:104px;border-radius:50%;object-fit:cover;position:relative;z-index:2;
+    box-shadow:0 8px 28px rgba(0,0,0,0.45);border:3px solid rgba(255,255,255,0.85);margin-bottom:14px;}
+  .gate-school{font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;font-size:13px;font-weight:700;color:#fff;
+    letter-spacing:2px;text-transform:uppercase;position:relative;z-index:2;margin-bottom:2px;
+    text-shadow:0 2px 10px rgba(0,0,0,0.4);}
+  .role-gate .gate-brand{display:flex;align-items:center;gap:10px;margin-bottom:6px;position:relative;z-index:2;}
+  .role-gate .gate-brand .dot{width:11px;height:11px;border-radius:50%;background:var(--blue);}
+  .role-gate .gate-brand h1{font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;font-size:27px;font-weight:700;margin:0;
+    text-shadow:0 2px 12px rgba(0,0,0,0.35);text-align:center;}
+  .role-gate .gate-sub{font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;font-size:12px;color:var(--blue);
+    letter-spacing:2px;text-transform:uppercase;margin-bottom:40px;position:relative;z-index:2;text-align:center;}
+  .gate-cards{display:flex;gap:22px;flex-wrap:wrap;justify-content:center;max-width:760px;position:relative;z-index:2;}
+  .gate-card{width:280px;background:rgba(16,26,46,0.50);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    border:1px solid rgba(255,255,255,0.20);border-radius:14px;padding:34px 28px;cursor:pointer;
+    transition:all .18s ease;text-align:center;box-shadow:0 14px 36px rgba(0,0,0,0.28);}
+  .gate-card:hover{background:rgba(16,26,46,0.68);border-color:rgba(0,0,0,0.7);
+    box-shadow:0 18px 44px rgba(0,0,0,0.34);transform:translateY(-4px);}
+  .gate-card h3{font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;font-size:17px;font-weight:700;margin:0;
+    letter-spacing:0.2px;}
+  .gate-card .gate-cta{margin-top:14px;font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;font-size:10.5px;
+    color:var(--blue);letter-spacing:1.5px;text-transform:uppercase;}
+  .teacher-login{display:none;flex-direction:column;gap:10px;margin-top:14px;}
+  .teacher-login input{font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;font-size:13px;padding:10px 12px;
+    border-radius:8px;border:1px solid rgba(255,255,255,0.25);background:rgba(255,255,255,0.06);color:#fff;}
+  .teacher-login input::placeholder{color:rgba(255,255,255,0.4);}
+  .teacher-login button{font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;font-size:12px;padding:9px 12px;
+    border-radius:8px;border:1px solid var(--blue);background:var(--blue);color:#fff;
+    font-weight:600;cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,0.45), 0 6px 14px rgba(0,0,0,0.3);
+    transition:transform .12s ease,box-shadow .12s ease;}
+  .teacher-login button:hover{transform:translateY(-1px);box-shadow:0 4px 0 rgba(0,0,0,0.45), 0 8px 18px rgba(0,0,0,0.35);}
+  .teacher-login button:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(0,0,0,0.45), 0 2px 6px rgba(0,0,0,0.2);}
+  .teacher-login-error{display:none;color:var(--coral);font-size:11.5px;font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;}
+  .gate-foot{margin-top:30px;font-size:11.5px;color:rgba(255,255,255,0.4);font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;
+    position:relative;z-index:2;text-align:center;max-width:500px;}
+  .gate-admin-link{margin-top:16px;position:relative;z-index:2;font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;
+    font-size:10.5px;color:rgba(255,255,255,0.35);background:transparent;border:none;cursor:pointer;
+    letter-spacing:0.5px;}
+  .gate-admin-link:hover{color:rgba(255,255,255,0.75);text-decoration:underline;}
+
+  /* ============ PORTAL TAG / SIDEBAR ============ */
+  .portal-tag{display:flex;align-items:center;justify-content:space-between;gap:8px;
+    background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.14);border-radius:8px;
+    padding:8px 10px;font-size:11.5px;font-weight:600;margin-bottom:16px;}
+  .portal-tag.teacher{border-color:rgba(0,0,0,0.5);}
+  .switch-portal{font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;font-size:10px;color:var(--blue);
+    background:transparent;border:none;cursor:pointer;letter-spacing:0.5px;}
+  .switch-portal:hover{text-decoration:underline;}
+  .sidebar-action{display:flex;align-items:center;gap:10px;width:100%;font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;
+    font-size:12px;font-weight:600;color:#fff;background:rgba(255,255,255,0.05);
+    border:1px solid rgba(255,255,255,0.14);border-radius:9px;padding:9px 12px;margin-top:10px;
+    cursor:pointer;text-align:left;transition:background .15s ease,border-color .15s ease;}
+  .sidebar-action:hover{background:rgba(255,255,255,0.09);border-color:rgba(255,255,255,0.32);}
+  .sidebar-action .ico{width:24px;height:24px;border-radius:7px;display:flex;align-items:center;justify-content:center;
+    font-size:12px;flex-shrink:0;background:rgba(0,0,0,0.25);color:var(--blue);}
+  .sidebar-action.locked{color:rgba(255,255,255,0.45);cursor:pointer;}
+  .sidebar-action.locked .ico{background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.4);}
+  .track-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:20px;}
+  @media (max-width:720px){.track-grid{grid-template-columns:1fr;}}
+  .track-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:22px;position:relative;overflow:hidden;}
+  .track-card .track-icon{font-size:28px;margin-bottom:10px;}
+  .track-card h3{font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;font-size:16px;margin:0 0 8px;color:var(--ink);}
+  .track-card p{font-size:12.5px;color:var(--muted);line-height:1.6;margin:0;}
+  .track-card .soon-badge{position:absolute;top:16px;right:16px;font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;
+    font-size:10px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;color:var(--coral);
+    background:rgba(192,71,44,0.1);padding:4px 9px;border-radius:99px;}
+  .track-teaser{background:var(--ink);color:#fff;border-radius:14px;padding:26px 30px;margin-top:16px;
+    display:flex;align-items:center;gap:18px;flex-wrap:wrap;}
+  .track-teaser .stamp{font-size:32px;}
+  .track-teaser h3{font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;font-size:17px;margin:0 0 4px;}
+  .track-teaser p{font-size:12.5px;color:rgba(255,255,255,0.7);margin:0;}
+  .track-teaser button{margin-left:auto;font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;font-size:12px;font-weight:600;
+    padding:10px 18px;border-radius:8px;border:1px solid var(--blue);background:var(--blue);color:#fff;cursor:pointer;}
+  .admin-link{width:100%;font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;font-size:11px;color:rgba(255,255,255,0.7);
+    background:rgba(255,255,255,0.04);border:1px dashed rgba(255,255,255,0.2);border-radius:8px;
+    padding:9px 10px;margin-bottom:16px;cursor:pointer;text-align:left;}
+  .admin-link:hover{color:#fff;border-color:var(--blue);}
+
+  /* ============ ADMIN PANEL ============ */
+  .admin-modal{display:none;position:fixed;inset:0;background:rgba(8,27,46,0.82);z-index:55;
+    align-items:center;justify-content:center;padding:24px;}
+  .admin-box{background:#fff;border-radius:14px;max-width:460px;width:100%;padding:26px 28px;
+    position:relative;max-height:88vh;overflow-y:auto;}
+  .admin-box h3{font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;font-size:19px;margin:0 0 6px;color:var(--ink);}
+  .admin-box .admin-note{font-size:12.5px;color:var(--muted);line-height:1.6;margin-bottom:18px;}
+  .admin-field{margin-bottom:14px;}
+  .admin-field label{display:block;font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;font-size:11px;
+    text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);margin-bottom:5px;}
+  .admin-field input,.admin-field select{width:100%;font-size:13.5px;padding:9px 11px;border-radius:7px;
+    border:1px solid var(--line);font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;box-sizing:border-box;margin-top:6px;}
+  .admin-field input:first-of-type,.admin-field select:first-of-type{margin-top:0;}
+  .admin-hr{border:none;border-top:1px solid var(--line);margin:22px 0;}
+  .admin-userrow{display:flex;justify-content:space-between;align-items:center;gap:8px;
+    padding:8px 0;border-bottom:1px solid var(--line);font-size:12.5px;}
+  .admin-userrow:last-child{border-bottom:none;}
+  .admin-userrow .who{color:var(--ink);}
+  .admin-userrow .who b{font-weight:700;}
+  .admin-userrow .who span{color:var(--muted);font-size:11px;display:block;}
+  .admin-userrow button{font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;font-size:11px;color:var(--coral);
+    background:transparent;border:none;cursor:pointer;flex-shrink:0;}
+  .admin-userrow button:hover{text-decoration:underline;}
+  .admin-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px;}
+  .admin-actions button{font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;font-size:12px;padding:10px 16px;
+    border-radius:8px;border:1px solid var(--ink);background:var(--ink);color:#fff;cursor:pointer;}
+  .admin-actions button.ghost{background:transparent;color:var(--ink);}
+  .admin-actions button:hover{background:var(--blue);border-color:var(--blue);color:#fff;}
+  .admin-msg{margin-top:12px;font-size:12.5px;padding:9px 12px;border-radius:8px;display:none;}
+  .admin-msg.show{display:block;background:rgba(0,0,0,0.13);color:var(--blue);}
+  .admin-close{position:absolute;top:14px;right:14px;width:30px;height:30px;border-radius:50%;
+    border:1px solid var(--line);background:var(--paper);cursor:pointer;font-size:14px;color:var(--ink);}
+
+  /* ============ REVIEW / HOMEWORK ============ */
+  .review-card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:22px 24px;}
+  .review-field{margin-bottom:20px;}
+  .review-field label{display:block;font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;font-size:11px;
+    text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);margin-bottom:6px;}
+  .review-field input{width:100%;max-width:360px;font-size:14px;padding:10px 12px;border-radius:8px;
+    border:1px solid var(--line);font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;box-sizing:border-box;}
+
+  /* ============ PRINT / PDF EXPORT ============ */
+  .print-only{display:none;}
+  @media print{
+    body > *:not(#printArea){display:none !important;}
+    #printArea{display:block !important;}
+    .print-header h1{font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;font-size:20px;margin:0 0 4px;}
+    .print-header p{font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;font-size:12px;color:#444;margin:0 0 24px;}
+    .print-item{margin-bottom:16px;page-break-inside:avoid;}
+    .print-q{font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;font-size:13px;font-weight:700;margin-bottom:6px;}
+    .print-a{font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;font-size:13px;border-bottom:1px solid #999;
+      padding-bottom:6px;min-height:16px;}
+  }
+
+  /* ============ DRILLS ============ */
+  .drill-intro{font-size:13px;color:var(--muted);background:var(--paper-2);border-radius:8px;
+    padding:10px 14px;margin-bottom:14px;line-height:1.6;}
+  .section-subtitle{font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;font-size:11px;text-transform:uppercase;
+    letter-spacing:1px;color:var(--ink);margin:22px 0 10px;}
+
+  .teacher-drill-row{display:flex;gap:12px;align-items:flex-start;background:#fff;border:1px solid var(--line);
+    border-left:3px solid var(--cyan);border-radius:0 10px 10px 0;padding:12px 16px;margin-bottom:8px;}
+  .teacher-drill-row.expr{border-left-color:var(--blue);}
+  .tdr-num{font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;font-size:11px;font-weight:700;color:#fff;background:var(--ink);
+    width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .tdr-pt{font-size:14px;color:var(--ink);margin-bottom:4px;}
+  .tdr-en{font-size:13px;color:var(--cyan);font-weight:600;}
+
+  .drill-block{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:14px;}
+  .drill-pt{font-size:14.5px;color:var(--ink);margin-bottom:12px;line-height:1.5;}
+  .drill-pt-label{font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;font-size:10.5px;color:var(--muted);
+    text-transform:uppercase;letter-spacing:0.5px;}
+  .answer-slot{min-height:42px;border:1.5px dashed var(--line);border-radius:8px;padding:8px;
+    display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;background:var(--paper);}
+  .chip-bank{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;}
+  .chip{font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;font-size:13px;padding:7px 12px;border-radius:7px;
+    border:1px solid var(--line);background:var(--paper-2);color:var(--ink);cursor:pointer;transition:all .12s ease;}
+  .chip:hover:not(:disabled){border-color:var(--cyan);background:#fff;}
+  .chip:disabled{opacity:0.25;cursor:default;}
+  .chip.placed{background:rgba(34,211,196,0.14);border-color:var(--cyan);color:var(--cyan);font-weight:600;}
+  .drill-actions{display:flex;gap:8px;flex-wrap:wrap;}
+  .drill-btn{font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;font-size:11px;padding:8px 14px;border-radius:7px;
+    border:1px solid var(--ink);background:var(--ink);color:#fff;cursor:pointer;letter-spacing:0.4px;}
+  .drill-btn.ghost{background:transparent;color:var(--ink);}
+  .drill-btn:hover{background:var(--blue);border-color:var(--blue);color:#fff;}
+  .drill-feedback{font-size:13px;margin-top:10px;display:none;padding:8px 12px;border-radius:8px;}
+  .drill-feedback.show{display:block;}
+  .drill-feedback.ok{background:rgba(34,211,196,0.13);color:var(--cyan);font-weight:600;}
+  .drill-feedback.no{background:rgba(255,90,95,0.1);color:var(--coral);font-weight:600;}
+  .drill-feedback.reveal{background:var(--paper-2);color:var(--ink);}
+
+  /* ============ WRITTEN EXERCISES (fill / translate) ============ */
+  .ex-item{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-bottom:10px;}
+  .ex-q{font-size:13.5px;color:var(--ink);margin-bottom:8px;line-height:1.5;}
+  .ex-input{width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:8px;
+    font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;font-size:13.5px;background:var(--paper);color:var(--text);}
+  .ex-input.correct{border-color:var(--cyan);background:rgba(34,211,196,0.08);}
+  .ex-input.incorrect{border-color:var(--coral);background:rgba(255,90,95,0.06);}
+  .ex-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;align-items:center;}
+  .ex-row .ex-input{flex:1;min-width:200px;margin-top:0;}
+  .ex-feedback{font-size:12.5px;margin-top:8px;display:none;}
+  .ex-feedback.show{display:block;}
+  .ex-feedback.ok{color:var(--cyan);font-weight:600;}
+  .ex-feedback.no{color:var(--coral);}
+
+  /* ============ GATE ROLE TABS ============ */
+  .gate-tabs{display:flex;gap:8px;margin-bottom:22px;position:relative;z-index:2;}
+  .gate-tab{font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;
+    background:rgba(16,26,46,0.45);border:1px solid rgba(255,255,255,0.20);color:#fff;border-radius:999px;
+    padding:8px 18px;font-size:12.5px;font-weight:600;letter-spacing:0.3px;cursor:pointer;transition:all .15s ease;}
+  .gate-tab.on{background:var(--blue);border-color:var(--blue);box-shadow:0 2px 0 rgba(0,0,0,0.4), 0 4px 10px rgba(0,0,0,0.3);}
+
+  /* ============ TEACHER / ADMIN PANELS ============ */
+  .panel-box{background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin-bottom:18px;}
+  .panel-box h3{margin:0 0 12px;font-size:15.5px;}
+  .panel-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;}
+  .panel-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;
+    border:1px solid var(--line);border-radius:10px;background:var(--bg2,#f7f8fa);margin-bottom:8px;}
+  .panel-row .who b{display:block;font-size:13.5px;}
+  .panel-row .who span{font-size:11.5px;color:var(--muted);}
+  .panel-row .actions{display:flex;gap:6px;flex-wrap:wrap;}
+  .panel-row .actions button{font-size:11.5px;padding:6px 10px;border-radius:8px;border:1px solid var(--line);
+    background:#fff;cursor:pointer;}
+  .panel-row .actions button.danger{color:var(--coral);border-color:var(--coral);}
+  .panel-field{margin-bottom:10px;}
+  .panel-field label{display:block;font-size:11.5px;color:var(--muted);margin-bottom:4px;}
+  .panel-field input,.panel-field select,.panel-field textarea{width:100%;padding:9px 11px;border:1px solid var(--line);
+    border-radius:9px;font-size:13px;font-family:inherit;}
+  .panel-field textarea{resize:vertical;min-height:56px;}
+  .panel-tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+  .panel-tab{font-size:12.5px;padding:7px 14px;border-radius:999px;border:1px solid var(--line);background:#fff;
+    cursor:pointer;font-weight:600;}
+  .panel-tab.on{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .lock-badge{font-size:11px;padding:2px 8px;border-radius:999px;background:var(--line);color:var(--muted);}
+  .lock-badge.unlocked{background:rgba(0,0,0,0.12);color:var(--blue);}
+  .lesson-stub.locked{opacity:0.55;}
+  .pending-badge{display:inline-block;min-width:18px;text-align:center;background:var(--coral);color:#fff;
+    font-size:10.5px;font-weight:700;border-radius:999px;padding:1px 6px;margin-left:6px;}
+  .review-card{border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:10px;background:var(--bg2,#f7f8fa);}
+  .review-card .a-line{font-size:12.5px;margin:3px 0;}
+  .hw-feedback-banner{border:1px solid var(--blue);background:rgba(0,0,0,0.08);border-radius:10px;
+    padding:10px 12px;font-size:12.5px;margin-bottom:10px;}
+  .hw-feedback-banner.pending{border-color:var(--line);background:var(--bg2,#f7f8fa);color:var(--muted);}
+  .sidebar-task-banner{background:var(--navy-surface-2);border:1px solid var(--navy-border);border-radius:10px;
+    padding:12px 14px;margin:2px 0 14px;}
+  .sidebar-task-banner b{display:flex;align-items:center;gap:6px;font-size:10.5px;color:var(--blue);
+    text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px;}
+  .sidebar-task-banner p{margin:0;font-size:12.5px;color:var(--navy-text);line-height:1.4;}
+
+  /* ============ TOAST ============ */
+  #toast{position:fixed;bottom:24px;left:50%;transform:translate(-50%,20px);background:var(--ink);color:#fff;
+    padding:12px 20px;border-radius:10px;font-size:13.5px;box-shadow:0 8px 24px rgba(0,0,0,0.25);
+    opacity:0;pointer-events:none;transition:all .25s ease;z-index:60;}
+  #toast.show{opacity:1;transform:translate(-50%,0);}
+
+  @media (max-width:640px){
+    .gate-cards{flex-direction:column;align-items:stretch;}
+    .gate-card{width:100%;}
+  }
+</style>
+</head>
+<body>
+<div id="gate" class="role-gate">
+  <div class="gate-mosaic" id="gateMosaic"></div>
+  <div class="gate-overlay"></div>
+  <img id="gateLogo" class="gate-logo" alt="Upfront Idiomas">
+  <div class="gate-school">Upfront Idiomas</div>
+  <div class="gate-brand"><div class="dot"></div><h1>Water Engineering</h1></div>
+  <div class="gate-sub">A1 &rarr; C1</div>
+  <div class="gate-tabs" id="gateTabs">
+    <button type="button" class="gate-tab on" onclick="setGateRole('student')" data-role="student">Aluno</button>
+    <button type="button" class="gate-tab" onclick="setGateRole('teacher')" data-role="teacher">Professor</button>
+    <button type="button" class="gate-tab" onclick="setGateRole('admin')" data-role="admin">Admin</button>
+  </div>
+  <div class="gate-cards">
+    <div class="gate-card" style="cursor:default;">
+      <div class="teacher-login" style="display:flex;">
+        <input type="text" id="gateLoginInput" placeholder="Login" autocomplete="username" onkeydown="if(event.key==='Enter')document.getElementById('gatePassInput').focus()">
+        <input type="password" id="gatePassInput" placeholder="Senha" autocomplete="current-password" onkeydown="if(event.key==='Enter')submitGateLogin()">
+        <button onclick="submitGateLogin()" id="gateSubmitBtn">Entrar no curso &rarr;</button>
+        <div class="teacher-login-error" id="gateLoginError">Login ou senha incorretos.</div>
+      </div>
+    </div>
+  </div>
+  <div class="gate-foot">Curso completo - 5 niveis, 60 aulas &middot; vocabulario, gramatica, dialogos, pronuncia, listening, writing e exercicios interativos sobre engenharia e tratamento de agua</div>
+</div>
+
+<div id="app" style="display:none">
+  <div id="sidebar"></div>
+  <div id="main">
+    <div class="navbar">
+      <div class="navbar-left">
+        <button class="navbar-menu-btn" onclick="toggleSidebarCollapse()" title="Menu">&#9776;</button>
+        <div>
+          <div class="navbar-greeting-main" id="topbarGreeting"></div>
+          <div class="navbar-greeting-sub" id="topbarGreetingSub"></div>
+        </div>
+      </div>
+      <div class="navbar-right">
+        <button class="navbar-icon-btn" onclick="showToast('🔎 Busca em breve')" title="Buscar">🔎</button>
+        <button class="navbar-icon-btn" onclick="showToast('🔔 Sem notificações novas')" title="Notificações">🔔</button>
+        <button class="navbar-icon-btn" onclick="showToast('🌐 Português (Brasil)')" title="Idioma">🌐</button>
+        <button class="navbar-avatar" id="topbarAvatar" onclick="exitPortal()" title="Trocar portal"></button>
+      </div>
+    </div>
+    <div class="topbar">
+      <div class="breadcrumb" id="breadcrumb">Home / Control Tower</div>
+      <div class="flight-code" id="flightcode">AQUA-CORE &middot; 75 AULAS</div>
+    </div>
+    <div class="content" id="content"></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+<div id="printArea" class="print-only"></div>
+
+<!-- Optional online integration with the Upfront Idiomas portal backend (PHP/MySQL): only used
+     for individual student login and homework submission. Everything else keeps working with
+     zero internet access if this fails or the device is offline. -->
+
+<script>
+/* ================= BACKEND (Cursosextras/api2/ — real teacher/student/admin accounts) =================
+   Session-cookie based: apiFetch always sends credentials:'include' and expects
+   same-origin deployment (this file and api2/*.php in the same Cursosextras/ folder),
+   so no CORS handling is needed. See Cursosextras/api2/DEPLOY2.md for deploy steps. */
+const COURSE_ID = 'water_eng';
+const API2_BASE = 'https://upfrontidiomas.com.br/Cursosextras/api2';
+function apiFetch(path, opts){
+  opts = opts || {};
+  opts.credentials = 'include';
+  opts.headers = Object.assign({'Content-Type':'application/json'}, opts.headers||{});
+  return fetch(API2_BASE + path, opts).then(function(r){
+    return r.json().then(function(data){
+      if(!r.ok){ throw new Error((data && data.error) ? data.error : ('Erro ' + r.status)); }
+      return data;
+    });
+  });
+}
+
+/* ================= LEVELS ================= */
+const LEVELS = [{"id":"A1","color":"#2E8F7F","label":"Beginner","caption":"Vocabulario basico de reservatorios, tubulacoes e seguranca no canteiro (Aulas 1-12)"},{"id":"A2","color":"#3E7CB1","label":"Elementary","caption":"Instalacao de reservatorios, manutencao e comunicacao no dia a dia da obra (Aulas 13-24)"},{"id":"B1","color":"#D9A438","label":"Intermediate","caption":"Processos de tratamento de agua e esgoto (ETA/ETE) e reuso industrial (Aulas 25-36)"},{"id":"B2","color":"#8B5CF6","label":"Upper-Intermediate","caption":"Normas ambientais, projetos industriais e negociacao com fornecedores (Aulas 37-48)"},{"id":"C1","color":"#334155","label":"Advanced","caption":"Consultoria estrategica, gestao de crise e inovacao em reuso de agua (Aulas 49-60)"}];
+
+/* ================= TRACKS (specialization, unlocked after the Core) ================= */
+const TRACKS = [];
+const TRACK_COLORS = {core:'#3B5BFF', project:'#2DD4BF', commercial:'#6C63FF', finance:'#F59E0B', process:'#FB7185', marketing:'#A855F7'};
+
+/* ================= TRACK LESSONS (specialization, unlocked after the Core) ================= */
+const TRACK_LESSONS = {};
+
+/* ================= LESSONS ================= */
+/* Piloto: Modulo 1 (Survival English), 4 aulas, nivel A1. Os demais 14 modulos do curso completo (Football Vocabulary, Training Ground English, Match Day English, Communication on the Pitch, Coach Instructions, Gym English, Medical English, Nutrition, Life Abroad, Interviews, Social Media English, Football Idioms, Football Phrasal Verbs, Real Match Listening) ainda serao adicionados. */
+const LESSONS = [];
+
+/* Upfront Idiomas school logo, embedded inline (offline). Shared across all Upfront Idiomas courses. */
+const LOGO_URI = 'data:image/jpeg;base64,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';
+const GATE_PHOTO = '';
+const HERO_PHOTO = '';
+const LESSON_PHOTOS = {};
+function lessonPhotoFor(l){ return LESSON_PHOTOS[l.id] || ''; }
+const TRACK_PHOTOS = {};
+
+/* ================= STATE ================= */
+let currentLevel = 'A1';
+let currentLessonId = null;
+let currentView = 'home';
+let currentTrackId = null;
+let currentTrackLevel = 'A1';
+let currentRole = null;          // 'student' | 'teacher' | 'admin'
+let currentUserId = null;
+let currentStudentName = null;
+let currentTeacherName = null;
+let gateRole = 'student';
+let completed = new Set();
+let unlockedSet = new Set();
+let assignedTaskMessage = null;
+let mcqState = {};      // final multiple-choice quiz, per lesson id
+let dmcqState = {};     // dialogue comprehension quiz, per lesson id
+let listenState = {};   // listening comprehension quiz, per lesson id
+let currentHomeworkItems = [];
+let exState = {};       // fill / translate written exercises, per lesson id
+
+// teacher-only state
+let roster = [];              // this teacher's students, from students_list.php
+let pendingReviews = [];
+let managedStudentId = null;  // student selected in "Meus alunos" for unlock/assign-task
+let reviewStudentId = null;   // student whose homework is shown inline in a lesson
+
+// admin-only state
+let adminTeachersCache = [];
+let adminStudentsCache = [];
+let editingTeacherId = null;
+let editingStudentId = null;
+
+/* ================= HELPERS ================= */
+function lessonsOf(level){ return LESSONS.filter(l=>l.level===level); }
+function codeOf(l){ return l.level + ' · ' + l.number.split('/')[0]; }
+function lessonsOfTrack(trackId, level){ return (TRACK_LESSONS[trackId]||[]).filter(l=>l.level===level); }
+function allLessonsFlat(){ return LESSONS.concat(...Object.values(TRACK_LESSONS)); }
+function poolForLesson(l){
+  if(LESSONS.includes(l)) return LESSONS;
+  for(const k in TRACK_LESSONS){ if(TRACK_LESSONS[k].includes(l)) return TRACK_LESSONS[k]; }
+  return LESSONS;
+}
+function trackPct(trackId){
+  const pool = TRACK_LESSONS[trackId]||[];
+  if(!pool.length) return 0;
+  return Math.round(pool.filter(l=>completed.has(l.id)).length/pool.length*100);
+}
+function trackAllDone(trackId){
+  const pool = TRACK_LESSONS[trackId]||[];
+  return pool.length>0 && pool.every(l=>completed.has(l.id));
+}
+function esc(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function normalize(s){ return String(s).trim().toLowerCase().replace(/[.,!?;:"']/g,'').replace(/\s+/g,' '); }
+function answerVariants(a){
+  const variants = new Set();
+  const base = String(a).trim();
+  variants.add(normalize(base));
+  const noParens = base.replace(/\s*\([^)]*\)\s*/g, ' ').replace(/\s+/g,' ').trim();
+  if(noParens) variants.add(normalize(noParens));
+  const parenMatch = base.match(/\(([^)]+)\)/);
+  if(parenMatch) variants.add(normalize(parenMatch[1]));
+  return variants;
+}
+function answerMatches(val, a){
+  return answerVariants(a).has(normalize(val));
+}
+
+/* ================= ROLE GATE ================= */
+(function renderGateLogo(){
+  const logo = document.getElementById('gateLogo');
+  if(logo && LOGO_URI) logo.src = LOGO_URI;
+})();
+function setGateRole(role){
+  gateRole = role;
+  document.querySelectorAll('#gateTabs .gate-tab').forEach(function(btn){
+    btn.classList.toggle('on', btn.dataset.role===role);
+  });
+  const err = document.getElementById('gateLoginError');
+  err.classList.remove('show');
+  err.style.display = 'none';
+  const label = role==='teacher' ? 'Entrar como professor' : role==='admin' ? 'Entrar como admin' : 'Entrar no curso';
+  document.getElementById('gateSubmitBtn').textContent = label + ' \u2192';
+}
+function showGate(){
+  document.getElementById('gate').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+  document.documentElement.style.visibility = '';
+  const mosaic = document.getElementById('gateMosaic');
+  if(mosaic && !mosaic.querySelector('img')){
+    mosaic.innerHTML = `<img src="${GATE_PHOTO}" alt="">`;
+  }
+}
+function submitGateLogin(){
+  const loginInput = document.getElementById('gateLoginInput');
+  const passInput = document.getElementById('gatePassInput');
+  const err = document.getElementById('gateLoginError');
+  const login = loginInput.value.trim();
+  const password = passInput.value;
+  err.style.display = 'none';
+  if(!login || !password){
+    err.textContent = 'Preencha login e senha.';
+    err.style.display = 'block';
+    return;
+  }
+  apiFetch('/login.php', {method:'POST', body: JSON.stringify({role:gateRole, login:login, password:password, course:COURSE_ID})})
+    .then(function(user){ passInput.value=''; enterApp(user); })
+    .catch(function(e){
+      err.textContent = e.message || 'Login ou senha incorretos.';
+      err.style.display = 'block';
+      passInput.value = '';
+      passInput.focus();
+    });
+}
+function enterApp(user){
+  currentRole = user.role;
+  currentUserId = user.id;
+  if(user.role==='student'){ currentStudentName = user.name; currentLevel = user.level || 'A1'; }
+  if(user.role==='teacher'){ currentTeacherName = user.name; }
+  document.getElementById('gate').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+  document.documentElement.style.visibility = '';
+  currentView = 'home';
+  currentLessonId = null;
+  if(user.role==='admin'){
+    renderAdminView();
+    return;
+  }
+  if(user.role==='teacher'){
+    loadRoster(function(){
+      renderSidebar();
+      renderHome();
+      loadPendingReviews();
+    });
+  }else{
+    loadOwnProgress(function(){
+      renderSidebar();
+      renderHome();
+    });
+  }
+}
+function checkSession(){
+  apiFetch('/me.php').then(function(user){
+    if(user && user.role){ enterApp(user); } else { showGate(); }
+  }).catch(function(){ showGate(); });
+}
+function logout(){
+  apiFetch('/logout.php', {method:'POST', body: JSON.stringify({})}).catch(function(){}).finally(function(){
+    currentRole = null; currentUserId = null; currentStudentName = null; currentTeacherName = null;
+    currentLessonId = null; completed = new Set(); unlockedSet = new Set();
+    roster = []; pendingReviews = []; managedStudentId = null; reviewStudentId = null;
+    const li = document.getElementById('gateLoginInput'); if(li) li.value = '';
+    const pi = document.getElementById('gatePassInput'); if(pi) pi.value = '';
+    showGate();
+  });
+}
+function exitPortal(){ logout(); }
+
+/* ================= PROGRESS / UNLOCK ================= */
+function loadOwnProgress(cb){
+  apiFetch('/progress.php').then(function(data){
+    // completed holds numeric lesson ids everywhere else in this file, but the
+    // server stores/returns classKey strings -- convert back on the way in.
+    completed = new Set((data.completed || []).map(Number));
+    unlockedSet = new Set(data.unlocked || []);
+    assignedTaskMessage = data.assignedTask || null;
+    if(cb) cb();
+  }).catch(function(){ completed = new Set(); unlockedSet = new Set(); if(cb) cb(); });
+}
+function loadManagedProgress(studentId, cb){
+  apiFetch('/progress.php?studentId=' + encodeURIComponent(studentId)).then(function(data){
+    unlockedSet = new Set(data.unlocked || []);
+    if(cb) cb(data);
+  }).catch(function(){ if(cb) cb(null); });
+}
+function isLockedForCurrentUser(l){
+  if(currentRole==='teacher' || currentRole==='admin') return false;
+  return !unlockedSet.has(String(l.id));
+}
+
+/* ================= TEACHER PANEL (roster, unlock, assign task, pending reviews) ================= */
+function loadRoster(cb){
+  apiFetch('/students_list.php?course_id=' + encodeURIComponent(COURSE_ID)).then(function(data){
+    roster = data.students || [];
+    if(cb) cb();
+  }).catch(function(){ roster = []; if(cb) cb(); });
+}
+function loadPendingReviews(){
+  apiFetch('/pending_reviews.php?course_id=' + encodeURIComponent(COURSE_ID)).then(function(data){
+    pendingReviews = data.pending || [];
+    if(currentView==='teacherPanel') renderTeacherPanel();
+    renderSidebar();
+  }).catch(function(){});
+}
+function openTeacherPanel(){ renderTeacherPanel(); }
+function renderTeacherPanel(){
+  currentView = 'teacherPanel';
+  currentLessonId = null;
+  renderSidebar();
+  document.getElementById('breadcrumb').textContent = 'Home / Meus alunos';
+  document.getElementById('flightcode').textContent = 'PROFESSOR(A)';
+  document.getElementById('content').className = 'content';
+
+  const pendingHtml = pendingReviews.length ? pendingReviews.map(function(p){
+    return `<div class="panel-row">
+      <div class="who"><b>${esc(p.student_name)}</b><span>${esc(p.level)} \u00b7 Aula ${esc(p.class_key)}</span></div>
+      <div class="actions">
+        <button onclick="jumpToReview('${esc(p.class_key)}', ${p.student_id})">Revisar</button>
+        <button class="danger" onclick="dismissPending(${p.student_id}, '${esc(p.class_key)}', ${p.etapa_num})">Dispensar</button>
+      </div>
+    </div>`;
+  }).join('') : '<div style="color:var(--muted);font-size:12.5px;">Nenhuma tarefa pendente de corre\u00e7\u00e3o. \ud83c\udf89</div>';
+
+  const rosterOptions = roster.map(function(s){
+    return `<option value="${s.id}" ${managedStudentId===s.id?'selected':''}>${esc(s.name)} (${esc(s.level)})</option>`;
+  }).join('');
+
+  let managedHtml = '';
+  const managed = roster.find(function(r){ return r.id===managedStudentId; });
+  if(managed){
+    const levelSections = LEVELS.map(function(lv){
+      const lvLessons = lessonsOf(lv.id);
+      if(!lvLessons.length) return '';
+      const grid = lvLessons.map(function(l){
+        const on = unlockedSet.has(String(l.id));
+        return `<button class="lock-badge ${on?'unlocked':''}" onclick="toggleUnlock(${managed.id}, ${l.id})">${esc(l.number.split('/')[0])} ${on?'\ud83d\udd13':'\ud83d\udd12'}</button>`;
+      }).join(' ');
+      return `<div class="panel-field"><label>Aulas liberadas — Nível ${lv.id}</label><div>${grid}</div></div>`;
+    }).join('');
+    managedHtml = `
+      <div class="panel-field">
+        <label>Tarefa atribu\u00edda a ${esc(managed.name)}</label>
+        <textarea id="assignTaskInput">${esc(managed.assigned_task||'')}</textarea>
+      </div>
+      <div style="margin-bottom:14px;"><button onclick="saveAssignedTask(${managed.id})">Salvar tarefa</button></div>
+      <div class="panel-field">
+        <label>Liberar níveis inteiros (desbloqueia todas as aulas do(s) nível(is) marcado(s) de uma vez)</label>
+        <div id="levelUnlockChecks-${managed.id}" style="display:flex;flex-wrap:wrap;gap:12px;margin:4px 0 8px;">
+          ${LEVELS.map(function(lv){ return `<label style="display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:600;cursor:pointer;"><input type="checkbox" value="${lv.id}"> ${lv.id}</label>`; }).join('')}
+        </div>
+        <button type="button" onclick="bulkUnlockLevels(${managed.id})">🔓 Liberar níveis selecionados</button>
+      </div>
+      ${levelSections}`;
+  }
+
+  document.getElementById('content').innerHTML = `
+    <div class="panel-box">
+      <h3>\ud83d\udccb Corre\u00e7\u00f5es pendentes</h3>
+      ${pendingHtml}
+    </div>
+    <div class="panel-box">
+      <h3>\ud83d\udc65 Meus alunos</h3>
+      <div class="panel-field">
+        <label>Selecionar aluno para gerenciar acesso</label>
+        <select onchange="selectManagedStudent(this.value)">
+          <option value="">\u2014 selecione \u2014</option>
+          ${rosterOptions}
+        </select>
+      </div>
+      ${managedHtml}
+    </div>`;
+  window.scrollTo(0,0);
+}
+function selectManagedStudent(idStr){
+  managedStudentId = idStr ? parseInt(idStr,10) : null;
+  if(!managedStudentId){ unlockedSet = new Set(); renderTeacherPanel(); return; }
+  loadManagedProgress(managedStudentId, function(){ renderTeacherPanel(); });
+}
+function handleStudentAccessError(e, studentId){
+  const msg = e && e.message || '';
+  if(msg==='forbidden' || msg==='not your student'){
+    showToast('Este aluno não está mais na sua lista. Atualizando...');
+    loadRoster(function(){
+      if(managedStudentId===studentId && !roster.find(function(r){ return r.id===studentId; })){
+        managedStudentId = null;
+        unlockedSet = new Set();
+      }
+      renderTeacherPanel();
+    });
+  }else{
+    showToast(msg||'Erro');
+  }
+}
+function toggleUnlock(studentId, lessonId){
+  const key = String(lessonId);
+  const willUnlock = !unlockedSet.has(key);
+  apiFetch('/unlock_toggle.php', {method:'POST', body: JSON.stringify({studentId:studentId, classKey:key, unlocked:willUnlock})})
+    .then(function(){
+      if(willUnlock) unlockedSet.add(key); else unlockedSet.delete(key);
+      renderTeacherPanel();
+    }).catch(function(e){ handleStudentAccessError(e, studentId); });
+}
+function saveAssignedTask(studentId){
+  const val = document.getElementById('assignTaskInput').value;
+  apiFetch('/assign_task.php', {method:'POST', body: JSON.stringify({studentId:studentId, message:val})})
+    .then(function(){
+      const s = roster.find(function(r){ return r.id===studentId; });
+      if(s) s.assigned_task = val;
+      showToast('\u2705 Tarefa salva.');
+    }).catch(function(e){ handleStudentAccessError(e, studentId); });
+}
+function dismissPending(studentId, classKey, etapaNum){
+  apiFetch('/homework_dismiss.php', {method:'POST', body: JSON.stringify({studentId:studentId, classKey:classKey, etapaNum:etapaNum})})
+    .then(function(){ loadPendingReviews(); })
+    .catch(function(e){ showToast(e.message||'Erro'); });
+}
+function jumpToReview(classKey, studentId){
+  reviewStudentId = studentId;
+  const lessonId = parseInt(classKey, 10);
+  const lesson = allLessonsFlat().find(function(l){ return l.id===lessonId; });
+  if(lesson) currentLevel = lesson.level;
+  openLesson(lessonId);
+}
+
+/* ================= ADMIN PANEL (teacher/student CRUD, no lesson access) ================= */
+function renderAdminView(){
+  currentView = 'admin';
+  const sb = document.getElementById('sidebar');
+  sb.innerHTML = `
+    <div class="brand"><img src="${LOGO_URI}" class="brand-logo" alt="Upfront Idiomas"><h1>Water Engineering</h1></div>
+    <div class="brand-school">Upfront Idiomas</div>
+    <div class="brand-sub">Painel do Admin</div>
+    <button class="side-nav-item active"><span class="side-nav-icon">\u2699\ufe0f</span><span class="side-nav-text">Admin</span></button>
+    <button class="side-nav-item" onclick="logout()"><span class="side-nav-icon">\ud83d\udeaa</span><span class="side-nav-text">Sair</span></button>`;
+  renderTopNavbar();
+  document.getElementById('breadcrumb').textContent = 'Admin';
+  document.getElementById('flightcode').textContent = 'PAINEL ADMINISTRATIVO';
+  document.getElementById('content').className = 'content';
+  document.getElementById('content').innerHTML = '<div style="padding:20px;color:var(--muted);">Carregando\u2026</div>';
+  loadAdminLists();
+}
+function loadAdminLists(){
+  Promise.all([
+    apiFetch('/teachers_list.php'),
+    apiFetch('/students_list.php?course_id=' + encodeURIComponent(COURSE_ID))
+  ]).then(function(results){
+    adminTeachersCache = results[0].teachers || [];
+    adminStudentsCache = results[1].students || [];
+    renderAdminLists();
+  }).catch(function(e){
+    document.getElementById('content').innerHTML = '<div style="padding:20px;color:var(--coral);">Erro ao carregar: '+esc(e.message||'')+'</div>';
+  });
+}
+function renderAdminLists(){
+  const teacherOptionsFor = function(selectedId){
+    return '<option value="">Sem professor</option>' + adminTeachersCache.map(function(t){
+      return `<option value="${t.id}" ${selectedId===t.id?'selected':''}>${esc(t.name)}</option>`;
+    }).join('');
+  };
+  const levelOptionsFor = function(selectedLevel){
+    return LEVELS.map(function(lv){ return `<option value="${lv.id}" ${selectedLevel===lv.id?'selected':''}>${lv.id} \u2014 ${esc(lv.label)}</option>`; }).join('');
+  };
+
+  const teacherRows = adminTeachersCache.map(function(t){
+    if(editingTeacherId===t.id){
+      return `<div class="panel-row" style="flex-direction:column;align-items:stretch;">
+        <div class="panel-field"><label>Nome</label><input id="editTeacherName-${t.id}" value="${esc(t.name)}"></div>
+        <div class="panel-field"><label>Login</label><input id="editTeacherLogin-${t.id}" value="${esc(t.login)}"></div>
+        <div class="panel-field"><label>Nova senha (deixe em branco para manter)</label><input type="password" id="editTeacherPass-${t.id}"></div>
+        <div class="actions"><button onclick="saveTeacherEdit(${t.id})">Salvar</button><button onclick="editingTeacherId=null;renderAdminLists()">Cancelar</button></div>
+      </div>`;
+    }
+    return `<div class="panel-row">
+      <div class="who"><b>\ud83d\udc69\u200d\ud83c\udfeb ${esc(t.name)}</b><span>${esc(t.login)}</span></div>
+      <div class="actions">
+        <button onclick="editingTeacherId=${t.id};renderAdminLists()">Editar</button>
+        <button class="danger" onclick="deleteTeacher(${t.id}, '${esc(t.name).replace(/'/g,"\\'")}')">Excluir</button>
+      </div>
+    </div>`;
+  }).join('') || '<div style="color:var(--muted);font-size:12.5px;">Nenhum professor cadastrado.</div>';
+
+  const studentRows = adminStudentsCache.map(function(s){
+    if(editingStudentId===s.id){
+      return `<div class="panel-row" style="flex-direction:column;align-items:stretch;">
+        <div class="panel-field"><label>Nome</label><input id="editStudentName-${s.id}" value="${esc(s.name)}"></div>
+        <div class="panel-field"><label>Login</label><input id="editStudentLogin-${s.id}" value="${esc(s.login)}"></div>
+        <div class="panel-field"><label>Nova senha (deixe em branco para manter)</label><input type="password" id="editStudentPass-${s.id}"></div>
+        <div class="panel-field"><label>N\u00edvel</label><select id="editStudentLevel-${s.id}">${levelOptionsFor(s.level)}</select></div>
+        <div class="panel-field"><label>Professor</label><select id="editStudentTeacher-${s.id}">${teacherOptionsFor(s.teacher_id)}</select></div>
+        <div class="actions"><button onclick="saveStudentEdit(${s.id})">Salvar</button><button onclick="editingStudentId=null;renderAdminLists()">Cancelar</button></div>
+      </div>`;
+    }
+    return `<div class="panel-row">
+      <div class="who"><b>\ud83c\udf92 ${esc(s.name)}</b><span>${esc(s.login)} \u00b7 ${esc(s.level)} \u00b7 ${s.teacher_name?esc(s.teacher_name):'sem professor'}</span></div>
+      <div class="actions">
+        <button onclick="editingStudentId=${s.id};renderAdminLists()">Editar</button>
+        <button class="danger" onclick="deleteStudent(${s.id}, '${esc(s.name).replace(/'/g,"\\'")}')">Excluir</button>
+      </div>
+    </div>`;
+  }).join('') || '<div style="color:var(--muted);font-size:12.5px;">Nenhum aluno cadastrado.</div>';
+
+  document.getElementById('content').innerHTML = `
+    <div class="panel-box">
+      <h3>\ud83d\udc69\u200d\ud83c\udfeb Professores</h3>
+      ${teacherRows}
+      <hr style="margin:16px 0;border:none;border-top:1px solid var(--line);">
+      <div class="panel-grid">
+        <div class="panel-field"><label>Nome</label><input id="newTeacherName" placeholder="Nome completo"></div>
+        <div class="panel-field"><label>Login</label><input id="newTeacherLogin" placeholder="login"></div>
+        <div class="panel-field"><label>Senha</label><input type="password" id="newTeacherPass" placeholder="Senha"></div>
+      </div>
+      <button onclick="submitAddTeacher()">+ Cadastrar professor</button>
+    </div>
+    <div class="panel-box">
+      <h3>\ud83c\udf92 Alunos</h3>
+      ${studentRows}
+      <hr style="margin:16px 0;border:none;border-top:1px solid var(--line);">
+      <div class="panel-grid">
+        <div class="panel-field"><label>Nome</label><input id="newStudentName" placeholder="Nome completo"></div>
+        <div class="panel-field"><label>Login</label><input id="newStudentLogin" placeholder="login"></div>
+        <div class="panel-field"><label>Senha</label><input type="password" id="newStudentPass" placeholder="Senha"></div>
+        <div class="panel-field"><label>N\u00edvel</label><select id="newStudentLevel">${levelOptionsFor('A1')}</select></div>
+        <div class="panel-field"><label>Professor</label><select id="newStudentTeacherSel">${teacherOptionsFor(null)}</select></div>
+      </div>
+      <button onclick="submitAddStudent()">+ Cadastrar aluno</button>
+    </div>`;
+}
+function submitAddTeacher(){
+  const name = document.getElementById('newTeacherName').value.trim();
+  const login = document.getElementById('newTeacherLogin').value.trim();
+  const password = document.getElementById('newTeacherPass').value;
+  if(!name || !login || !password){ showToast('Preencha nome, login e senha.'); return; }
+  apiFetch('/teachers_create.php', {method:'POST', body: JSON.stringify({name:name, login:login, password:password})})
+    .then(function(){ showToast('\u2705 Professor cadastrado.'); loadAdminLists(); })
+    .catch(function(e){ showToast(e.message||'Erro ao cadastrar professor'); });
+}
+function saveTeacherEdit(id){
+  const name = document.getElementById('editTeacherName-'+id).value.trim();
+  const login = document.getElementById('editTeacherLogin-'+id).value.trim();
+  const password = document.getElementById('editTeacherPass-'+id).value;
+  apiFetch('/teachers_update.php', {method:'POST', body: JSON.stringify({id:id, name:name, login:login, password:password})})
+    .then(function(){ editingTeacherId=null; showToast('\u2705 Professor atualizado.'); loadAdminLists(); })
+    .catch(function(e){ showToast(e.message||'Erro ao atualizar professor'); });
+}
+function deleteTeacher(id, name){
+  if(!window.confirm('Excluir o professor "'+name+'"? Os alunos dele ficam sem professor respons\u00e1vel, mas n\u00e3o s\u00e3o apagados.')) return;
+  apiFetch('/teachers_delete.php', {method:'POST', body: JSON.stringify({id:id})})
+    .then(function(){ showToast('\u2705 Professor exclu\u00eddo.'); loadAdminLists(); })
+    .catch(function(e){ showToast(e.message||'Erro ao excluir professor'); });
+}
+function submitAddStudent(){
+  const name = document.getElementById('newStudentName').value.trim();
+  const login = document.getElementById('newStudentLogin').value.trim();
+  const password = document.getElementById('newStudentPass').value;
+  const level = document.getElementById('newStudentLevel').value;
+  const teacherIdVal = document.getElementById('newStudentTeacherSel').value;
+  if(!name || !login || !password){ showToast('Preencha nome, login e senha.'); return; }
+  apiFetch('/students_create.php', {method:'POST', body: JSON.stringify({
+    name:name, login:login, password:password, level:level,
+    teacherId: teacherIdVal?parseInt(teacherIdVal,10):null, courseId: COURSE_ID
+  })}).then(function(data){
+    showToast('\u2705 Aluno cadastrado.');
+    // Convenience default only (no lesson-numbering knowledge in the backend):
+    // unlock this level's first lesson so the student isn't greeted by a fully locked course.
+    const firstOfLevel = lessonsOf(level)[0];
+    if(data && data.id && firstOfLevel){
+      apiFetch('/unlock_toggle.php', {method:'POST', body: JSON.stringify({studentId:data.id, classKey:String(firstOfLevel.id), unlocked:true})}).catch(function(){});
+    }
+    loadAdminLists();
+  }).catch(function(e){ showToast(e.message||'Erro ao cadastrar aluno'); });
+}
+function bulkUnlockLevels(studentId){
+  const box = document.getElementById('levelUnlockChecks-'+studentId);
+  if(!box) return;
+  const checked = Array.from(box.querySelectorAll('input[type=checkbox]:checked')).map(function(cb){ return cb.value; });
+  if(!checked.length){ showToast('Selecione ao menos um nível.'); return; }
+  let lessonIds = [];
+  checked.forEach(function(lv){ lessonsOf(lv).forEach(function(l){ lessonIds.push(l.id); }); });
+  if(!lessonIds.length){ showToast('Nenhuma aula encontrada nesse(s) nível(is).'); return; }
+  Promise.all(lessonIds.map(function(id){
+    return apiFetch('/unlock_toggle.php', {method:'POST', body: JSON.stringify({studentId:studentId, classKey:String(id), unlocked:true})});
+  })).then(function(){
+    lessonIds.forEach(function(id){ unlockedSet.add(String(id)); });
+    showToast('✅ '+checked.length+' nível(is) liberado(s) — '+lessonIds.length+' aulas desbloqueadas.');
+    renderTeacherPanel();
+  }).catch(function(e){ showToast(e.message||'Erro ao liberar níveis'); });
+}
+function saveStudentEdit(id){
+  const name = document.getElementById('editStudentName-'+id).value.trim();
+  const login = document.getElementById('editStudentLogin-'+id).value.trim();
+  const password = document.getElementById('editStudentPass-'+id).value;
+  const level = document.getElementById('editStudentLevel-'+id).value;
+  const teacherIdVal = document.getElementById('editStudentTeacher-'+id).value;
+  apiFetch('/students_update.php', {method:'POST', body: JSON.stringify({
+    id:id, name:name, login:login, password:password, level:level,
+    teacherId: teacherIdVal?parseInt(teacherIdVal,10):null
+  })}).then(function(){ editingStudentId=null; showToast('\u2705 Aluno atualizado.'); loadAdminLists(); })
+    .catch(function(e){ showToast(e.message||'Erro ao atualizar aluno'); });
+}
+function deleteStudent(id, name){
+  if(!window.confirm('Excluir o aluno "'+name+'"? Isso apaga tamb\u00e9m as tarefas enviadas e o progresso dele.')) return;
+  apiFetch('/students_delete.php', {method:'POST', body: JSON.stringify({id:id})})
+    .then(function(){ showToast('\u2705 Aluno exclu\u00eddo.'); loadAdminLists(); })
+    .catch(function(e){ showToast(e.message||'Erro ao excluir aluno'); });
+}
+
+/* ================= RENDER SIDEBAR ================= */
+function renderSidebar(){
+  const sb = document.getElementById('sidebar');
+  const totalDone = completed.size;
+  let html = `
+    <div class="brand"><img src="${LOGO_URI}" class="brand-logo" alt="Upfront Idiomas"><h1>Water Engineering</h1></div>
+    <div class="brand-school">Upfront Idiomas</div>
+    <div class="brand-sub">Curso Completo &middot; A1 &rarr; C1</div>
+    ${(currentRole==='student' && assignedTaskMessage) ? `
+    <div class="sidebar-task-banner">
+      <b>\ud83d\udccc Tarefa do professor</b>
+      <p>${esc(assignedTaskMessage)}</p>
+    </div>` : ''}
+    ${currentRole==='teacher' ? `<button class="admin-link ${currentView==='teacherPanel'?'active':''}" onclick="openTeacherPanel()">\ud83d\udc65 Meus alunos${pendingReviews.length?`<span class="pending-badge">${pendingReviews.length}</span>`:''}</button>` : ''}
+
+    <button class="side-nav-item ${currentView==='home'?'active':''}" onclick="renderHome()"><span class="side-nav-icon">\ud83c\udfe0</span><span class="side-nav-text">Dashboard</span></button>
+
+    <div class="level-tabs">
+      ${LEVELS.map(l=>`<div class="level-tab ${l.id===currentLevel?'active':''}" onclick="selectLevel('${l.id}')">${l.id}</div>`).join('')}
+    </div>
+    <div class="level-caption">${LEVELS.find(l=>l.id===currentLevel).label} &mdash; ${LEVELS.find(l=>l.id===currentLevel).caption}</div>
+    <div class="progress-wrap">
+      <div class="progress-label"><span>Progresso geral</span><span>${totalDone}/${LESSONS.length}</span></div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${LESSONS.length?(totalDone/LESSONS.length*100).toFixed(0):0}%"></div></div>
+    </div>
+  `;
+  lessonsOf(currentLevel).forEach(l=>{
+    const active = l.id===currentLessonId ? 'active':'';
+    const done = completed.has(l.id) ? 'done':'';
+    const locked = isLockedForCurrentUser(l);
+    html += `
+      <div class="lesson-stub ${active} ${done} ${locked?'locked':''}" onclick="openLesson(${l.id})">
+        <div class="icon">${locked?'\ud83d\udd12':l.icon}</div>
+        <div class="meta">
+          <div class="code">${codeOf(l)}</div>
+          <div class="name">${l.title}</div>
+        </div>
+        <div class="check">\u2713</div>
+      </div>`;
+  });
+  sb.innerHTML = html;
+  renderTopNavbar();
+}
+
+function renderTopNavbar(){
+  const displayName = currentRole==='teacher' ? (currentTeacherName||'Professor(a)') : (currentStudentName||'Aluno(a)');
+  const roleTag = currentRole==='teacher' ? 'Professor(a)' : 'Aluno(a)';
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? 'Bom dia' : hour < 18 ? 'Boa tarde' : 'Boa noite';
+  const initials = displayName.split(' ').filter(Boolean).slice(0,2).map(w=>w[0].toUpperCase()).join('') || (currentRole==='teacher'?'PR':'AL');
+  const g = document.getElementById('topbarGreeting');
+  const gs = document.getElementById('topbarGreetingSub');
+  const av = document.getElementById('topbarAvatar');
+  if(g) g.textContent = `${greeting}, ${displayName}! 👋`;
+  if(gs) gs.textContent = 'Vamos continuar sua jornada de aprendizado.';
+  if(av) av.innerHTML = `<span class="navbar-avatar-initials">${esc(initials)}</span><span class="navbar-avatar-meta"><b>${esc(displayName)}</b><small>${esc(roleTag)}</small></span>`;
+}
+
+function toggleSidebarCollapse(){
+  const sb = document.getElementById('sidebar');
+  sb.style.display = (sb.style.display === 'none') ? '' : 'none';
+}
+
+function selectLevel(lvl){
+  currentLevel = lvl;
+  currentLessonId = null;
+  renderSidebar();
+  openCoreBoard();
+}
+
+/* ================= CORE -> TRACKS ================= */
+function allCoreDone(){
+  return LESSONS.length > 0 && LESSONS.every(l=>completed.has(l.id));
+}
+
+function renderTrackTeaser(){
+  return `<div class="track-teaser">
+      <div class="stamp">🎉</div>
+      <div>
+        <h3>Curso concluído!</h3>
+        <p>Parabéns! Você completou todas as aulas disponíveis até agora. Os próximos módulos chegam em breve.</p>
+      </div>
+    </div>`;
+}
+
+/* ================= REVIEW / HOMEWORK ================= */
+/* 3 etapas: 1 Verbs (vocab_drills), 2 Expressions (expr_drills),
+   3 Grammar & Comprehension (translate / match the columns / fill-in-blank).
+   All content is reused from fields the lesson already has — nothing new is authored per lesson. */
+var hwStage = 1;          // stage currently shown to the student
+var hwReviewStage = 1;    // stage currently shown to the teacher while reviewing
+var hwSubsCache = {};     // {etapaNum: submission|null} for the lesson currently open
+
+var IRREGULAR_VERBS_FILLBLANK = {
+  come:['come','came'], keep:['keep','kept'], take:['take','took','taken'],
+  get:['get','got','gotten'], give:['give','gave','given'], make:['make','made'],
+  break:['break','broke','broken'], hold:['hold','held'], catch:['catch','caught'],
+  buy:['buy','bought'], bring:['bring','brought'], think:['think','thought'],
+  understand:['understand','understood'], spend:['spend','spent'], lend:['lend','lent'],
+  meet:['meet','met'], tell:['tell','told'], sell:['sell','sold'], teach:['teach','taught'],
+  fight:['fight','fought'], find:['find','found'], say:['say','said'], go:['go','went','gone'],
+  do:['do','did','done'], know:['know','knew','known'], see:['see','saw','seen'],
+  run:['run','ran'], beat:['beat','beaten'], write:['write','wrote','written'],
+  fall:['fall','fell','fallen'], shake:['shake','shook','shaken'], lay:['lay','laid'],
+  pay:['pay','paid'], blow:['blow','blew','blown'], stand:['stand','stood'], dig:['dig','dug'],
+  build:['build','built'], draw:['draw','drew','drawn'], throw:['throw','threw','thrown'],
+  hang:['hang','hung']
+};
+function escapeRegexFillBlank(s){ return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+function buildFuzzyBlankRegex(phrase){
+  const words = phrase.split(/\s+/).filter(Boolean);
+  const parts = words.map(function(w,i){
+    const clean = w.replace(/[^a-zA-Z']/g,'');
+    if(!clean) return escapeRegexFillBlank(w);
+    const lower = clean.toLowerCase();
+    if(lower==='someone' || lower==='something'){
+      return "[a-zA-Z' ]+?";
+    }
+    if(i===0 && IRREGULAR_VERBS_FILLBLANK[lower]){
+      return '(?:' + IRREGULAR_VERBS_FILLBLANK[lower].map(escapeRegexFillBlank).join('|') + ')' + "\\w*";
+    }
+    if(/[^aeiou]y$/i.test(clean)){
+      const stem = escapeRegexFillBlank(clean.slice(0,-1));
+      return '(?:' + escapeRegexFillBlank(clean) + "\\w*|" + stem + "(?:ies|ied|ying))";
+    }
+    return escapeRegexFillBlank(clean) + "\\w*";
+  });
+  return new RegExp('\\b' + parts.join('\\s+') + '\\b', 'i');
+}
+function makeFillBlankItem(pt, en, expressionsList){
+  let best = null;
+  (expressionsList||[]).forEach(function(e){
+    const phrase = (e.phrase||'').trim().replace(/[.!?]+$/, '');
+    if(!phrase) return;
+    const lowerEn = en.toLowerCase();
+    const lowerPhrase = phrase.toLowerCase();
+    let idx = lowerEn.indexOf(lowerPhrase);
+    let matched = idx>=0 ? en.substr(idx, phrase.length) : null;
+    if(idx<0){
+      try{
+        const re = buildFuzzyBlankRegex(phrase);
+        const m = en.match(re);
+        if(m){ idx = m.index; matched = m[0]; }
+      }catch(e2){ /* ignore */ }
+    }
+    if(idx>=0 && matched && (!best || matched.length>best.len)){
+      best = {idx:idx, len:matched.length, answer:matched};
+    }
+  });
+  if(!best) return {pt:pt, before:'', after:'', answer:en, fullSentence:true};
+  return {pt:pt, before:en.slice(0,best.idx), after:en.slice(best.idx+best.len), answer:best.answer};
+}
+function buildHomeworkStages(l){
+  const verbs = (l.vocab_drills||[]).map(d=>({pt:d.pt, en:d.en, tokens:d.tokens}));
+  const expressionsFill = (l.expr_drills||[]).map(d=>makeFillBlankItem(d.pt, d.en, l.expressions||[]));
+  const translateItems = (l.translate||[]).map(t=>({q:t.q, a:t.a}));
+  const matchPairs = (l.vocab||[]).slice(0,8).map(v=>({term:v.term, pt:v.pt}));
+  const fillItems = (l.fill||[]).map(f=>({q:f.q, a:f.a}));
+  return {
+    1: {label:'Stage 1', type:'build', items: verbs},
+    2: {label:'Stage 2', type:'fillblank', items: expressionsFill},
+    3: {label:'Stage 3', type:'grammar', translate: translateItems, match: matchPairs, fill: fillItems}
+  };
+}
+
+function hwDraftKey(lessonId, stageNum){
+  return 'hwDraft_' + (currentUserId||'anon') + '_' + lessonId + '_' + stageNum;
+}
+function saveHwDraft(lessonId, stageNum){
+  const l = allLessonsFlat().find(x=>x.id===lessonId);
+  if(!l) return;
+  const stage = buildHomeworkStages(l)[stageNum];
+  if(!stage) return;
+  let draft;
+  if(stage.type==='build'){
+    draft = {type:'build', items: stage.items.map(function(item,i){
+      const slot = document.getElementById(`hw-${lessonId}-${i}-slot`);
+      return slot ? Array.from(slot.children).map(c=>c.textContent) : [];
+    })};
+  }else if(stage.type==='fillblank'){
+    draft = {type:'fillblank', items: stage.items.map(function(item,i){
+      const inp = document.getElementById(`hw-${lessonId}-${i}-input`);
+      return inp ? inp.value : '';
+    })};
+  }else{
+    draft = {type:'grammar',
+      translate: stage.translate.map(function(it,i){ const inp=document.getElementById(`hw-${lessonId}-tr-input-${i}`); return inp?inp.value:''; }),
+      match: stage.match.map(function(p,i){ const sel=document.getElementById(`hw-${lessonId}-match-sel-${i}`); return sel?sel.value:''; }),
+      fill: stage.fill.map(function(it,i){ const inp=document.getElementById(`hw-${lessonId}-fill-input-${i}`); return inp?inp.value:''; })
+    };
+  }
+  try{ localStorage.setItem(hwDraftKey(lessonId, stageNum), JSON.stringify(draft)); }catch(e){}
+}
+function saveHwDraftFromDomId(domId){
+  const m = domId.match(/^hw-(\d+)-/);
+  if(m) saveHwDraft(parseInt(m[1],10), hwStage);
+}
+function loadHwDraft(lessonId, stageNum){
+  try{
+    const raw = localStorage.getItem(hwDraftKey(lessonId, stageNum));
+    return raw ? JSON.parse(raw) : null;
+  }catch(e){ return null; }
+}
+function clearHwDraft(lessonId, stageNum){
+  try{ localStorage.removeItem(hwDraftKey(lessonId, stageNum)); }catch(e){}
+}
+function applyHwDraft(lessonId, stageNum){
+  if(currentRole!=='student') return;
+  const l = allLessonsFlat().find(x=>x.id===lessonId);
+  if(!l) return;
+  const stage = buildHomeworkStages(l)[stageNum];
+  const draft = loadHwDraft(lessonId, stageNum);
+  if(!stage || !draft) return;
+  if(stage.type==='build' && draft.type==='build'){
+    (draft.items||[]).forEach(function(words, i){
+      const slot = document.getElementById(`hw-${lessonId}-${i}-slot`);
+      const bank = document.getElementById(`hw-${lessonId}-${i}-bank`);
+      if(!slot || !bank || !words) return;
+      words.forEach(function(word){
+        const chip = Array.from(bank.querySelectorAll('.chip:not(.used)')).find(c=>c.textContent===word);
+        if(chip) chipClick(`hw-${lessonId}-${i}`, chip);
+      });
+    });
+  }else if(stage.type==='fillblank' && draft.type==='fillblank'){
+    (draft.items||[]).forEach(function(val,i){ const inp=document.getElementById(`hw-${lessonId}-${i}-input`); if(inp && val) inp.value = val; });
+  }else if(stage.type==='grammar' && draft.type==='grammar'){
+    (draft.translate||[]).forEach(function(val,i){ const inp=document.getElementById(`hw-${lessonId}-tr-input-${i}`); if(inp && val) inp.value = val; });
+    (draft.match||[]).forEach(function(val,i){ const sel=document.getElementById(`hw-${lessonId}-match-sel-${i}`); if(sel && val) sel.value = val; });
+    (draft.fill||[]).forEach(function(val,i){ const inp=document.getElementById(`hw-${lessonId}-fill-input-${i}`); if(inp && val) inp.value = val; });
+  }
+}
+function manualSaveHwDraft(lessonId, stageNum){
+  saveHwDraft(lessonId, stageNum);
+  showToast('\ud83d\udcbe Progresso salvo. Voc\u00ea pode continuar depois.');
+}
+
+function hwStageTabsHtml(lessonId, current, setterFn){
+  return `<div class="panel-tabs">${[1,2,3].map(function(n){
+    const stages = buildHomeworkStages(allLessonsFlat().find(x=>x.id===lessonId));
+    return `<button type="button" class="panel-tab ${n===current?'on':''}" onclick="${setterFn}(${lessonId},${n})">${esc(stages[n].label)}</button>`;
+  }).join('')}</div>`;
+}
+
+function renderMatchColumns(domId, pairs){
+  const shuffledPt = shuffleTokens(pairs.map(p=>p.pt));
+  const legend = shuffledPt.map((pt,idx)=>`<b>${idx+1}.</b> ${esc(pt)}`).join('&emsp;');
+  const rows = pairs.map((p,i)=>{
+    const options = shuffledPt.map((pt,idx)=>`<option value="${idx}">${idx+1}</option>`).join('');
+    return `<div class="ex-item">
+      <div class="ex-q">${i+1}. ${esc(p.term)}</div>
+      <div class="ex-row"><select class="ex-input" id="${domId}-sel-${i}" onchange="saveHwDraftFromDomId('${domId}')"><option value="">—</option>${options}</select></div>
+    </div>`;
+  }).join('');
+  return `<div class="drill-block" id="${domId}" data-shuffled="${encodeURIComponent(JSON.stringify(shuffledPt))}">
+    <div class="drill-pt">🔗 <span class="drill-pt-label">Coluna B (Português):</span> ${legend}</div>
+    ${rows}
+    <div class="drill-actions"><button type="button" class="drill-btn" onclick="checkMatchColumns('${domId}')">Verificar ✓</button></div>
+    <div class="drill-feedback" id="${domId}-fb"></div>
+  </div>`;
+}
+function checkMatchColumns(domId){
+  const box = document.getElementById(domId);
+  const shuffledPt = JSON.parse(decodeURIComponent(box.dataset.shuffled));
+  const rows = box.querySelectorAll('select.ex-input');
+  let allAnswered = true, correctCount = 0;
+  rows.forEach(function(sel, i){
+    const expectedTerm = box.querySelectorAll('.ex-q')[i].textContent;
+    if(sel.value==='') allAnswered = false;
+  });
+  const fb = document.getElementById(domId+'-fb');
+  if(!allAnswered){
+    fb.className = 'drill-feedback show no';
+    fb.textContent = '❌ Responda todos os pares antes de verificar.';
+    return;
+  }
+  fb.className = 'drill-feedback show ok';
+  fb.textContent = '✅ Respostas registradas. O professor vai conferir se estão corretas.';
+}
+function renderTranslateOrFillItems(domId, items, kind){
+  return items.map((it,i)=>`
+    <div class="ex-item">
+      <div class="ex-q">${i+1}. ${esc(it.q)}</div>
+      <div class="ex-row">
+        <input type="text" class="ex-input" id="${domId}-input-${i}" placeholder="${kind==='translate'?'Type the translation in English':'Digite sua resposta'}" oninput="saveHwDraftFromDomId('${domId}')">
+      </div>
+    </div>`).join('');
+}
+
+function renderFillBlankItems(domId, items){
+  return items.map((item,i)=>{
+    const middle = item.fullSentence
+      ? `<input type="text" class="ex-input" id="${domId}-${i}-input" style="width:100%;margin-top:6px;" placeholder="Write the full sentence in English" oninput="saveHwDraftFromDomId('${domId}-${i}')">`
+      : `${esc(item.before)}<input type="text" class="ex-input" id="${domId}-${i}-input" style="width:170px;display:inline-block;margin:0 6px;vertical-align:middle;" placeholder="..." oninput="saveHwDraftFromDomId('${domId}-${i}')">${esc(item.after)}`;
+    return `<div class="drill-block" id="${domId}-${i}" data-answer="${encodeURIComponent(item.answer)}">
+    <div class="drill-pt">🗣️ <span class="drill-pt-label">Professor fala:</span> <b>"${esc(item.pt)}"</b></div>
+    <div class="ex-row" style="margin:10px 0;font-size:14.5px;line-height:1.6;">${middle}</div>
+    <div class="drill-actions">
+      <button type="button" class="drill-btn" onclick="checkFillBlank('${domId}-${i}')">Verificar ✓</button>
+      <button type="button" class="drill-btn ghost" onclick="revealFillBlank('${domId}-${i}')">Ver resposta 👁</button>
+    </div>
+    <div class="drill-feedback" id="${domId}-${i}-fb"></div>
+  </div>`;
+  }).join('');
+}
+function checkFillBlank(blockId){
+  const block = document.getElementById(blockId);
+  const input = document.getElementById(`${blockId}-input`);
+  const fb = document.getElementById(`${blockId}-fb`);
+  const answer = decodeURIComponent(block.dataset.answer);
+  const correct = answerMatches(input.value, answer);
+  fb.className = 'drill-feedback show ' + (correct?'ok':'no');
+  fb.textContent = correct ? '✅ Certinho! Muito bem.' : '❌ Quase lá — confira a palavra e tente de novo.';
+}
+function revealFillBlank(blockId){
+  const block = document.getElementById(blockId);
+  const answer = decodeURIComponent(block.dataset.answer);
+  const fb = document.getElementById(`${blockId}-fb`);
+  fb.className = 'drill-feedback show reveal';
+  fb.textContent = '💡 Resposta: ' + answer;
+}
+
+function renderLessonHomeworkSection(l){
+  if(currentRole==='teacher'){
+    if(reviewStudentId){
+      const student = roster.find(r=>r.id===reviewStudentId);
+      return `<div class="drill-intro">Revisão da tarefa de ${student?esc(student.name):'aluno selecionado'}:
+        <button class="nav-btn ghost" style="margin-left:10px;" onclick="reviewStudentId=null;renderLesson(${l.id});">Sair da revisão</button></div>
+        ${hwStageTabsHtml(l.id, hwReviewStage, 'hwReviewGoStage')}
+        <div id="teacherReviewBox-${l.id}" style="margin-top:10px;">Carregando…</div>`;
+    }
+    return `<div class="drill-intro">A tarefa de casa tem 3 etapas — 1) Verbs, 2) Expressions (preencher a lacuna), 3) Grammar &amp; Comprehension (tradução, ligar as colunas e gramática). Para corrigir a tarefa de um aluno específico, abra "👥 Meus alunos" e clique em "Revisar" na lista de correções pendentes.</div>`;
+  }
+  const stages = buildHomeworkStages(l);
+  const stage = stages[hwStage];
+  let bodyHtml = '';
+  if(stage.type==='build'){
+    currentHomeworkItems = stage.items;
+    bodyHtml = stage.items.map((item,i)=>renderDrillBuilder(`hw-${l.id}-${i}`, item.pt, item.tokens)).join('');
+  }else if(stage.type==='fillblank'){
+    currentHomeworkItems = stage.items;
+    bodyHtml = renderFillBlankItems(`hw-${l.id}`, stage.items);
+  }else{
+    bodyHtml = `
+      <div class="section-subtitle">A — Tradução (Português → Inglês)</div>
+      ${renderTranslateOrFillItems(`hw-${l.id}-tr`, stage.translate, 'translate')}
+      <div class="section-subtitle">B — Ligar as colunas</div>
+      ${renderMatchColumns(`hw-${l.id}-match`, stage.match)}
+      <div class="section-subtitle">C — Gramática (complete a frase)</div>
+      ${renderTranslateOrFillItems(`hw-${l.id}-fill`, stage.fill, 'fill')}`;
+  }
+  return `
+    ${hwStageTabsHtml(l.id, hwStage, 'hwGoStage')}
+    <div id="hwFeedbackBox-${l.id}"></div>
+    <div class="review-field">
+      <label>Nome do aluno</label>
+      <input type="text" id="reviewStudentName-${l.id}" placeholder="Seu nome completo" value="${esc(currentStudentName||'')}">
+    </div>
+    ${bodyHtml}
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:4px;">
+      <button class="nav-btn" onclick="submitHomeworkStage(${l.id}, ${hwStage})">Enviar etapa ao professor ✓</button>
+      <button class="nav-btn ghost" onclick="manualSaveHwDraft(${l.id}, ${hwStage})">💾 Salvar e continuar depois</button>
+      <button class="nav-btn ghost" onclick="downloadHomeworkPDF(${l.id}, ${hwStage})">Baixar em PDF ↓</button>
+    </div>`;
+}
+function hwGoStage(lessonId, n){
+  hwStage = n;
+  renderLesson(lessonId);
+}
+function hwReviewGoStage(lessonId, n){
+  hwReviewStage = n;
+  loadHomeworkSection(allLessonsFlat().find(x=>x.id===lessonId));
+}
+
+/* ---- homework submission + teacher correction (api2) ---- */
+function loadHomeworkSection(l){
+  if(!l) return;
+  if(currentRole==='student'){
+    apiFetch('/homework_get.php?classKey=' + encodeURIComponent(String(l.id))).then(function(data){
+      const subs = data.submissions || [];
+      const found = subs.find(function(s){ return s.etapaNum===hwStage; }) || null;
+      renderHwFeedbackBanner(l.id, found);
+    }).catch(function(){});
+  }else if(currentRole==='teacher' && reviewStudentId){
+    apiFetch('/homework_get.php?studentId=' + encodeURIComponent(reviewStudentId) + '&classKey=' + encodeURIComponent(String(l.id))).then(function(data){
+      const subs = data.submissions || [];
+      const found = subs.find(function(s){ return s.etapaNum===hwReviewStage; }) || null;
+      renderTeacherReview(l, found, hwReviewStage);
+    }).catch(function(){});
+  }
+}
+function collectStageAnswers(lessonId, stageNum, stage){
+  if(stage.type==='build'){
+    const built = [];
+    stage.items.forEach(function(item, i){
+      const slot = document.getElementById(`hw-${lessonId}-${i}-slot`);
+      const words = slot ? Array.from(slot.children).map(c=>c.textContent) : [];
+      const correct = words.length===item.tokens.length && words.every((w,idx)=>w===item.tokens[idx]);
+      built.push({pt:item.pt, built:words, correct:correct});
+    });
+    return {type:'build', items: built};
+  }
+  if(stage.type==='fillblank'){
+    const items = stage.items.map(function(item,i){
+      const input = document.getElementById(`hw-${lessonId}-${i}-input`);
+      const val = input ? input.value : '';
+      return {pt:item.pt, given:val, correct: answerMatches(val, item.answer)};
+    });
+    return {type:'fillblank', items: items};
+  }
+  const translate = stage.translate.map(function(it,i){
+    const input = document.getElementById(`hw-${lessonId}-tr-input-${i}`);
+    const val = input ? input.value : '';
+    return {q:it.q, given:val, correct: answerMatches(val, it.a)};
+  });
+  const matchBox = document.getElementById(`hw-${lessonId}-match`);
+  const shuffledPt = matchBox ? JSON.parse(decodeURIComponent(matchBox.dataset.shuffled)) : [];
+  const match = stage.match.map(function(p,i){
+    const sel = document.getElementById(`hw-${lessonId}-match-sel-${i}`);
+    const idx = sel && sel.value!=='' ? parseInt(sel.value,10) : -1;
+    const givenPt = idx>=0 ? shuffledPt[idx] : '';
+    return {term:p.term, given:givenPt, correct: givenPt===p.pt};
+  });
+  const fill = stage.fill.map(function(it,i){
+    const input = document.getElementById(`hw-${lessonId}-fill-input-${i}`);
+    const val = input ? input.value : '';
+    return {q:it.q, given:val, correct: answerMatches(val, it.a)};
+  });
+  return {type:'grammar', translate:translate, match:match, fill:fill};
+}
+function submitHomeworkStage(lessonId, stageNum){
+  const l = allLessonsFlat().find(x=>x.id===lessonId);
+  const stages = buildHomeworkStages(l);
+  const answers = collectStageAnswers(lessonId, stageNum, stages[stageNum]);
+  apiFetch('/homework_submit.php', {method:'POST', body: JSON.stringify({classKey:String(lessonId), etapaNum:stageNum, answers:answers})})
+    .then(function(){
+      clearHwDraft(lessonId, stageNum);
+      showToast('✅ Etapa enviada ao professor.');
+      loadHomeworkSection(l);
+    }).catch(function(e){ showToast(e.message||'Erro ao enviar tarefa'); });
+}
+function renderHwFeedbackBanner(lessonId, submission){
+  const box = document.getElementById('hwFeedbackBox-'+lessonId);
+  if(!box) return;
+  if(!submission){ box.innerHTML = ''; return; }
+  if(submission.reviewedAt){
+    box.innerHTML = `<div class="hw-feedback-banner"><b>✅ Corrigido pelo professor</b><br>${submission.feedback?esc(submission.feedback):'Sem comentários adicionais.'}</div>`;
+  }else{
+    box.innerHTML = `<div class="hw-feedback-banner pending">📨 Etapa enviada — aguardando correção do professor.</div>`;
+  }
+}
+function renderTeacherReview(l, submission, stageNum){
+  const box = document.getElementById('teacherReviewBox-'+l.id);
+  if(!box) return;
+  if(!submission){
+    box.innerHTML = '<div style="color:var(--muted);font-size:12.5px;">Este aluno ainda não enviou esta etapa.</div>';
+    return;
+  }
+  const a = submission.answers || {};
+  let rows = '';
+  if(a.type==='build'){
+    rows = (a.items||[]).map(x=>`<div class="review-card"><div class="a-line"><b>${esc(x.pt)}</b></div><div class="a-line">${x.correct?'✅':'❌'} ${esc((x.built||[]).join(' '))}</div></div>`).join('');
+  }else if(a.type==='fillblank'){
+    rows = (a.items||[]).map(x=>`<div class="review-card"><div class="a-line"><b>${esc(x.pt)}</b></div><div class="a-line">${x.correct?'✅':'❌'} ${esc(x.given||'(vazio)')}</div></div>`).join('');
+  }else if(a.type==='grammar'){
+    const trRows = (a.translate||[]).map(x=>`<div class="review-card"><div class="a-line"><b>${esc(x.q)}</b></div><div class="a-line">${x.correct?'✅':'❌'} ${esc(x.given||'(vazio)')}</div></div>`).join('');
+    const matchRows = (a.match||[]).map(x=>`<div class="review-card"><div class="a-line"><b>${esc(x.term)}</b></div><div class="a-line">${x.correct?'✅':'❌'} ${esc(x.given||'(vazio)')}</div></div>`).join('');
+    const fillRows = (a.fill||[]).map(x=>`<div class="review-card"><div class="a-line"><b>${esc(x.q)}</b></div><div class="a-line">${x.correct?'✅':'❌'} ${esc(x.given||'(vazio)')}</div></div>`).join('');
+    rows = `<div class="section-subtitle">A — Tradução</div>${trRows}<div class="section-subtitle">B — Ligar as colunas</div>${matchRows}<div class="section-subtitle">C — Gramática</div>${fillRows}`;
+  }
+  if(!rows) rows = '<div style="color:var(--muted);font-size:12.5px;">Sem respostas registradas.</div>';
+  box.innerHTML = `
+    ${rows}
+    <div class="panel-field">
+      <label>Feedback para o aluno</label>
+      <textarea id="teacherFeedbackInput-${l.id}">${esc(submission.feedback||'')}</textarea>
+    </div>
+    <div class="actions" style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button onclick="saveHomeworkFeedback(${l.id}, ${stageNum})">Salvar correção</button>
+      <button class="danger" onclick="resetHomeworkSubmission(${l.id}, ${stageNum})">Resetar etapa</button>
+    </div>`;
+}
+function saveHomeworkFeedback(lessonId, stageNum){
+  const feedback = document.getElementById('teacherFeedbackInput-'+lessonId).value;
+  apiFetch('/homework_feedback.php', {method:'POST', body: JSON.stringify({studentId:reviewStudentId, classKey:String(lessonId), etapaNum:stageNum, feedback:feedback})})
+    .then(function(){
+      showToast('✅ Correção salva.');
+      loadPendingReviews();
+      loadHomeworkSection(allLessonsFlat().find(x=>x.id===lessonId));
+    }).catch(function(e){ showToast(e.message||'Erro ao salvar correção'); });
+}
+function resetHomeworkSubmission(lessonId, stageNum){
+  if(!window.confirm('Resetar esta etapa? O aluno precisará enviar de novo.')) return;
+  apiFetch('/homework_reset.php', {method:'POST', body: JSON.stringify({studentId:reviewStudentId, classKey:String(lessonId), etapaNum:stageNum})})
+    .then(function(){
+      showToast('✅ Etapa resetada.');
+      loadPendingReviews();
+      loadHomeworkSection(allLessonsFlat().find(x=>x.id===lessonId));
+    }).catch(function(e){ showToast(e.message||'Erro ao resetar tarefa'); });
+}
+
+function downloadHomeworkPDF(lessonId, stageNum){
+  const l = allLessonsFlat().find(x=>x.id===lessonId);
+  const stages = buildHomeworkStages(l);
+  const stage = stages[stageNum];
+  const nameInput = document.getElementById(`reviewStudentName-${lessonId}`);
+  const name = (nameInput && nameInput.value.trim()) || '_______________________';
+  let rows = '';
+  if(stage.type==='build'){
+    stage.items.forEach((item,i)=>{
+      const slot = document.getElementById(`hw-${lessonId}-${i}-slot`);
+      const built = slot ? Array.from(slot.children).map(c=>c.textContent).join(' ') : '';
+      rows += `<div class="print-item"><div class="print-q">${i+1}. ${esc(item.pt)}</div><div class="print-a">${built ? esc(built) : '&nbsp;'}</div></div>`;
+    });
+  }else if(stage.type==='fillblank'){
+    stage.items.forEach((item,i)=>{
+      const input = document.getElementById(`hw-${lessonId}-${i}-input`);
+      const given = input && input.value ? input.value : '_____';
+      rows += `<div class="print-item"><div class="print-q">${i+1}. ${esc(item.pt)}</div><div class="print-a">${esc(item.before)}${esc(given)}${esc(item.after)}</div></div>`;
+    });
+  }else{
+    stage.translate.forEach((it,i)=>{
+      const input = document.getElementById(`hw-${lessonId}-tr-input-${i}`);
+      rows += `<div class="print-item"><div class="print-q">${i+1}. ${esc(it.q)}</div><div class="print-a">${input&&input.value ? esc(input.value) : '&nbsp;'}</div></div>`;
+    });
+    const matchBox = document.getElementById(`hw-${lessonId}-match`);
+    const shuffledPt = matchBox ? JSON.parse(decodeURIComponent(matchBox.dataset.shuffled)) : [];
+    stage.match.forEach((p,i)=>{
+      const sel = document.getElementById(`hw-${lessonId}-match-sel-${i}`);
+      const idx = sel && sel.value!=='' ? parseInt(sel.value,10) : -1;
+      const given = idx>=0 ? shuffledPt[idx] : '';
+      rows += `<div class="print-item"><div class="print-q">${esc(p.term)}</div><div class="print-a">${given ? esc(given) : '&nbsp;'}</div></div>`;
+    });
+    stage.fill.forEach((it,i)=>{
+      const input = document.getElementById(`hw-${lessonId}-fill-input-${i}`);
+      rows += `<div class="print-item"><div class="print-q">${esc(it.q)}</div><div class="print-a">${input&&input.value ? esc(input.value) : '&nbsp;'}</div></div>`;
+    });
+  }
+  const dateStr = new Date().toLocaleDateString('pt-BR');
+  document.getElementById('printArea').innerHTML = `
+    <div class="print-header">
+      <h1>Water Engineering — Homework</h1>
+      <p>Aula: ${esc(l.level+' · '+l.title)} &nbsp;·&nbsp; Etapa: ${esc(stage.label)} &nbsp;·&nbsp; Aluno: ${esc(name)} &nbsp;·&nbsp; Data: ${dateStr} &nbsp;·&nbsp; Upfront Idiomas</p>
+    </div>
+    ${rows}`;
+  window.print();
+}
+/* ================= DASHBOARD (Home) ================= */
+function renderHome(){
+  currentView = 'home';
+  currentLessonId = null;
+  renderSidebar();
+  document.getElementById('breadcrumb').textContent = 'Home / Dashboard';
+  document.getElementById('flightcode').textContent = 'AQUA-CORE \u00b7 ' + LESSONS.length + ' AULAS';
+  document.getElementById('content').className = 'content dash-mode';
+  window.scrollTo(0,0);
+
+  const totalDone = completed.size;
+  const totalLessons = LESSONS.length;
+  const corePct = totalLessons ? Math.round(totalDone/totalLessons*100) : 0;
+  const displayName = currentRole==='teacher' ? (currentTeacherName||'Professor(a)') : (currentStudentName||'Aluno(a)');
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? 'Bom dia' : hour < 18 ? 'Boa tarde' : 'Boa noite';
+
+  const nextLessons = LESSONS.filter(l=>!completed.has(l.id)).slice(0,3);
+
+  const levelProgress = LEVELS.map(lv=>{
+    const pool = lessonsOf(lv.id);
+    const pct = pool.length ? Math.round(pool.filter(l=>completed.has(l.id)).length/pool.length*100) : 0;
+    return {id:lv.id, label:lv.label, pct};
+  });
+
+  const nextHtml = nextLessons.length ? nextLessons.map(l=>`
+    <div class="next-lesson-row" onclick="openLesson(${l.id})">
+      <div class="next-lesson-thumb">${l.icon}<span class="play-badge">▶</span></div>
+      <div class="next-lesson-info">
+        <div class="next-lesson-title">${l.level} \u00b7 ${esc(l.title)}</div>
+        <div class="next-lesson-sub">${esc(l.subtitle)}</div>
+      </div>
+      <span class="next-lesson-status">Não iniciada</span>
+      <button class="next-lesson-play">▶</button>
+    </div>`).join('') : `<div class="next-lesson-empty">🎉 Você concluiu todas as aulas dispon\u00edveis até agora!</div>`;
+
+  document.getElementById('content').innerHTML = `
+    <div class="dash-inner">
+    <div class="dash-hero">
+      <div class="dash-hero-text">
+        <div class="dash-hero-eyebrow">Upfront Idiomas</div>
+        <h2>Water <b>Engineering</b></h2>
+        <p>O inglês técnico para instalar, operar e gerenciar reservatórios e estações de tratamento de água em grandes empresas.</p>
+        <button class="dash-hero-btn" onclick="${nextLessons.length?`openLesson(${nextLessons[0].id})`:'openCoreBoard()'}">Continuar aprendendo →</button>
+      </div>
+      <div class="dash-hero-photo" style="background-image:url('${HERO_PHOTO}')"></div>
+    </div>
+
+    <div class="dash-columns">
+      <div class="dash-col-main">
+        <h3 class="dash-section-title">Próximas aulas</h3>
+        <div class="next-lesson-list">${nextHtml}</div>
+      </div>
+      <div class="dash-col-side">
+        <div class="dash-widget">
+          <h4>Progresso Geral</h4>
+          <div class="donut" style="--pct:${corePct}"><span>${corePct}%</span></div>
+          <div class="donut-legend">
+            ${levelProgress.map(lv=>`<div class="donut-legend-row"><span class="dot" style="background:${TRACK_COLORS.core}"></span>${esc(lv.id)} \u00b7 ${esc(lv.label)}<b>${lv.pct}%</b></div>`).join('')}
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+  `;
+}
+
+/* ================= CORE BOARD (level lesson list) ================= */
+function selectTrackLevel(trackId, lvl){
+  currentTrackLevel = lvl;
+  openTrackBoard(trackId);
+}
+
+function renderCapstoneTeaser(trackId){
+  const t = TRACKS.find(x=>x.id===trackId);
+  return `<div class="track-teaser">
+      <div class="stamp">🏆</div>
+      <div>
+        <h3>Trilha concluída! Capstone Project</h3>
+        <p>${esc(t.capstone||'Parabéns por concluir esta trilha de especialização!')}</p>
+      </div>
+    </div>`;
+}
+
+function openTrackBoard(trackId){
+  const pool = TRACK_LESSONS[trackId];
+  if(!pool || !pool.length){
+    openTracksPage();
+    return;
+  }
+  currentView = 'track';
+  currentTrackId = trackId;
+  currentLessonId = null;
+  renderSidebar();
+  const t = TRACKS.find(x=>x.id===trackId);
+  document.getElementById('breadcrumb').textContent = 'Home / ' + t.title;
+  document.getElementById('content').className = 'content';
+  window.scrollTo(0,0);
+  const trackLevelIds = ['A1','A2','B1','B2','C1'].filter(lv=>lessonsOfTrack(trackId,lv).length>0);
+  if(!trackLevelIds.includes(currentTrackLevel)) currentTrackLevel = trackLevelIds[0];
+  document.getElementById('flightcode').textContent = 'AQUA-' + trackId.toUpperCase() + ' · ' + pool.length + ' AULAS';
+  const lvlLessons = lessonsOfTrack(trackId, currentTrackLevel);
+  const lvlInfo = LEVELS.find(l=>l.id===currentTrackLevel);
+  let rows = lvlLessons.map(l=>{
+    const done = completed.has(l.id);
+    return `<div class="board-row">
+      <div>${l.number.split('/')[0]}</div>
+      <div>${l.icon}&nbsp; ${l.title}</div>
+      <div class="status">${done?'COMPLETED':'READY'}</div>
+      <div><a href="#" onclick="openLesson(${l.id});return false;" style="color:#fff;-webkit-text-stroke:0.4px #000;text-shadow:0 1px 1px rgba(0,0,0,0.6);font-weight:700;text-decoration:none;">ABRIR &rarr;</a></div>
+    </div>`;
+  }).join('');
+  document.getElementById('content').innerHTML = `
+    <div class="board-hero">
+      <div class="board-hero-bg"><img src="${TRACK_PHOTOS[trackId] || TRACK_PHOTOS.tracks}" alt=""></div>
+      <div class="eyebrow">${esc(t.title)} · Nível ${currentTrackLevel} — ${lvlInfo.label}</div>
+      <h2>${esc(t.subtitle)}</h2>
+      <div class="level-tabs" style="max-width:340px;margin-top:16px;">
+        ${trackLevelIds.map(lv=>`<div class="level-tab ${lv===currentTrackLevel?'active':''}" onclick="selectTrackLevel('${trackId}','${lv}')">${lv}</div>`).join('')}
+      </div>
+      <div class="board-table" style="margin-top:18px;">
+        <div class="board-row head"><div>Nº</div><div>Aula</div><div>Status</div><div>Ação</div></div>
+        ${rows}
+      </div>
+    </div>
+    ${trackAllDone(trackId) ? renderCapstoneTeaser(trackId) : ''}
+  `;
+}
+
+function openCoreBoard(){
+  currentView = 'core';
+  currentLessonId = null;
+  renderSidebar();
+  document.getElementById('breadcrumb').textContent = 'Home / Water Engineering';
+  document.getElementById('flightcode').textContent = 'AQUA-CORE · ' + LESSONS.length + ' AULAS';
+  document.getElementById('content').className = 'content';
+  const lvlLessons = lessonsOf(currentLevel);
+  const lvlInfo = LEVELS.find(l=>l.id===currentLevel);
+  let rows = lvlLessons.map(l=>{
+    const done = completed.has(l.id);
+    return `<div class="board-row">
+      <div>${l.number.split('/')[0]}</div>
+      <div>${l.icon}&nbsp; ${l.title}</div>
+      <div class="status">${done?'COMPLETED':'READY'}</div>
+      <div><a href="#" onclick="openLesson(${l.id});return false;" style="color:#fff;-webkit-text-stroke:0.4px #000;text-shadow:0 1px 1px rgba(0,0,0,0.6);font-weight:700;text-decoration:none;">ABRIR &rarr;</a></div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('content').innerHTML = `
+    <div class="board-hero">
+      <div class="board-hero-bg"><img src="${TRACK_PHOTOS.core}" alt=""></div>
+      <div class="eyebrow">Nível ${currentLevel} · ${lvlInfo.label}</div>
+      <h2>${lvlInfo.caption}.</h2>
+      <div class="level-tabs" style="max-width:410px;margin-top:16px;">
+        ${LEVELS.map(l=>`<div class="level-tab ${l.id===currentLevel?'active':''}" onclick="selectLevel('${l.id}')">${l.id}</div>`).join('')}
+      </div>
+      <div class="board-table" style="margin-top:18px;">
+        <div class="board-row head"><div>Nº</div><div>Aula</div><div>Status</div><div>Ação</div></div>
+        ${rows}
+      </div>
+    </div>
+    ${allCoreDone() ? renderTrackTeaser() : ''}
+  `;
+}
+
+/* ================= RENDER LESSON ================= */
+function openLesson(id){
+  currentView = 'lesson';
+  currentLessonId = id;
+  hwStage = 1;
+  hwReviewStage = 1;
+  renderSidebar();
+  document.getElementById('content').className = 'content';
+  renderLesson(id);
+  window.scrollTo(0,0);
+}
+
+function downloadScript(id){
+  const l = allLessonsFlat().find(x=>x.id===id);
+  let txt = `BUSINESS ENGLISH FOR MANAGEMENT ACADEMY — ROTEIRO DE AUDICAO (LISTENING)\n`;
+  txt += `Aula: ${l.title} (${l.number})\nNível: ${l.level}\n\n`;
+  txt += l.audio_script + '\n';
+  const blob = new Blob([txt], {type:'text/plain;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `roteiro-listening-${l.level}-aula${l.number.split('/')[0]}.txt`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+/* ---- sentence-building drills (vocab_drills / expr_drills) ---- */
+function shuffleTokens(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+  if(a.length>1 && a.join(' ')===arr.join(' ')) [a[0],a[1]]=[a[1],a[0]];
+  return a;
+}
+function renderDrillBuilder(domId, pt, tokens){
+  const shuffled = shuffleTokens(tokens);
+  return `<div class="drill-block" id="${domId}">
+    <div class="drill-pt">🗣️ <span class="drill-pt-label">Professor fala:</span> <b>"${esc(pt)}"</b></div>
+    <div class="answer-slot" id="${domId}-slot" data-answer="${encodeURIComponent(JSON.stringify(tokens))}"></div>
+    <div class="chip-bank" id="${domId}-bank">${shuffled.map(t=>`<button type="button" class="chip" onclick="chipClick('${domId}',this)">${esc(t)}</button>`).join('')}</div>
+    <div class="drill-actions">
+      <button type="button" class="drill-btn" onclick="checkDrill('${domId}')">Verificar ✓</button>
+      <button type="button" class="drill-btn ghost" onclick="resetDrill('${domId}')">Reiniciar ↺</button>
+      <button type="button" class="drill-btn ghost" onclick="revealDrill('${domId}')">Ver resposta 👁</button>
+    </div>
+    <div class="drill-feedback" id="${domId}-fb"></div>
+  </div>`;
+}
+function chipClick(domId, btn){
+  const slot = document.getElementById(`${domId}-slot`);
+  btn.disabled = true;
+  btn.classList.add('used');
+  const placed = document.createElement('button');
+  placed.type = 'button';
+  placed.className = 'chip placed';
+  placed.textContent = btn.textContent;
+  placed.onclick = function(){
+    slot.removeChild(placed);
+    btn.disabled = false;
+    btn.classList.remove('used');
+    saveHwDraftFromDomId(domId);
+  };
+  slot.appendChild(placed);
+  saveHwDraftFromDomId(domId);
+}
+function checkDrill(domId){
+  const slot = document.getElementById(`${domId}-slot`);
+  const fb = document.getElementById(`${domId}-fb`);
+  const answer = JSON.parse(decodeURIComponent(slot.dataset.answer));
+  const built = Array.from(slot.children).map(c=>c.textContent);
+  const correct = built.length===answer.length && built.every((w,i)=>w===answer[i]);
+  fb.className = 'drill-feedback show ' + (correct?'ok':'no');
+  fb.textContent = correct ? '✅ Certinho! Muito bem.' : '❌ Quase lá — confira a ordem e tente de novo.';
+}
+function resetDrill(domId){
+  const slot = document.getElementById(`${domId}-slot`);
+  const bank = document.getElementById(`${domId}-bank`);
+  slot.innerHTML = '';
+  bank.querySelectorAll('.chip').forEach(c=>{ c.disabled=false; c.classList.remove('used'); });
+  const fb = document.getElementById(`${domId}-fb`); fb.className='drill-feedback'; fb.textContent='';
+  saveHwDraftFromDomId(domId);
+}
+function revealDrill(domId){
+  const slot = document.getElementById(`${domId}-slot`);
+  const answer = JSON.parse(decodeURIComponent(slot.dataset.answer));
+  const fb = document.getElementById(`${domId}-fb`);
+  fb.className = 'drill-feedback show reveal';
+  fb.textContent = '💡 Resposta: ' + answer.join(' ');
+}
+
+function renderDrillsSection(items, idPrefix, id){
+  return items.map((d,i)=>renderDrillBuilder(`drill-${id}-${idPrefix}-${i}`, d.pt, d.tokens)).join('');
+}
+
+/* ---- generic radio-button quiz (used for dialogue_mcq / listening_mcq / mcq) ---- */
+function stateMapFor(kind){ return {mcq:mcqState, dmcq:dmcqState, listen:listenState}[kind]; }
+function stateFor(kind, lessonId){
+  const map = stateMapFor(kind);
+  if(!map[lessonId]) map[lessonId] = {answered:{}};
+  return map[lessonId];
+}
+function fieldFor(kind){ return {mcq:'mcq', dmcq:'dialogue_mcq', listen:'listening_mcq'}[kind]; }
+function renderRadioQuiz(items, kind, id){
+  return items.map((q,qi)=>{
+    const optsHtml = q.options.map((o,oi)=>`<button class="quiz-opt" onclick="answerRadio('${kind}',${id},${qi},${oi},${q.correct})">${esc(o)}</button>`).join('');
+    return `<div class="quiz-card">
+      <div class="quiz-q">${qi+1}. ${esc(q.q)}</div>
+      <div class="quiz-opts" id="${kind}-opts-${id}-${qi}">${optsHtml}</div>
+    </div>`;
+  }).join('');
+}
+function answerRadio(kind, lessonId, qIdx, chosenIdx, correctIdx){
+  const st = stateFor(kind, lessonId);
+  if(st.answered[qIdx] !== undefined) return;
+  st.answered[qIdx] = chosenIdx;
+  paintRadio(kind, lessonId, qIdx, chosenIdx, correctIdx);
+  updateRadioScore(kind, lessonId);
+}
+function paintRadio(kind, lessonId, qIdx, chosenIdx, correctIdx){
+  const wrap = document.getElementById(`${kind}-opts-${lessonId}-${qIdx}`);
+  if(!wrap) return;
+  const btns = wrap.querySelectorAll('.quiz-opt');
+  btns.forEach((b,i)=>{
+    b.classList.add('disabled');
+    if(i===correctIdx) b.classList.add('correct');
+    else if(i===chosenIdx) b.classList.add('wrong');
+  });
+}
+function updateRadioScore(kind, lessonId){
+  const l = allLessonsFlat().find(x=>x.id===lessonId);
+  const items = l[fieldFor(kind)];
+  const st = stateFor(kind, lessonId);
+  let correct = 0;
+  Object.keys(st.answered).forEach(qi=>{ if(st.answered[qi]===items[qi].correct) correct++; });
+  const el = document.getElementById(`${kind}-score-${lessonId}`);
+  if(el) el.textContent = `${correct} / ${items.length}`;
+}
+function repaintRadioQuiz(kind, lessonId){
+  const l = allLessonsFlat().find(x=>x.id===lessonId);
+  const items = l[fieldFor(kind)];
+  const st = stateFor(kind, lessonId);
+  Object.keys(st.answered).forEach(qi=>{
+    paintRadio(kind, lessonId, parseInt(qi), st.answered[qi], items[qi].correct);
+  });
+  updateRadioScore(kind, lessonId);
+}
+
+/* ---- written exercises: fill-in-the-blank / translation ---- */
+function renderExItems(items, kind, id){
+  return items.map((it,i)=>`
+    <div class="ex-item">
+      <div class="ex-q">${i+1}. ${esc(it.q)}</div>
+      <div class="ex-row">
+        <input type="text" class="ex-input" id="${kind}-input-${id}-${i}" placeholder="${kind==='translate'?'Type the translation in English':'Digite sua resposta'}" onkeydown="if(event.key==='Enter'){event.preventDefault();checkExItem(${id},'${kind}',${i});}">
+        <button type="button" class="drill-btn" onclick="checkExItem(${id},'${kind}',${i})">Verificar</button>
+      </div>
+      <div class="ex-feedback" id="${kind}-fb-${id}-${i}"></div>
+    </div>`).join('');
+}
+function checkExItem(lessonId, kind, idx){
+  const l = allLessonsFlat().find(x=>x.id===lessonId);
+  const correctAnswer = l[kind][idx].a;
+  const input = document.getElementById(`${kind}-input-${lessonId}-${idx}`);
+  const fb = document.getElementById(`${kind}-fb-${lessonId}-${idx}`);
+  const ok = normalize(input.value) === normalize(correctAnswer);
+  input.classList.remove('correct','incorrect');
+  input.classList.add(ok?'correct':'incorrect');
+  fb.className = 'ex-feedback show ' + (ok?'ok':'no');
+  fb.textContent = ok ? '✅ Correto!' : `❌ Resposta esperada: "${correctAnswer}"`;
+  if(!exState[lessonId]) exState[lessonId] = {fill:{}, translate:{}};
+  exState[lessonId][kind][idx] = ok;
+  updateExScore(lessonId, kind);
+}
+function updateExScore(lessonId, kind){
+  const l = allLessonsFlat().find(x=>x.id===lessonId);
+  const total = l[kind].length;
+  const st = (exState[lessonId] && exState[lessonId][kind]) || {};
+  const correct = Object.values(st).filter(Boolean).length;
+  const el = document.getElementById(`${kind}-score-${lessonId}`);
+  if(el) el.textContent = `${correct} / ${total}`;
+}
+
+function renderLesson(id){
+  const l = allLessonsFlat().find(x=>x.id===id);
+  const lvlInfo = LEVELS.find(x=>x.id===l.level);
+  document.getElementById('breadcrumb').textContent = `${l.level} / Aula ${l.number}`;
+  document.getElementById('flightcode').textContent = codeOf(l);
+
+  if(currentRole==='student' && isLockedForCurrentUser(l)){
+    document.getElementById('content').innerHTML = `
+      <div class="panel-box" style="text-align:center;padding:40px 24px;">
+        <div style="font-size:40px;margin-bottom:10px;">🔒</div>
+        <h3>Aula bloqueada</h3>
+        <p style="color:var(--muted);font-size:13px;">Fale com seu professor para liberar esta aula.</p>
+      </div>`;
+    return;
+  }
+
+  const objectivesHtml = `<ul>${l.objectives.map(o=>`<li>${esc(o)}</li>`).join('')}</ul>`;
+
+  const vocabHtml = l.vocab.map(v=>`<div class="vocab-card">
+      <div class="en">${esc(v.term)}</div>
+      <div class="pt">${esc(v.pt)}</div>
+      <div class="pt" style="font-style:italic;margin-top:4px;">"${esc(v.ex)}"</div>
+    </div>`).join('');
+
+  const exprInfoHtml = l.expressions.map(e=>`<div class="vocab-card">
+      <div class="en">${esc(e.phrase)}</div>
+      <div class="pt">${esc(e.usage)}</div>
+      ${e.ex ? `<div class="pt" style="font-style:italic;margin-top:4px;">"${esc(e.ex)}"</div>` : ''}
+    </div>`).join('');
+
+  const questionsHtml = `<div class="homework-card"><ol>${(l.questions||[]).map(q=>`<li>${esc(q.q)}</li>`).join('')}</ol></div>`;
+
+  const grammarHtml = l.grammar.map(g=>`<div class="drill-card"><b>${esc(g.title)}</b><p>${g.content}</p></div>`).join('');
+
+  const dialogueHtml = l.dialogue.map(d=>`<div class="line"><div class="who">${esc(d.sp)}</div><div class="bubble"><div class="en">${esc(d.en)}</div></div></div>`).join('');
+
+  const dmcqHtml = renderRadioQuiz(l.dialogue_mcq, 'dmcq', id);
+
+  const pronunHtml = l.pronunciation.map(p=>`<div class="vocab-card">
+      <div class="en">${esc(p.word)}</div>
+      <div class="pt">🔊 ${esc(p.simple)} <span style="color:var(--coral)">(ênfase: ${esc(p.stress)})</span></div>
+      <div class="pt" style="margin-top:4px;">⚠️ ${esc(p.mistake)}</div>
+    </div>`).join('');
+
+  const audioHtml = `<div class="audio-card">
+      <div class="play">🎙️</div>
+      <div class="info">
+        <b>Áudio ainda não gravado</b>
+        <span>Um texto narrado diferente do diálogo de leitura, para praticar audição com uma situação nova.</span>
+        <span class="audio-pending">Assim que o áudio for gravado por um locutor, o link de reprodução aparecerá aqui.</span>
+      </div>
+      <div class="actions">
+        ${currentRole==='teacher' ? `<button onclick="downloadScript(${id})">Baixar roteiro (.txt) ↓</button>` : ''}
+      </div>
+    </div>`;
+
+  const scriptHtml = currentRole==='teacher' ? `<div class="script-block">
+      <div class="script-title">📝 Roteiro para leitura em voz alta pelo professor (aluno apenas escuta)</div>
+      <div class="script-line">${esc(l.audio_script)}</div>
+    </div>` : '';
+
+  const listenHtml = renderRadioQuiz(l.listening_mcq, 'listen', id);
+
+  const speakingHtml = `<div class="homework-card"><ul>${l.speaking.map(s=>`<li>${esc(s)}</li>`).join('')}</ul></div>`;
+
+  const teacherQaHtml = `<div class="drill-intro">O professor faz estas perguntas em voz alta, usando o vocabulário e as expressões da aula; o aluno responde oralmente em inglês.</div>
+    <div class="homework-card"><ol>${(l.teacher_questions||[]).map(q=>`<li><b>${esc(q.en)}</b></li>`).join('')}</ol></div>`;
+
+  const writingHtml = `<div class="tip-card" style="align-items:flex-start;background:#fff;border-color:var(--line);">
+      <div class="stamp">✍️</div>
+      <div style="flex:1;">
+        <p style="color:var(--text);">${esc(l.writing_prompt)}</p>
+        <div class="example-box">${esc(l.writing_example)}</div>
+      </div>
+    </div>`;
+
+  const challengeHtml = `<div class="tip-card" style="align-items:flex-start;background:#fff;border-color:var(--line);">
+      <div class="stamp">🏆</div>
+      <p style="color:var(--text);">${esc(l.challenge)}</p>
+    </div>`;
+
+  const extraPracticeHtml = `<div class="homework-card"><ul>${(l.extra_practice||[]).map(e=>`<li>${esc(e)}</li>`).join('')}</ul></div>`;
+
+  const mcqHtml = renderRadioQuiz(l.mcq, 'mcq', id);
+  const fillHtml = renderExItems(l.fill, 'fill', id);
+  const translateHtml = renderExItems(l.translate, 'translate', id);
+
+  const takeawaysHtml = `<div class="homework-card"><ul>${l.takeaways.map(t=>`<li>${esc(t)}</li>`).join('')}</ul></div>`;
+
+  const vocabDrillsHtml = renderDrillsSection(l.vocab_drills, 'vd', id);
+  const exprDrillsHtml = renderDrillsSection(l.expr_drills, 'ed', id);
+  const drillIntro = 'Clique nas palavras em inglês, na ordem certa, para montar a frase a partir do português.';
+
+  const lessonPool = poolForLesson(l);
+  const idx = lessonPool.findIndex(x=>x.id===id);
+  const prev = idx>0 ? lessonPool[idx-1] : null;
+  const next = idx<lessonPool.length-1 ? lessonPool[idx+1] : null;
+  const prevOk = prev && prev.level===l.level;
+  const nextOk = next && next.level===l.level;
+
+  const track = lessonsOf(l.level).map(x=>`<div class="track-dot ${x.id<=id?'filled':''}"></div>`).join('');
+
+  document.getElementById('content').innerHTML = `
+    <div class="lesson-head">
+      <div class="big-icon">${l.icon}</div>
+      <div>
+        <span class="level-pill" style="background:${lvlInfo.color}">${l.level} · ${lvlInfo.label}</span>
+        <h2>${l.title}</h2>
+        <p class="subtitle">${l.subtitle}</p>
+        <div class="topic-track">${track}</div>
+      </div>
+    </div>
+
+
+
+    <div class="objective"><b>Lesson Objectives:</b> ${objectivesHtml}</div>
+    <button class="nav-btn ghost" style="margin:4px 0 0;" onclick="document.getElementById('hw-section-${id}').scrollIntoView({behavior:'smooth',block:'start'})">📝 Ir para a Tarefa de casa ↓</button>
+
+    ${lessonPhotoFor(l) ? `<div class="lesson-photo"><img src="${lessonPhotoFor(l)}" alt=""></div>` : ''}
+
+    <div class="section" style="margin-top:28px">
+      <div class="section-title"><span class="num">1</span> Vocabulário-chave</div>
+      <div class="vocab-grid">${vocabHtml}</div>
+    </div>
+
+    <div class="section">
+      <div class="section-title"><span class="num">2</span> Monte a frase — vocabulário</div>
+      <div class="drill-intro">${drillIntro}</div>
+      ${vocabDrillsHtml}
+    </div>
+
+    <div class="section">
+      <div class="section-title"><span class="num">3</span> Perguntas — pratique com o vocabulário da aula</div>
+      ${questionsHtml}
+    </div>
+
+    <div class="section">
+      <div class="section-title"><span class="num">4</span> Phrasal Verbs</div>
+      <div class="vocab-grid">${exprInfoHtml}</div>
+    </div>
+
+    <div class="section">
+      <div class="section-title"><span class="num">5</span> Monte a frase — expressões</div>
+      <div class="drill-intro">${drillIntro}</div>
+      ${exprDrillsHtml}
+    </div>
+
+    <div class="section">
+      <div class="section-title"><span class="num">6</span> Gramática da aula</div>
+      ${grammarHtml}
+    </div>
+
+    <div class="section">
+      <div class="section-title"><span class="num">7</span> Diálogo profissional</div>
+      <div class="dialogue">${dialogueHtml}</div>
+    </div>
+
+    <div class="section">
+      <div class="section-title"><span class="num">8</span> Perguntas de compreensão do diálogo</div>
+      ${dmcqHtml}
+      <div class="score-bar">
+        <span>Pontuação — compreensão</span>
+        <span class="big" id="dmcq-score-${id}">0 / ${l.dialogue_mcq.length}</span>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title"><span class="num">9</span> Pronúncia</div>
+      <div class="vocab-grid">${pronunHtml}</div>
+    </div>
+
+    <div class="section">
+      <div class="section-title"><span class="num">10</span> Áudio — Listening</div>
+      ${audioHtml}
+      ${scriptHtml}
+      <div class="section-subtitle">Perguntas de compreensão auditiva</div>
+      ${listenHtml}
+      <div class="score-bar">
+        <span>Pontuação — listening</span>
+        <span class="big" id="listen-score-${id}">0 / ${l.listening_mcq.length}</span>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title"><span class="num">11</span> Speaking — prática oral</div>
+      ${speakingHtml}
+    </div>
+
+    <div class="section">
+      <div class="section-title"><span class="num">12</span> Perguntas do professor</div>
+      ${teacherQaHtml}
+    </div>
+
+    <div class="section">
+      <div class="section-title"><span class="num">13</span> Writing — atividade escrita</div>
+      ${writingHtml}
+    </div>
+
+    <div class="section">
+      <div class="section-title"><span class="num">14</span> Exercícios finais</div>
+      <div class="section-subtitle">A — Múltipla escolha</div>
+      ${mcqHtml}
+      <div class="score-bar">
+        <span>Pontuação — múltipla escolha</span>
+        <span class="big" id="mcq-score-${id}">0 / ${l.mcq.length}</span>
+      </div>
+      <div class="section-subtitle">B — Complete as frases</div>
+      ${fillHtml}
+      <div class="score-bar">
+        <span>Pontuação — complete as frases</span>
+        <span class="big" id="fill-score-${id}">0 / ${l.fill.length}</span>
+      </div>
+      <div class="section-subtitle">C — Tradução</div>
+      ${translateHtml}
+      <div class="score-bar">
+        <span>Pontuação — tradução</span>
+        <span class="big" id="translate-score-${id}">0 / ${l.translate.length}</span>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title"><span class="num">15</span> Resumo da aula</div>
+      ${takeawaysHtml}
+    </div>
+
+    <div class="section">
+      <div class="section-title"><span class="num">16</span> Challenge</div>
+      ${challengeHtml}
+    </div>
+
+    <div class="section">
+      <div class="section-title"><span class="num">17</span> Extra Practice</div>
+      ${extraPracticeHtml}
+    </div>
+
+    <div class="section">
+      <div class="section-title"><span class="num">18</span> Dica de estudo</div>
+      <div class="tip-card"><div class="stamp">💡</div><p>${esc(l.study_tip)}</p></div>
+    </div>
+
+    <div class="section" id="hw-section-${id}">
+      <div class="section-title"><span class="num">19</span> Tarefa de casa</div>
+      <div class="section-subtitle">✍️ Monte e envie as frases desta aula</div>
+      ${renderLessonHomeworkSection(l)}
+    </div>
+
+    <div class="lesson-nav">
+      <button class="nav-btn ghost" ${prevOk?'':'disabled'} onclick="${prevOk?`openLesson(${prev.id})`:''}">← Aula anterior</button>
+      <button class="nav-btn" onclick="markComplete(${id})">Marcar como concluída ✓</button>
+      <button class="nav-btn ghost" ${nextOk?'':'disabled'} onclick="${nextOk?`openLesson(${next.id})`:''}">Próxima aula →</button>
+    </div>
+  `;
+
+  repaintRadioQuiz('dmcq', id);
+  repaintRadioQuiz('listen', id);
+  repaintRadioQuiz('mcq', id);
+
+  const est = exState[id];
+  if(est){
+    ['fill','translate'].forEach(kind=>{
+      Object.keys(est[kind]||{}).forEach(i=>{
+        const input = document.getElementById(`${kind}-input-${id}-${i}`);
+        if(input){
+          input.classList.add(est[kind][i] ? 'correct' : 'incorrect');
+        }
+      });
+      updateExScore(id, kind);
+    });
+  }
+
+  loadHomeworkSection(l);
+  applyHwDraft(l.id, hwStage);
+}
+
+function markComplete(id){
+  completed.add(id);
+  apiFetch('/progress_complete.php', {method:'POST', body: JSON.stringify({classKey:String(id)})}).catch(function(){});
+  renderSidebar();
+  showToast('🎉 Aula concluída! Bom trabalho.');
+}
+
+function showToast(msg){
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(window.__toastTimer);
+  window.__toastTimer = setTimeout(()=>el.classList.remove('show'), 2600);
+}
+
+/* ================= INIT ================= */
+checkSession();
+</script>
+</body>
+</html>
