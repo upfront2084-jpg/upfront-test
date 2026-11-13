@@ -1173,13 +1173,19 @@ function renderSidebar(){
 
     <button class="side-nav-item ${currentView==='home'?'active':''}" onclick="renderHome()"><span class="side-nav-icon">\ud83c\udfe0</span><span class="side-nav-text">Dashboard</span></button>
 
-    <div class="level-tabs" style="flex-wrap:wrap;">
-      ${EXAM_TRACKS.map(t=>`<div class="level-tab ${t.id===currentExamTrack?'active':''}" style="font-size:11px;padding:6px 8px;" onclick="selectExamTrack('${t.id}')">${t.icon} ${t.label}</div>`).join('')}
+    <div style="margin:14px 0 2px;padding:10px 10px 12px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;">
+      <div style="font-size:10px;font-weight:700;letter-spacing:0.08em;color:rgba(255,255,255,0.45);text-transform:uppercase;margin-bottom:7px;">Prova</div>
+      <div class="level-tabs" style="flex-wrap:wrap;gap:6px;">
+        ${EXAM_TRACKS.map(t=>`<div class="level-tab ${t.id===currentExamTrack?'active':''}" style="font-size:11px;padding:6px 8px;" onclick="selectExamTrack('${t.id}')">${t.icon} ${t.label}</div>`).join('')}
+      </div>
     </div>
-    <div class="level-tabs">
-      ${LEVELS.map(l=>`<div class="level-tab ${l.id===currentLevel?'active':''}" onclick="selectLevel('${l.id}')">${l.id}</div>`).join('')}
+    <div style="margin:10px 0 2px;padding:10px 10px 4px;">
+      <div style="font-size:10px;font-weight:700;letter-spacing:0.08em;color:rgba(255,255,255,0.45);text-transform:uppercase;margin-bottom:7px;">N\u00edvel \u2014 ${esc(EXAM_TRACKS.find(t=>t.id===currentExamTrack).label)}</div>
+      <div class="level-tabs">
+        ${LEVELS.map(l=>`<div class="level-tab ${l.id===currentLevel?'active':''}" onclick="selectLevel('${l.id}')">${l.id}</div>`).join('')}
+      </div>
     </div>
-    <div class="level-caption">${EXAM_TRACKS.find(t=>t.id===currentExamTrack).label} \u00b7 ${LEVELS.find(l=>l.id===currentLevel).label} &mdash; ${LEVELS.find(l=>l.id===currentLevel).caption}</div>
+    <div class="level-caption">${LEVELS.find(l=>l.id===currentLevel).label} &mdash; ${LEVELS.find(l=>l.id===currentLevel).caption}</div>
     <div class="progress-wrap">
       <div class="progress-label"><span>Progresso (${EXAM_TRACKS.find(t=>t.id===currentExamTrack).label})</span><span>${tracksLessons().filter(l=>completed.has(l.id)).length}/${tracksLessons().length}</span></div>
       <div class="progress-bar"><div class="progress-fill" style="width:${tracksLessons().length?(tracksLessons().filter(l=>completed.has(l.id)).length/tracksLessons().length*100).toFixed(0):0}%"></div></div>
