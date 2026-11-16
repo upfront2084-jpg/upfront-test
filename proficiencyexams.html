@@ -269,6 +269,21 @@
   .quiz-opt.correct{background:rgba(34,211,196,0.15);border-color:var(--cyan);color:var(--cyan);font-weight:600;}
   .quiz-opt.wrong{background:rgba(255,90,95,0.12);border-color:var(--coral);color:var(--coral);}
   .quiz-opt.disabled{cursor:default;}
+  .quiz-opt.selected{background:rgba(59,91,255,0.12);border-color:var(--blue);color:var(--blue);font-weight:600;}
+  .mock-timer-bar{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:14px;
+    background:var(--ink);color:#fff;padding:14px 20px;border-radius:12px;margin-bottom:16px;
+    font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;}
+  .mock-timer-bar .mock-time{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--cyan);}
+  .mock-timer-bar .mock-time.low{color:var(--coral);}
+  .mock-timer-bar .mock-sec-label{font-size:12.5px;opacity:0.75;}
+  .mock-passage{background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin-bottom:16px;
+    font-size:14px;line-height:1.7;color:var(--text);max-height:360px;overflow-y:auto;white-space:pre-wrap;}
+  .mock-task-card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin-bottom:14px;}
+  .mock-task-card textarea{width:100%;min-height:140px;border:1px solid var(--line);border-radius:8px;padding:10px 12px;
+    font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;font-size:13.5px;resize:vertical;color:var(--text);}
+  .mock-result-row{display:flex;align-items:center;justify-content:space-between;background:#fff;border:1px solid var(--line);
+    border-radius:10px;padding:13px 18px;margin-bottom:9px;font-size:13.5px;}
+  .mock-score-badge{font-size:26px;font-weight:700;color:var(--blue);}
   .score-bar{display:flex;align-items:center;justify-content:space-between;background:var(--ink);color:#fff;
     padding:15px 20px;border-radius:12px;font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;font-size:12.5px;margin-top:4px;}
   .score-bar .big{font-family:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;font-size:20px;color:var(--blue);}
@@ -694,7 +709,7 @@ let editingStudentId = null;
 /* ================= HELPERS ================= */
 function lessonsOf(level){ return LESSONS.filter(l=>l.level===level && l.examTrack===currentExamTrack); }
 function tracksLessons(){ return LESSONS.filter(l=>l.examTrack===currentExamTrack); }
-function selectExamTrack(t){ currentExamTrack=t; currentLevel='B1'; currentLessonId=null; renderSidebar(); if(currentView==='home'){ renderHome(); } else { openCoreBoard(); } }
+function selectExamTrack(t){ clearMockTimer(); mockExamState=null; currentExamTrack=t; currentLevel='B1'; currentLessonId=null; renderSidebar(); if(currentView==='home'){ renderHome(); } else { openCoreBoard(); } }
 function codeOf(l){ return l.level + ' · ' + l.number.split('/')[0]; }
 function lessonsOfTrack(trackId, level){ return (TRACK_LESSONS[trackId]||[]).filter(l=>l.level===level); }
 function allLessonsFlat(){ return LESSONS.concat(...Object.values(TRACK_LESSONS)); }
@@ -1172,6 +1187,7 @@ function renderSidebar(){
     ${currentRole==='teacher' ? `<button class="admin-link ${currentView==='teacherPanel'?'active':''}" onclick="openTeacherPanel()">\ud83d\udc65 Meus alunos${pendingReviews.length?`<span class="pending-badge">${pendingReviews.length}</span>`:''}</button>` : ''}
 
     <button class="side-nav-item ${currentView==='home'?'active':''}" onclick="renderHome()"><span class="side-nav-icon">\ud83c\udfe0</span><span class="side-nav-text">Dashboard</span></button>
+    <button class="side-nav-item ${currentView==='mockList'||currentView==='mockExam'||currentView==='mockResult'?'active':''}" onclick="openMockExamList()"><span class="side-nav-icon">\u23f1\ufe0f</span><span class="side-nav-text">Simulados</span></button>
 
     <div style="margin:14px 0 2px;padding:10px 10px 12px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;">
       <div style="font-size:10px;font-weight:700;letter-spacing:0.08em;color:rgba(255,255,255,0.45);text-transform:uppercase;margin-bottom:7px;">Prova</div>
@@ -2344,6 +2360,289 @@ function showToast(msg){
   el.classList.add('show');
   clearTimeout(window.__toastTimer);
   window.__toastTimer = setTimeout(()=>el.classList.remove('show'), 2600);
+}
+
+/* ================= MOCK EXAMS ================= */
+const MOCK_EXAMS = [];
+let mockExamState = null;
+
+function mockExamsForTrack(trackId){ return MOCK_EXAMS.filter(m=>m.examTrack===trackId); }
+function mockSectionLabel(type){ return {reading:'Reading', listening:'Listening', speaking:'Speaking', writing:'Writing'}[type] || type; }
+function mockSectionDurationSec(section){
+  if(section.timeLimitSec) return section.timeLimitSec;
+  if(section.tasks) return section.tasks.reduce((s,t)=>s+(t.prepSec||0)+(t.responseSec||0)+(t.timeLimitSec||0),0);
+  return 0;
+}
+
+function openMockExamList(){
+  clearMockTimer();
+  mockExamState = null;
+  currentView = 'mockList';
+  currentLessonId = null;
+  renderSidebar();
+  document.getElementById('breadcrumb').textContent = 'Home / Proficiency Exams / Simulados';
+  document.getElementById('flightcode').textContent = 'SIMULADOS';
+  document.getElementById('content').className = 'content';
+  const exams = mockExamsForTrack(currentExamTrack);
+  const trackLabel = EXAM_TRACKS.find(t=>t.id===currentExamTrack).label;
+  let body;
+  if(!exams.length){
+    body = `<div class="board-hero"><div class="eyebrow">Simulados</div><h2>Em breve para ${esc(trackLabel)}.</h2></div>`;
+  } else {
+    body = `<div class="board-hero">
+      <div class="eyebrow">Simulados &middot; ${esc(trackLabel)}</div>
+      <h2>Pratique no formato real da prova, com tempo cronometrado por seção.</h2>
+      <div class="board-table" style="margin-top:18px;">
+        <div class="board-row head"><div>Simulado</div><div>Seções</div><div>Duração</div><div>Ação</div></div>
+        ${exams.map(ex=>{
+          const totalMin = Math.round(ex.sections.reduce((s,sec)=>s+mockSectionDurationSec(sec),0)/60);
+          return `<div class="board-row">
+            <div>${esc(ex.title)}</div>
+            <div>${ex.sections.map(s=>mockSectionLabel(s.type)).join(' + ')}</div>
+            <div>~${totalMin} min</div>
+            <div><a href="#" onclick="startMockExam('${ex.id}');return false;" style="color:var(--blue);text-decoration:none;">COMEÇAR &rarr;</a></div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  }
+  document.getElementById('content').innerHTML = body;
+}
+
+function startMockExam(examId){
+  const exam = MOCK_EXAMS.find(e=>e.id===examId);
+  if(!exam) return;
+  mockExamState = { examId, sectionIndex: -1, mcqAnswers: {}, writingAnswers: {} };
+  advanceMockExamSection();
+}
+
+function clearMockTimer(){
+  if(mockExamState && mockExamState.timerId){ clearInterval(mockExamState.timerId); mockExamState.timerId = null; }
+}
+
+function startMockTimer(seconds, onExpire){
+  clearMockTimer();
+  mockExamState.timeLeft = seconds;
+  updateMockTimerDisplay();
+  mockExamState.timerId = setInterval(function(){
+    mockExamState.timeLeft--;
+    updateMockTimerDisplay();
+    if(mockExamState.timeLeft <= 0){
+      clearMockTimer();
+      onExpire();
+    }
+  }, 1000);
+}
+
+function updateMockTimerDisplay(){
+  const el = document.getElementById('mock-time-display');
+  if(!el || !mockExamState) return;
+  const t = Math.max(0, mockExamState.timeLeft);
+  const mm = String(Math.floor(t/60)).padStart(2,'0');
+  const ss = String(t%60).padStart(2,'0');
+  el.textContent = `${mm}:${ss}`;
+  el.classList.toggle('low', t<=30);
+}
+
+function advanceMockExamSection(){
+  clearMockTimer();
+  if(!mockExamState) return;
+  const exam = MOCK_EXAMS.find(e=>e.id===mockExamState.examId);
+  mockExamState.sectionIndex++;
+  if(mockExamState.sectionIndex >= exam.sections.length){
+    finishMockExam();
+    return;
+  }
+  mockExamState.taskIndex = 0;
+  mockExamState.subPhase = 'prep';
+  renderMockExamSection();
+}
+
+function renderMockExamSection(){
+  currentView = 'mockExam';
+  renderSidebar();
+  const exam = MOCK_EXAMS.find(e=>e.id===mockExamState.examId);
+  const section = exam.sections[mockExamState.sectionIndex];
+  document.getElementById('breadcrumb').textContent = `Home / Simulados / ${esc(exam.title)}`;
+  document.getElementById('flightcode').textContent = `SEÇÃO ${mockExamState.sectionIndex+1}/${exam.sections.length} · ${mockSectionLabel(section.type).toUpperCase()}`;
+  document.getElementById('content').className = 'content';
+  if(section.type === 'reading' || section.type === 'listening'){
+    renderMockObjectiveSection(exam, section);
+  } else if(section.type === 'speaking'){
+    renderMockSpeakingSection(exam, section);
+  } else if(section.type === 'writing'){
+    renderMockWritingSection(exam, section);
+  }
+}
+
+function renderMockObjectiveSection(exam, section){
+  mockExamState.mcqAnswers[mockExamState.sectionIndex] = mockExamState.mcqAnswers[mockExamState.sectionIndex] || {};
+  const html = `
+    <div class="mock-timer-bar">
+      <div><div class="mock-sec-label">${esc(exam.title)} &middot; ${mockSectionLabel(section.type)}</div><div style="font-size:15px;font-weight:600;">${esc(section.title||mockSectionLabel(section.type))}</div></div>
+      <div style="text-align:right;"><div class="mock-time" id="mock-time-display">--:--</div><div class="mock-sec-label">tempo restante</div></div>
+    </div>
+    ${section.instructions?`<p style="color:var(--muted);font-size:13.5px;margin-bottom:14px;">${esc(section.instructions)}</p>`:''}
+    ${section.passage?`<div class="mock-passage"><b>${section.type==='listening'?'🎧 Roteiro de áudio (leia com atenção ou peça para alguém ler em voz alta):':'📖 Texto:'}</b><br><br>${esc(section.passage)}</div>`:''}
+    <div id="mock-questions">
+      ${section.questions.map((q,qi)=>`
+        <div class="quiz-card">
+          <div class="quiz-q">${qi+1}. ${esc(q.q)}</div>
+          <div class="quiz-opts">
+            ${q.options.map((o,oi)=>`<button class="quiz-opt" onclick="mockSelectAnswer(${qi},${oi})" id="mock-opt-${qi}-${oi}">${esc(o)}</button>`).join('')}
+          </div>
+        </div>`).join('')}
+    </div>
+    <button class="dash-hero-btn" onclick="finishMockSection()">Finalizar seção e continuar &rarr;</button>
+  `;
+  document.getElementById('content').innerHTML = html;
+  startMockTimer(section.timeLimitSec, finishMockSection);
+}
+
+function mockSelectAnswer(qIdx, oIdx){
+  mockExamState.mcqAnswers[mockExamState.sectionIndex][qIdx] = oIdx;
+  const exam = MOCK_EXAMS.find(e=>e.id===mockExamState.examId);
+  const section = exam.sections[mockExamState.sectionIndex];
+  section.questions[qIdx].options.forEach((_,oi2)=>{
+    const btn = document.getElementById(`mock-opt-${qIdx}-${oi2}`);
+    if(btn) btn.classList.remove('selected');
+  });
+  const chosen = document.getElementById(`mock-opt-${qIdx}-${oIdx}`);
+  if(chosen) chosen.classList.add('selected');
+}
+
+function finishMockSection(){
+  clearMockTimer();
+  advanceMockExamSection();
+}
+
+function renderMockSpeakingSection(exam, section){
+  const task = section.tasks[mockExamState.taskIndex];
+  const phase = mockExamState.subPhase;
+  const dur = phase==='prep' ? task.prepSec : task.responseSec;
+  const phaseLabel = phase==='prep' ? 'Tempo de preparo' : 'Tempo de resposta (fale em voz alta)';
+  const html = `
+    <div class="mock-timer-bar">
+      <div><div class="mock-sec-label">${esc(exam.title)} &middot; Speaking &middot; Tarefa ${mockExamState.taskIndex+1}/${section.tasks.length}</div><div style="font-size:15px;font-weight:600;">${esc(phaseLabel)}</div></div>
+      <div style="text-align:right;"><div class="mock-time" id="mock-time-display">--:--</div></div>
+    </div>
+    <div class="mock-task-card">
+      <p style="font-size:14px;line-height:1.6;">${esc(task.prompt)}</p>
+      ${task.readingPassage?`<div class="mock-passage" style="margin-top:12px;">${esc(task.readingPassage)}</div>`:''}
+    </div>
+  `;
+  document.getElementById('content').innerHTML = html;
+  startMockTimer(dur, advanceMockSpeakingPhase);
+}
+
+function advanceMockSpeakingPhase(){
+  clearMockTimer();
+  const exam = MOCK_EXAMS.find(e=>e.id===mockExamState.examId);
+  const section = exam.sections[mockExamState.sectionIndex];
+  if(mockExamState.subPhase==='prep'){
+    mockExamState.subPhase = 'response';
+    renderMockExamSection();
+  } else {
+    mockExamState.taskIndex++;
+    if(mockExamState.taskIndex >= section.tasks.length){
+      advanceMockExamSection();
+    } else {
+      mockExamState.subPhase = 'prep';
+      renderMockExamSection();
+    }
+  }
+}
+
+function renderMockWritingSection(exam, section){
+  const task = section.tasks[mockExamState.taskIndex];
+  const key = `${mockExamState.sectionIndex}-${mockExamState.taskIndex}`;
+  const html = `
+    <div class="mock-timer-bar">
+      <div><div class="mock-sec-label">${esc(exam.title)} &middot; Writing &middot; Tarefa ${mockExamState.taskIndex+1}/${section.tasks.length}</div></div>
+      <div style="text-align:right;"><div class="mock-time" id="mock-time-display">--:--</div></div>
+    </div>
+    <div class="mock-task-card">
+      <p style="font-size:14px;line-height:1.6;margin-bottom:10px;">${esc(task.prompt)}</p>
+      ${task.readingPassage?`<div class="mock-passage">${esc(task.readingPassage)}</div>`:''}
+      ${task.listeningScript?`<div class="mock-passage"><b>🎧 Roteiro de áudio:</b><br><br>${esc(task.listeningScript)}</div>`:''}
+      <textarea id="mock-writing-ta" placeholder="Escreva sua resposta aqui..." oninput="mockSaveWritingDraft('${key}')">${esc(mockExamState.writingAnswers[key]||'')}</textarea>
+    </div>
+    <button class="dash-hero-btn" onclick="advanceMockWritingTask()">Próxima tarefa / finalizar seção &rarr;</button>
+  `;
+  document.getElementById('content').innerHTML = html;
+  startMockTimer(task.timeLimitSec, advanceMockWritingTask);
+}
+
+function mockSaveWritingDraft(key){
+  const ta = document.getElementById('mock-writing-ta');
+  if(ta) mockExamState.writingAnswers[key] = ta.value;
+}
+
+function advanceMockWritingTask(){
+  clearMockTimer();
+  mockSaveWritingDraft(`${mockExamState.sectionIndex}-${mockExamState.taskIndex}`);
+  const exam = MOCK_EXAMS.find(e=>e.id===mockExamState.examId);
+  const section = exam.sections[mockExamState.sectionIndex];
+  mockExamState.taskIndex++;
+  if(mockExamState.taskIndex >= section.tasks.length){
+    advanceMockExamSection();
+  } else {
+    renderMockExamSection();
+  }
+}
+
+function mockScoreEstimate(scoreSystem, fraction){
+  switch(scoreSystem){
+    case 'toefl': return Math.round(fraction*120) + ' / 120';
+    case 'ielts': {
+      const bands=[0,1,2,3,3.5,4,4.5,5,5.5,6,6.5,7,7.5,8,8.5,9];
+      return 'Banda ' + bands[Math.round(fraction*(bands.length-1))];
+    }
+    case 'toeic': return Math.round(10 + fraction*980) + ' / 990';
+    case 'cambridge': {
+      if(fraction>=0.8) return 'Grade A';
+      if(fraction>=0.6) return 'Grade B/C (aprovado)';
+      if(fraction>=0.45) return 'Grade C/D (abaixo do esperado)';
+      return 'Abaixo da nota de corte';
+    }
+    default: return Math.round(fraction*100)+'%';
+  }
+}
+
+function finishMockExam(){
+  const exam = MOCK_EXAMS.find(e=>e.id===mockExamState.examId);
+  currentView = 'mockResult';
+  renderSidebar();
+  document.getElementById('breadcrumb').textContent = `Home / Simulados / ${esc(exam.title)} / Resultado`;
+  document.getElementById('flightcode').textContent = 'RESULTADO DO SIMULADO';
+  document.getElementById('content').className = 'content';
+
+  let totalQ = 0, totalCorrect = 0;
+  const sectionRows = exam.sections.map((section, si)=>{
+    if(section.type==='reading' || section.type==='listening'){
+      const answers = mockExamState.mcqAnswers[si] || {};
+      let correct = 0;
+      section.questions.forEach((q,qi)=>{ if(answers[qi]===q.correct) correct++; });
+      totalQ += section.questions.length; totalCorrect += correct;
+      return `<div class="mock-result-row"><span>${mockSectionLabel(section.type)}</span><span>${correct}/${section.questions.length} corretas</span></div>`;
+    }
+    return `<div class="mock-result-row"><span>${mockSectionLabel(section.type)}</span><span>Concluído &mdash; peça para seu professor avaliar</span></div>`;
+  }).join('');
+
+  const fraction = totalQ ? totalCorrect/totalQ : 0;
+  const estimate = mockScoreEstimate(exam.scoreSystem, fraction);
+
+  document.getElementById('content').innerHTML = `
+    <div class="board-hero">
+      <div class="eyebrow">Simulado concluído</div>
+      <h2>${esc(exam.title)}</h2>
+      <div style="margin:18px 0;"><span class="mock-score-badge">${esc(String(estimate))}</span> <span style="opacity:0.7;font-size:13px;">pontuação estimada (baseada em Reading/Listening)</span></div>
+      <div style="margin-top:18px;">${sectionRows}</div>
+      <p style="margin-top:16px;font-size:12.5px;color:rgba(255,255,255,0.6);">Speaking e Writing não são corrigidos automaticamente &mdash; peça para seu professor revisar suas respostas para uma avaliação completa.</p>
+      <button class="dash-hero-btn" style="margin-top:14px;" onclick="openMockExamList()">Voltar aos simulados</button>
+    </div>
+  `;
+  mockExamState = null;
 }
 
 /* ================= INIT ================= */
