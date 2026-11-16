@@ -6,7 +6,8 @@ python3 - <<'PY'
 import pathlib
 src = pathlib.Path('.').resolve()
 order = ['toefl_itp', 'toefl_ibt', 'ielts', 'cpe', 'toeic']
-data = '\n'.join((src/'data'/f'{n}.js').read_text(encoding='utf-8') for n in order if (src/'data'/f'{n}.js').exists())
+files = [src/'data'/f'{n}{suf}.js' for n in order for suf in ('', '_lessons')]
+data = '\n'.join(f.read_text(encoding='utf-8') for f in files if f.exists())
 out = (src/'shell.html').read_text(encoding='utf-8')
 out = out.replace('/*CSS*/', (src/'app.css').read_text(encoding='utf-8'))
 out = out.replace('/*DATA*/', data.replace('</script', '<\\/script'))

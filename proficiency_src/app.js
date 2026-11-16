@@ -333,12 +333,47 @@ function itemCard(it, label, onScore){
 var main = $('#main'), nav = $('#topnav');
 function setAccent(c){ document.documentElement.style.setProperty('--c', c || '#2F5DA8'); }
 function findExam(id){ for (var i = 0; i < EXAMS.length; i++) if (EXAMS[i].id === id) return EXAMS[i]; return null; }
+function findStep(ex, id){ for (var i = 0; i < ex.steps.length; i++) if (ex.steps[i].id === id) return ex.steps[i]; return null; }
+function units(ex){ return ex.lessons && ex.lessons.length ? ex.lessons : ex.steps; }
+function lessonMin(ls){ return ls.stages.reduce(function(a, s){ return a + (s.min || 0); }, 0); }
+function unitPct(ex){ var list = units(ex), d = 0; list.forEach(function(u){ var p = prog(ex.id, u.id); if (p && p.done) d++; }); return {d:d, n:list.length, pct: list.length ? Math.round(100*d/list.length) : 0}; }
+
+/* teacher mode */
+var TKEY = 'upfront_prof_teacher', teacher = false;
+try { teacher = localStorage.getItem(TKEY) === '1'; } catch(e){}
+try { var pr = new URLSearchParams(location.search).get('portal_role'); if (pr === 'teacher') teacher = true; if (pr === 'student') teacher = false; } catch(e){}
+var tBtn = $('#teacherBtn');
+function applyTeacher(){ document.body.classList.toggle('teacher', teacher); tBtn.textContent = teacher ? 'Modo professor: ligado' : 'Modo professor'; tBtn.setAttribute('aria-pressed', teacher ? 'true' : 'false'); }
+tBtn.onclick = function(){ teacher = !teacher; try { localStorage.setItem(TKEY, teacher ? '1' : '0'); } catch(e){} applyTeacher(); };
+applyTeacher();
+
+/* reusable blocks from a step: intro, how, traps, ex, practice */
+function stepBlocks(s, parts, onScore, counter){
+  var out = [];
+  parts.forEach(function(part){
+    if (part === 'fmt' && s.fmt) out.push(h('div', {class:'chips', style:{'margin-top':'0'}}, s.fmt.map(function(f){ return h('div', {class:'chip', html:'<b>' + f[0] + '</b>' + f[1]}); })));
+    if (part === 'intro' && s.intro) out.push(h('div', {class:'sub-block'}, [h('h3', {text:'O que é esta parte'}), h('div', {class:'lead', html: s.intro})]));
+    if (part === 'how' && s.how) out.push(h('div', {class:'sub-block'}, [h('h3', {text:'Passo a passo'}), h('ol', {class:'steps'}, s.how.map(function(x){ return h('li', {html:x}); }))]));
+    if (part === 'traps' && s.traps) out.push(h('div', {class:'sub-block'}, [h('h3', {text:'Armadilhas comuns'}), h('ul', {class:'traps'}, s.traps.map(function(x){ return h('li', {html:x}); }))]));
+    if (part === 'ex' && s.ex){
+      var exCard = itemCard(s.ex.item, 'Exemplo resolvido');
+      var walk = h('div', {class:'walk hidden', html: s.ex.walk});
+      var wb = h('button', {class:'btn ghost', type:'button', text:'Ver resolução passo a passo'});
+      wb.onclick = function(){ walk.classList.toggle('hidden'); };
+      exCard.el.appendChild(h('div', {class:'actions'}, [wb])); exCard.el.appendChild(walk);
+      out.push(exCard.el);
+    }
+    if (part === 'practice' && s.practice) s.practice.forEach(function(it, i){ out.push(itemCard(it, 'Exercício ' + (++counter.n), onScore(i)).el); });
+    if (part === 'page' && s.html) out.push(h('div', {class:'rich', html: s.html}));
+  });
+  return out;
+}
 
 function viewHome(){
   setAccent('#2F5DA8');
   var hero = h('section', {class:'hero'}, [h('div', {class:'wrap'}, [
     h('h1', {text:'Prepare-se para a prova de proficiência seguindo os passos da própria prova.'}),
-    h('p', {text:'Escolha a prova e siga a trilha na mesma ordem das seções do exame real. Cada etapa ensina o formato, a estratégia e as armadilhas, e termina com prática corrigida na hora.'}),
+    h('p', {text:'Cada curso é dividido em aulas de 45 a 60 minutos, na mesma ordem das seções do exame real. Em cada aula: formato, estratégia, exemplo resolvido, prática guiada e prática em condições de prova, com correção na hora.'}),
     h('div', {class:'method'}, [
       h('div', null, [h('b',{text:'1 · Formato'}), h('span',{text:'Quantas questões, quanto tempo e o que é avaliado'})]),
       h('div', null, [h('b',{text:'2 · Passo a passo'}), h('span',{text:'A estratégia para resolver cada parte'})]),
@@ -347,12 +382,12 @@ function viewHome(){
     ])
   ])]);
   var cards = h('div', {class:'grid'}, EXAMS.map(function(ex){
-    var pr = examPct(ex);
+    var pr = unitPct(ex), n = units(ex).length;
     return h('a', {class:'exam-card', href:'#/' + ex.id, style:{'--c': ex.color}}, [
       h('span', {class:'tag', text: ex.tag}), h('h3', {text: ex.name}), h('p', {text: ex.desc}),
-      h('div', {class:'facts'}, ex.facts.map(function(f){ return h('span', {class:'fact', text:f}); })),
+      h('div', {class:'facts'}, ex.facts.concat(ex.lessons ? [n + ' aulas'] : []).map(function(f){ return h('span', {class:'fact', text:f}); })),
       h('div', {class:'bar'}, [h('i', {style:{width: pr.pct + '%'}})]),
-      h('span', {class:'bar-label', text: pr.d + ' de ' + pr.n + ' etapas concluídas'})
+      h('span', {class:'bar-label', text: pr.d + ' de ' + pr.n + (ex.lessons ? ' aulas concluídas' : ' etapas concluídas')})
     ]);
   }));
   var which = h('div', {class:'box', style:{'margin-top':'24px'}, html:
@@ -363,19 +398,20 @@ function viewHome(){
     '<li><b>Cambridge C2 Proficiency:</b> certificado sem validade que comprova domínio próximo ao de um falante nativo (C2). Útil para professores, tradutores e o mercado europeu.</li>' +
     '<li><b>TOEIC Listening &amp; Reading:</b> inglês no ambiente de trabalho. Muito pedido em processos seletivos de empresas.</li>' +
     '</ul><p>Antes de se inscrever, confirme sempre com a instituição qual prova e qual nota mínima ela aceita.</p>'});
+  var tbox = h('div', {class:'box', style:{'margin-top':'16px'}, html:'<h4>Para professores</h4><p>Ligue o <b>Modo professor</b> no topo da página para ver, em cada aula, o plano com tempos, as orientações de condução, os cronômetros de cada etapa e as respostas das atividades orais. Projete a tela na sala ou compartilhe na aula online. Os alunos podem refazer os exercícios em casa no modo aluno.</p>'});
   main.innerHTML = '';
   main.appendChild(hero);
-  main.appendChild(h('div', {class:'wrap'}, [h('h2', {class:'section-title', text:'Escolha sua prova'}), h('p', {class:'section-sub', text:'O progresso fica salvo neste navegador.'}), cards, which]));
+  main.appendChild(h('div', {class:'wrap'}, [h('h2', {class:'section-title', text:'Escolha sua prova'}), h('p', {class:'section-sub', text:'O progresso fica salvo neste navegador.'}), cards, which, tbox, h('div', {style:{height:'40px'}})]));
 }
 
 function viewExam(ex){
   setAccent(ex.color);
-  var pr = examPct(ex);
+  var pr = unitPct(ex);
   var head = h('section', {class:'exam-head'}, [h('div', {class:'wrap'}, [
     h('div', {class:'crumb', html:'<a href="#/">Provas</a> / ' + esc(ex.name)}),
     h('h1', {text: ex.name}), h('p', {html: ex.intro}),
     h('div', {class:'bar', style:{'max-width':'360px','margin-top':'14px'}}, [h('i', {style:{width: pr.pct + '%'}})]),
-    h('span', {class:'bar-label', text: pr.d + ' de ' + pr.n + ' etapas concluídas'})
+    h('span', {class:'bar-label', text: pr.d + ' de ' + pr.n + (ex.lessons ? ' aulas concluídas' : ' etapas concluídas')})
   ])]);
   var table = h('div', {class:'table-wrap'}, [h('table', null, [
     h('thead', null, [h('tr', null, ['Seção','Tempo','Questões','O que cai'].map(function(t){ return h('th',{text:t}); }))]),
@@ -383,92 +419,133 @@ function viewExam(ex){
   ])]);
   var info = h('div', {class:'info-grid'}, [h('div', {class:'box', html:'<h4>Pontuação</h4>' + ex.scoring}), h('div', {class:'box', html:'<h4>Antes de começar</h4>' + ex.tips})]);
   var track = h('ol', {class:'track'}), lastSec = null;
-  ex.steps.forEach(function(s, i){
-    if (s.sec !== lastSec){ track.appendChild(h('li', {class:'track-group', text: s.sec})); lastSec = s.sec; }
-    var p = prog(ex.id, s.id);
-    track.appendChild(h('li', {class:'track-item' + (p && p.done ? ' done' : '')}, [h('a', {href:'#/' + ex.id + '/' + s.id}, [
-      h('span', {class:'num', text: p && p.done ? '✓' : String(i+1)}),
-      h('span', null, [h('div', {class:'t', text: s.title}), h('div', {class:'s', text: s.sub})]),
-      h('span', {class:'score', text: p && p.t ? p.c + '/' + p.t + ' acertos' : ''})
-    ])]));
-  });
+  if (ex.lessons){
+    var totalMin = 0;
+    ex.lessons.forEach(function(ls, i){
+      if (ls.sec !== lastSec){ track.appendChild(h('li', {class:'track-group', text: ls.sec})); lastSec = ls.sec; }
+      var p = prog(ex.id, ls.id), m = lessonMin(ls); totalMin += m;
+      track.appendChild(h('li', {class:'track-item' + (p && p.done ? ' done' : '')}, [h('a', {href:'#/' + ex.id + '/' + ls.id}, [
+        h('span', {class:'num', text: p && p.done ? '✓' : String(i+1)}),
+        h('span', null, [h('div', {class:'t', text: 'Aula ' + (i+1) + ' · ' + ls.title}), h('div', {class:'s', text: ls.sub})]),
+        h('span', {class:'score', html: m + ' min' + (p && p.t ? '<br>' + p.c + '/' + p.t + ' acertos' : '')})
+      ])]));
+    });
+    var syll = h('div', {class:'box', style:{'margin-bottom':'8px'}, html:'<h4>Programa do curso</h4><p><b>' + ex.lessons.length + ' aulas</b> de 45 a 60 minutos (carga total ≈ ' + Math.round(totalMin/60*10)/10 + ' h). Cada aula segue a sequência: aquecimento → explicação da parte da prova → exemplo resolvido → prática guiada → prática em condições de prova → fechamento e tarefa de casa.</p><p class="tonly">Sugestão de ritmo: 1 a 2 aulas por semana. A última aula é um simulado: aplique-a com cronômetro e sem consulta.</p>'});
+  } else {
+    ex.steps.forEach(function(s, i){
+      if (s.sec !== lastSec){ track.appendChild(h('li', {class:'track-group', text: s.sec})); lastSec = s.sec; }
+      var p = prog(ex.id, s.id);
+      track.appendChild(h('li', {class:'track-item' + (p && p.done ? ' done' : '')}, [h('a', {href:'#/' + ex.id + '/' + s.id}, [
+        h('span', {class:'num', text: p && p.done ? '✓' : String(i+1)}),
+        h('span', null, [h('div', {class:'t', text: s.title}), h('div', {class:'s', text: s.sub})]),
+        h('span', {class:'score', text: p && p.t ? p.c + '/' + p.t + ' acertos' : ''})
+      ])]));
+    });
+  }
   main.innerHTML = '';
   main.appendChild(head);
   main.appendChild(h('div', {class:'wrap'}, [
-    h('h2', {class:'section-title', text:'Como é a prova'}), h('p', {class:'section-sub', text:'Formato oficial resumido. A trilha abaixo segue esta ordem.'}),
+    h('h2', {class:'section-title', text:'Como é a prova'}), h('p', {class:'section-sub', text:'Formato oficial resumido. As aulas seguem esta ordem.'}),
     table, info,
-    h('h2', {class:'section-title', text:'Trilha de preparação'}), h('p', {class:'section-sub', text:'Siga as etapas em ordem: elas acompanham a sequência da prova real.'}),
-    track, h('div', {style:{height:'60px'}})
+    h('h2', {class:'section-title', text: ex.lessons ? 'Aulas do curso' : 'Trilha de preparação'}),
+    h('p', {class:'section-sub', text: ex.lessons ? 'Siga as aulas em ordem: elas acompanham a sequência da prova real.' : 'Siga as etapas em ordem: elas acompanham a sequência da prova real.'}),
+    ex.lessons ? syll : null, track, h('div', {style:{height:'60px'}})
   ]));
+}
+
+var STAGE = {warm:'Aquecimento', teach:'Explicação', model:'Exemplo resolvido', guided:'Prática guiada', pair:'Atividade em dupla', exam:'Condições de prova', mock:'Simulado', review:'Fechamento'};
+var stageTimer = null;
+function viewLesson(ex, idx){
+  setAccent(ex.color);
+  var ls = ex.lessons[idx], total = lessonMin(ls);
+  var counter = {n:0}, got = {}, objective = 0;
+  var sum = h('div', {class:'summary hidden'});
+  function onScore(key){ return function(r){
+    got[key] = r; var c = 0, t = 0, n = 0; for (var k in got){ c += got[k].c; t += got[k].t; n++; }
+    setProg(ex.id, ls.id, {c:c, t:t});
+    sum.classList.remove('hidden');
+    sum.innerHTML = '<span class="big">' + c + '/' + t + '</span><span>' + n + ' de ' + objective + ' exercícios corrigidos. ' + (t && c/t >= .8 ? 'Excelente resultado.' : t && c/t >= .6 ? 'Bom resultado. Revise as explicações dos erros.' : 'Revise as explicações e refaça os exercícios em casa.') + '</span>';
+  }; }
+  var head = h('section', {class:'exam-head'}, [h('div', {class:'wrap'}, [
+    h('div', {class:'crumb', html:'<a href="#/">Provas</a> / <a href="#/' + ex.id + '">' + esc(ex.name) + '</a> / Aula ' + (idx+1) + ' de ' + ex.lessons.length}),
+    h('div', {class:'step-head'}, [h('span', {class:'pill', text: ls.sec}), h('span', {class:'pill', text: total + ' minutos'})]),
+    h('h1', {text: 'Aula ' + (idx+1) + ': ' + ls.title}), h('p', {text: ls.sub}),
+    h('div', {class:'info-grid'}, [
+      h('div', {class:'box', html:'<h4>Objetivos da aula</h4><ul>' + ls.goals.map(function(g){ return '<li>' + g + '</li>'; }).join('') + '</ul>'}),
+      h('div', {class:'box'}, [h('h4', {text:'Roteiro'}), h('ol', {class:'agenda'}, ls.stages.map(function(st, i){
+        return h('li', null, [h('a', {href:'javascript:void 0', onclick:function(){ var el = document.getElementById('st' + i); if (el) el.scrollIntoView({behavior:'smooth'}); }}, [h('span', {text: st.title || STAGE[st.k]}), h('b', {text: st.min + ' min'})])]);
+      }))])
+    ])
+  ])]);
+  var body = h('div', {class:'wrap'});
+  ls.stages.forEach(function(st, si){
+    var card = h('section', {class:'lstage', id:'st' + si});
+    var tm = timerEl(st.min * 60, '');
+    var tb = h('button', {class:'btn ghost sm tonly', type:'button', text:'▶ Cronometrar ' + st.min + ' min'});
+    tb.onclick = function(){ if (stageTimer && stageTimer !== tm) stageTimer.stop(); stageTimer = tm; tm.reset(); tm.start(); };
+    card.appendChild(h('div', {class:'stage-head'}, [
+      h('span', {class:'stage-n', text: String(si+1)}),
+      h('div', null, [h('div', {class:'stage-k', text: STAGE[st.k] || st.k}), h('h2', {text: st.title || STAGE[st.k]})]),
+      h('div', {class:'stage-time'}, [h('span', {class:'chip-min', text: st.min + ' min'}), tb, h('span', {class:'tonly'}, [tm.el])])
+    ]));
+    if (st.note) card.appendChild(h('div', {class:'tnote', html:'<b>Para o professor:</b> ' + st.note}));
+    if (st.html) card.appendChild(h('div', {class:'rich', html: st.html}));
+    if (st.step){
+      var s = findStep(ex, st.step);
+      if (s){
+        var parts = st.parts || ['intro','how','traps'];
+        parts.forEach(function(p){ if (p === 'practice' && s.practice) s.practice.forEach(function(it){ if (it.t !== 'write' && it.t !== 'speak') objective++; }); });
+        stepBlocks(s, parts, function(i){ return onScore(si + 's' + i); }, counter).forEach(function(el){ card.appendChild(el); });
+      }
+    }
+    (st.items || []).forEach(function(it, ii){
+      if (it.t !== 'write' && it.t !== 'speak') objective++;
+      card.appendChild(itemCard(it, 'Exercício ' + (++counter.n), onScore(si + '_' + ii)).el);
+    });
+    body.appendChild(card);
+  });
+  body.appendChild(sum);
+  if (ls.hw) body.appendChild(h('section', {class:'lstage hw'}, [h('div', {class:'stage-head'}, [h('span', {class:'stage-n', text:'🏠'}), h('div', null, [h('div', {class:'stage-k', text:'Depois da aula'}), h('h2', {text:'Tarefa de casa'})])]), h('div', {class:'rich', html: ls.hw})]));
+  var p0 = prog(ex.id, ls.id);
+  var done = h('button', {class:'btn c', type:'button', text: p0 && p0.done ? '✓ Aula concluída' : 'Marcar aula como concluída'});
+  done.onclick = function(){ setProg(ex.id, ls.id, {done:true}); done.textContent = '✓ Aula concluída'; };
+  body.appendChild(h('div', {class:'actions'}, [done]));
+  var prev = ex.lessons[idx-1], next = ex.lessons[idx+1];
+  body.appendChild(h('div', {class:'pager'}, [
+    prev ? h('a', {href:'#/' + ex.id + '/' + prev.id}, [h('small', {text:'← Aula ' + idx}), prev.title]) : h('a', {href:'#/' + ex.id}, [h('small', {text:'←'}), 'Visão geral do curso']),
+    next ? h('a', {class:'nx', href:'#/' + ex.id + '/' + next.id}, [h('small', {text:'Aula ' + (idx+2) + ' →'}), next.title]) : h('a', {class:'nx', href:'#/' + ex.id}, [h('small', {text:'Fim do curso →'}), 'Voltar à visão geral'])
+  ]));
+  main.innerHTML = ''; main.appendChild(head); main.appendChild(body);
 }
 
 function viewStep(ex, idx){
   setAccent(ex.color);
-  var s = ex.steps[idx];
-  var wrapEl = h('div', {class:'wrap'});
+  var s = ex.steps[idx], counter = {n:0}, got = {}, sum = h('div', {class:'summary hidden'});
   var head = h('section', {class:'exam-head'}, [h('div', {class:'wrap'}, [
-    h('div', {class:'crumb', html:'<a href="#/">Provas</a> / <a href="#/' + ex.id + '">' + esc(ex.name) + '</a> / Etapa ' + (idx+1) + ' de ' + ex.steps.length}),
+    h('div', {class:'crumb', html:'<a href="#/">Provas</a> / <a href="#/' + ex.id + '">' + esc(ex.name) + '</a> / ' + esc(s.title)}),
     h('div', {class:'step-head'}, [h('span', {class:'pill', text: s.sec})]),
     h('h1', {text: s.title}), h('p', {text: s.sub}),
     s.fmt ? h('div', {class:'chips'}, s.fmt.map(function(f){ return h('div', {class:'chip', html:'<b>' + f[0] + '</b>' + f[1]}); })) : null
   ])]);
-
-  if (s.kind === 'page'){
-    wrapEl.appendChild(h('div', {class:'block rich', html: s.html}));
-  } else {
-    if (s.intro) wrapEl.appendChild(h('div', {class:'block'}, [h('h2', {text:'O que é esta parte'}), h('div', {class:'lead', html: s.intro})]));
-    if (s.how) wrapEl.appendChild(h('div', {class:'block'}, [h('h2', {text:'Passo a passo'}), h('ol', {class:'steps'}, s.how.map(function(x){ return h('li', {html:x}); }))]));
-    if (s.traps) wrapEl.appendChild(h('div', {class:'block'}, [h('h2', {text:'Armadilhas comuns'}), h('ul', {class:'traps'}, s.traps.map(function(x){ return h('li', {html:x}); }))]));
-    if (s.ex){
-      var exCard = itemCard(s.ex.item, 'Exemplo resolvido');
-      var walk = h('div', {class:'walk hidden', html: s.ex.walk});
-      var wb = h('button', {class:'btn ghost', type:'button', text:'Ver resolução passo a passo'});
-      wb.onclick = function(){ walk.classList.toggle('hidden'); };
-      exCard.el.appendChild(h('div', {class:'actions'}, [wb])); exCard.el.appendChild(walk);
-      wrapEl.appendChild(h('div', {class:'block'}, [h('h2', {text:'Exemplo resolvido'}), h('p', {class:'section-sub', text:'Tente resolver primeiro e depois abra a resolução comentada.'}), exCard.el]));
-    }
-    if (s.practice && s.practice.length){
-      var total = 0, got = {}, sum = h('div', {class:'summary hidden'});
-      var pb = h('div', {class:'block'}, [h('h2', {text:'Prática no modelo da prova'})]);
-      s.practice.forEach(function(it, i){
-        var card = itemCard(it, 'Prática ' + (i+1), function(r){
-          got[i] = r; var c = 0, t = 0, n = 0; for (var k in got){ c += got[k].c; t += got[k].t; n++; }
-          var objective = s.practice.filter(function(p){ return BUILD[p.t] && ['write','speak'].indexOf(p.t) === -1; }).length;
-          if (n >= objective){ setProg(ex.id, s.id, {done:true, c:c, t:t}); }
-          sum.classList.remove('hidden'); sum.innerHTML = '<span class="big">' + c + '/' + t + '</span><span>' + (n >= objective ? 'Etapa concluída. ' : 'Continue: ainda há exercícios sem correção. ') + (t && c/t >= .8 ? 'Excelente: você está pronto para a próxima etapa.' : t && c/t >= .6 ? 'Bom resultado. Releia o passo a passo e as armadilhas antes de seguir.' : 'Reveja as explicações dos erros e refaça a etapa amanhã.') + '</span>';
-        });
-        total += card.total; pb.appendChild(card.el);
-      });
-      pb.appendChild(sum);
-      if (!total){
-        var done = h('button', {class:'btn c', type:'button', text: prog(ex.id, s.id) && prog(ex.id, s.id).done ? '✓ Etapa concluída' : 'Marcar etapa como concluída'});
-        done.onclick = function(){ setProg(ex.id, s.id, {done:true}); done.textContent = '✓ Etapa concluída'; };
-        pb.appendChild(h('div', {class:'actions'}, [done]));
-      }
-      wrapEl.appendChild(pb);
-    }
-  }
-  if (s.kind === 'page'){
-    var d2 = h('button', {class:'btn c', type:'button', text: prog(ex.id, s.id) && prog(ex.id, s.id).done ? '✓ Etapa concluída' : 'Marcar etapa como concluída'});
-    d2.onclick = function(){ setProg(ex.id, s.id, {done:true}); d2.textContent = '✓ Etapa concluída'; };
-    wrapEl.appendChild(h('div', {class:'actions'}, [d2]));
-  }
-  var prev = ex.steps[idx-1], next = ex.steps[idx+1];
-  wrapEl.appendChild(h('div', {class:'pager'}, [
-    prev ? h('a', {href:'#/' + ex.id + '/' + prev.id}, [h('small', {text:'← Etapa anterior'}), prev.title]) : h('a', {href:'#/' + ex.id}, [h('small', {text:'←'}), 'Visão geral da prova']),
-    next ? h('a', {class:'nx', href:'#/' + ex.id + '/' + next.id}, [h('small', {text:'Próxima etapa →'}), next.title]) : h('a', {class:'nx', href:'#/' + ex.id}, [h('small', {text:'Fim da trilha →'}), 'Voltar à visão geral'])
-  ]));
-  main.innerHTML = ''; main.appendChild(head); main.appendChild(wrapEl);
+  var body = h('div', {class:'wrap'}, [h('div', {class:'block'})]);
+  stepBlocks(s, s.kind === 'page' ? ['page'] : ['intro','how','traps','ex','practice'], function(i){ return function(r){ got[i] = r; var c = 0, t = 0; for (var k in got){ c += got[k].c; t += got[k].t; } sum.classList.remove('hidden'); sum.innerHTML = '<span class="big">' + c + '/' + t + '</span>'; }; }, counter).forEach(function(el){ body.appendChild(el); });
+  body.appendChild(sum);
+  body.appendChild(h('div', {class:'pager'}, [h('a', {href:'#/' + ex.id}, [h('small', {text:'←'}), 'Voltar ao curso'])]));
+  main.innerHTML = ''; main.appendChild(head); main.appendChild(body);
 }
 
 function route(){
-  stopAudio();
+  stopAudio(); if (stageTimer){ stageTimer.stop(); stageTimer = null; }
   var parts = location.hash.replace(/^#\/?/, '').split('/').filter(Boolean);
   var ex = parts[0] ? findExam(parts[0]) : null;
-  Array.prototype.forEach.call(nav.querySelectorAll('a'), function(a){ a.classList.toggle('on', ex && a.getAttribute('href') === '#/' + ex.id); });
+  Array.prototype.forEach.call(nav.querySelectorAll('a'), function(a){ a.classList.toggle('on', !!ex && a.getAttribute('href') === '#/' + ex.id); });
   if (!ex) viewHome();
   else if (!parts[1]) viewExam(ex);
-  else { var i = -1; ex.steps.forEach(function(s, j){ if (s.id === parts[1]) i = j; }); if (i < 0) viewExam(ex); else viewStep(ex, i); }
+  else {
+    var li = -1; (ex.lessons || []).forEach(function(l, j){ if (l.id === parts[1]) li = j; });
+    if (li >= 0) viewLesson(ex, li);
+    else { var i = -1; ex.steps.forEach(function(s, j){ if (s.id === parts[1]) i = j; }); if (i < 0) viewExam(ex); else viewStep(ex, i); }
+  }
   window.scrollTo(0, 0);
 }
 EXAMS.forEach(function(ex){ nav.appendChild(h('a', {href:'#/' + ex.id, text: ex.short})); });

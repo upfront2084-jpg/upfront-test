@@ -221,12 +221,45 @@ textarea.essay:focus{outline:none;border-color:var(--c)}
 footer{border-top:1px solid var(--line);padding:24px 0 40px;color:var(--muted);font-size:13px}
 .hidden{display:none!important}
 
+/* lessons & teacher mode */
+.tbtn{margin-left:8px;border:1px solid rgba(255,255,255,.35);background:transparent;color:#fff;border-radius:6px;padding:6px 10px;font-size:13px;white-space:nowrap}
+.tbtn[aria-pressed="true"]{background:#F4C95D;color:var(--ink);border-color:#F4C95D;font-weight:700}
+@media (max-width:760px){.tbtn{margin-left:auto}}
+.tnote,.tonly{display:none}
+body.teacher .tnote{display:block}
+body.teacher .tonly{display:inline-flex}
+body.teacher p.tonly{display:block}
+.tnote{background:#FFF8E1;border:1px solid #F0D58A;border-left:5px solid #D9A438;border-radius:8px;padding:12px 14px;margin:0 0 14px;font-size:15px}
+.agenda{margin:0;padding-left:20px;font-size:14px}
+.agenda li{margin:3px 0}
+.agenda a{display:flex;justify-content:space-between;gap:10px;color:inherit;text-decoration:none}
+.agenda a:hover span{text-decoration:underline}
+.agenda b{color:var(--muted);font-weight:600;white-space:nowrap}
+.lstage{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px;margin:22px 0;box-shadow:var(--shadow);scroll-margin-top:70px}
+.lstage .item{box-shadow:none;background:#FCFBF8}
+.stage-head{display:flex;gap:14px;align-items:flex-start;margin-bottom:14px;flex-wrap:wrap}
+.stage-head h2{margin:0;font-size:20px;line-height:1.3}
+.stage-head > div:nth-child(2){flex:1;min-width:180px}
+.stage-n{width:36px;height:36px;border-radius:10px;background:var(--c);color:#fff;display:grid;place-items:center;font-weight:700;flex:none}
+.stage-k{font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--c);font-weight:700}
+.stage-time{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.chip-min{font-size:13px;font-weight:700;background:var(--soft);border-radius:999px;padding:4px 10px}
+.btn.sm{padding:5px 10px;font-size:13px}
+.sub-block{margin:6px 0 18px}
+.sub-block h3{font-size:15px;margin:0 0 8px;color:var(--ink-2)}
+.lstage.hw{border-style:dashed}
+.rich table{margin:8px 0}
+.rich .cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:640px){.rich .cols{grid-template-columns:1fr}}
+.rich .card{background:var(--soft);border-radius:8px;padding:10px 14px}
+
 </style>
 </head>
 <body>
 <header class="top"><div class="wrap">
   <a class="logo" href="#/"><span class="logo-mark">UI</span><span>Proficiency Prep<small>Upfront Idiomas</small></span></a>
   <nav id="topnav" aria-label="Provas"></nav>
+  <button id="teacherBtn" class="tbtn" type="button" aria-pressed="false">Modo professor</button>
 </div></header>
 <main id="main"></main>
 <footer><div class="wrap">Upfront Idiomas · Curso preparatório para provas de proficiência. TOEFL e TOEIC são marcas da ETS; IELTS pertence ao British Council, IDP e Cambridge; C2 Proficiency é da Cambridge University Press &amp; Assessment. Este material é independente: as questões foram escritas para o curso e não são questões oficiais. Os formatos podem mudar, por isso confira sempre o site oficial antes da prova.</div></footer>
@@ -385,6 +418,267 @@ steps:[
  <ul><li>Leve documento com foto (o mesmo da inscrição) e chegue 30 minutos antes.</li><li>No papel, use lápis nº 2 e borracha. Preencha bem as bolinhas.</li><li>Não deixe nada em branco: erro não desconta.</li><li>Structure: se travou em uma questão, marque um palpite e volte no fim, se der tempo.</li><li>Reading: use o relógio. Ao terminar cada texto, confira se está dentro dos 11 minutos.</li></ul>`}
 ]
 });
+
+EXAMS.filter(function(e){ return e.id === 'toefl-itp'; })[0].lessons = [
+{id:'aula-1', sec:'Introdução', title:'Conhecendo o TOEFL ITP + diagnóstico', sub:'Formato, pontuação e um minissimulado para descobrir o ponto de partida.',
+ goals:['Entender as 3 seções, os tempos e a escala de 310 a 677','Fazer um diagnóstico rápido das três habilidades','Definir a nota-alvo e as prioridades de estudo'],
+ stages:[
+  {k:'warm', min:5, title:'Por que você vai fazer o TOEFL ITP?', note:`Faça a roda de perguntas em português mesmo. Anote no quadro a nota exigida por cada programa: ela vai guiar as metas da aula 10.`,
+   html:`<ul><li>Para qual programa ou processo você precisa da nota? Qual é a nota mínima?</li><li>Você já fez alguma prova de inglês? Como foi?</li><li>Das três habilidades (ouvir, gramática, leitura), qual parece mais difícil?</li></ul>`},
+  {k:'teach', min:10, title:'A prova em 10 minutos', note:`Projete a página de visão geral do curso (tabela). Destaque três regras: o áudio toca uma vez, não se volta a seções anteriores e erro não desconta.`,
+   html:`<div class="cols"><div class="card"><b>Section 1 · Listening</b><br>50 questões · ~35 min<br>Part A: 30 diálogos curtos<br>Part B: conversas longas<br>Part C: palestras</div><div class="card"><b>Section 2 · Structure &amp; Written Expression</b><br>40 questões · 25 min<br>15 frases para completar<br>25 frases para achar o erro</div><div class="card"><b>Section 3 · Reading</b><br>50 questões · 55 min<br>5 textos acadêmicos</div><div class="card"><b>Pontuação</b><br>310–677<br>460 ≈ B1 · 543 ≈ B2 · 627 ≈ C1<br>Erro não desconta: responda tudo!</div></div>`},
+  {k:'mock', min:25, title:'Diagnóstico: um pouco de cada seção', note:`Aplique em silêncio e sem consulta. Toque cada áudio <b>uma única vez</b>. Os alunos corrigem no final, e você anota no quadro a seção com mais erros na turma.`,
+   items:[
+    {t:'mcq', title:'Listening Part A', a:[['W',`Are you coming to the library tonight?`],['M',`I wish I could, but I have to work.`],['N',`What does the man mean?`]], o:[`He will go to the library after work.`,`He cannot go to the library.`,`He works at the library.`,`He wants the woman to work with him.`], k:1, x:`"I wish I could" = eu não posso.`},
+    {t:'mcq', title:'Listening Part A', a:[['M',`This printer never works when I need it.`],['W',`Tell me about it!`],['N',`What does the woman mean?`]], o:[`She wants more information.`,`She has had the same problem.`,`She will fix the printer.`,`She doesn't need the printer.`], k:1, x:`"Tell me about it!" = concordo, também passo por isso.`},
+    {t:'mcq', title:'Listening Part A', a:[['W',`Did you hand in your essay?`],['M',`Not yet. Professor Diaz gave us until Monday.`],['N',`What does the man imply?`]], o:[`He forgot about the essay.`,`The deadline was extended.`,`Professor Diaz is absent.`,`He handed it in on Monday.`], k:1},
+    {t:'mcq', title:'Structure', qs:[
+     {q:`_______ in 1636, Harvard is the oldest university in the United States.`, o:[`Founded`,`It was founded`,`Founding`,`Was founded`], k:0},
+     {q:`Some insects can survive temperatures _______ would kill most animals.`, o:[`what`,`that`,`they`,`and`], k:1},
+     {q:`Rarely _______ such a large earthquake in this region.`, o:[`scientists have recorded`,`have scientists recorded`,`scientists recording`,`recorded scientists`], k:1},
+     {q:`The Amazon River carries more water _______ any other river in the world.`, o:[`as`,`than`,`that`,`then`], k:1}]},
+    {t:'mcq', title:'Written Expression', qs:[
+     {q:`The <u>children</u> (A) in the study <u>was</u> (B) <u>observed</u> (C) for <u>several</u> (D) months.`, o:['children','was','observed','several'], k:1},
+     {q:`Glass is <u>made</u> (A) by <u>heat</u> (B) sand <u>to</u> (C) a very <u>high</u> (D) temperature.`, o:['made','heat','to','high'], k:1, x:`Depois de preposição vem -ing: "by heating".`},
+     {q:`<u>Despite</u> (A) <u>its</u> (B) small size, the hummingbird is <u>a</u> (C) <u>extremely</u> (D) fast flyer.`, o:['Despite','its','a','extremely'], k:2, x:`Antes de som de vogal: "an extremely".`},
+     {q:`Penguins <u>use</u> (A) their wings <u>for</u> (B) <u>swim</u> (C) rather than <u>flying</u> (D).`, o:['use','for','swim','flying'], k:2}]},
+    {t:'mcq', title:'Reading', p:`<p>The sea otter is one of the few animals that use tools. Floating on its back, it places a flat stone on its chest and strikes shellfish against it until the shell breaks. Because sea otters lack the layer of fat that keeps most marine mammals warm, they depend on extremely dense fur — up to one million hairs per square inch. To maintain the energy needed to stay warm, an otter must eat about a quarter of its body weight every day.</p>`,
+     qs:[{q:`What is the passage mainly about?`, o:[`How sea otters stay warm and feed`,`Why shellfish are hard to open`,`The fur trade`,`Animals that live on land`], k:0},
+         {q:`The word "it" in sentence 2 refers to`, o:[`the stone`,`the otter`,`the chest`,`the shell`], k:1},
+         {q:`Why must otters eat so much?`, o:[`They are very large.`,`They need energy to stay warm.`,`Shellfish have little food.`,`They swim long distances.`], k:1}]}
+   ]},
+  {k:'review', min:10, title:'Resultado e meta', note:`Peça que cada aluno calcule o percentual de acerto por seção e defina a seção prioritária. Explique que as aulas 2 a 4 tratam de Listening, 5 a 7 de Structure e 8 e 9 de Reading.`,
+   html:`<p>Preencha em seu caderno:</p><table><tr><th>Seção</th><th>Acertos</th><th>%</th></tr><tr><td>Listening</td><td>__ / 3</td><td></td></tr><tr><td>Structure + Written Expression</td><td>__ / 8</td><td></td></tr><tr><td>Reading</td><td>__ / 3</td><td></td></tr></table><p><b>Minha nota-alvo:</b> ____ &nbsp; <b>Minha seção prioritária:</b> ____</p>`}
+ ],
+ hw:`<ul><li>Ouça 15 minutos de qualquer podcast em inglês e anote 5 expressões que você não conhecia.</li><li>Leia a página de visão geral do curso e anote dúvidas sobre o formato para a próxima aula.</li></ul>`},
+
+{id:'aula-2', sec:'Section 1 · Listening', title:'Part A I: sugestões, concordância e expressões', sub:'A estratégia da segunda fala e as expressões que mais caem.',
+ goals:['Aplicar a estratégia de ler as alternativas antes do áudio','Focar na segunda fala','Reconhecer 12 expressões frequentes da Part A'],
+ stages:[
+  {k:'warm', min:5, title:'Expressão ou sentido literal?', note:`Escreva no quadro: "It's on me", "I'm all ears", "Count me in", "Let's call it a day". Os alunos tentam adivinhar o sentido antes da explicação.`,
+   html:`<p>O que significa cada expressão? Discuta com um colega:</p><ul><li><i>It's on me.</i></li><li><i>I'm all ears.</i></li><li><i>Count me in.</i></li><li><i>Let's call it a day.</i></li></ul>`},
+  {k:'teach', min:12, step:'listening-a', parts:['fmt','intro','how','traps'], note:`Enfatize o passo 3: a alternativa que repete palavras do áudio costuma ser a errada. Mostre um exemplo no quadro.`},
+  {k:'model', min:5, step:'listening-a', parts:['ex'], note:`Toque o áudio uma vez e peça que levantem a mão com A, B, C ou D. Depois abra a resolução.`},
+  {k:'guided', min:13, title:'Banco de expressões', note:`Faça em duplas. Na correção, peça um exemplo de uso para cada expressão.`,
+   items:[
+    {t:'match', short:true, ins:`Associe cada expressão ao sentido.`, o:[`I agree completely`,`I'll pay`,`I'm listening carefully`,`Include me`,`Stop working for today`,`It was very easy`,`I didn't hear what you said`,`Don't worry about it`],
+     qs:[{q:`It's on me.`, k:1},{q:`I'm all ears.`, k:2},{q:`Count me in.`, k:3},{q:`Let's call it a day.`, k:4},{q:`It was a piece of cake.`, k:5},{q:`You can say that again.`, k:0},{q:`Come again?`, k:6},{q:`Never mind.`, k:7}]},
+    {t:'mcq', a:[['M',`I'm going to the coffee shop. Do you want to come?`],['W',`Count me in. I could use a break.`],['N',`What does the woman mean?`]], o:[`She will count the money.`,`She will go with the man.`,`She is too busy.`,`She doesn't drink coffee.`], k:1},
+    {t:'mcq', a:[['W',`That chemistry test was really hard, wasn't it?`],['M',`Actually, it was a piece of cake.`],['N',`What does the man mean?`]], o:[`He ate cake before the test.`,`He found the test easy.`,`He agrees with the woman.`,`He didn't take the test.`], k:1}
+   ]},
+  {k:'exam', min:15, step:'listening-a', parts:['practice'], note:`Em condições de prova: o áudio toca uma vez e há 12 segundos para responder. Corrija só no final.`},
+  {k:'review', min:5, title:'O que levar desta aula', note:`Peça que cada aluno diga uma armadilha que percebeu hoje.`,
+   html:`<ul><li>Leio as alternativas <b>antes</b> do áudio.</li><li>A resposta costuma estar na <b>segunda fala</b>.</li><li>Palavra repetida ou de som parecido é sinal de alerta.</li></ul>`}
+ ],
+ hw:`<ul><li>Crie fichas (flashcards) com as 8 expressões da aula e mais 5 que você encontrar em séries ou podcasts.</li><li>Refaça os exercícios da aula no modo aluno e anote o tipo de erro.</li></ul>`},
+
+{id:'aula-3', sec:'Section 1 · Listening', title:'Part A II: condicionais, surpresa e negativas', sub:'As estruturas que fazem o aluno entender o contrário do que foi dito.',
+ goals:['Interpretar condicionais irreais e "wish"','Reconhecer surpresa e expectativas frustradas','Decodificar negativas duplas e sons parecidos'],
+ stages:[
+  {k:'warm', min:5, title:'Pares mínimos', note:`Leia em voz alta, em ordem aleatória, e os alunos indicam qual palavra ouviram: <i>walk/work, glass/class, thirteen/thirty, can/can't, live/leave</i>.`,
+   html:`<p>Você vai ouvir uma palavra de cada par. Qual foi?</p><p><b>walk / work · glass / class · thirteen / thirty · can / can't · live / leave · law / low</b></p>`},
+  {k:'teach', min:10, title:'Quatro estruturas que invertem o sentido', note:`Escreva cada estrutura no quadro com o significado "real". Peça que os alunos criem mais um exemplo de cada.`,
+   html:`<table><tr><th>Estrutura</th><th>Exemplo</th><th>O que significa</th></tr><tr><td>Condicional irreal</td><td><i>If I had known, I would have come.</i></td><td>Ele <b>não</b> sabia e <b>não</b> veio.</td></tr><tr><td>Wish</td><td><i>I wish I had more time.</i></td><td>Ela <b>não</b> tem tempo.</td></tr><tr><td>Surpresa</td><td><i>Oh, so the store is open today?</i></td><td>Ela achava que estava <b>fechada</b>.</td></tr><tr><td>Negativa dupla</td><td><i>It's not unusual for him to be late.</i></td><td>Ele <b>costuma</b> se atrasar.</td></tr><tr><td>Comparativo negativo</td><td><i>I couldn't agree more.</i></td><td>Concordo <b>totalmente</b>.</td></tr></table>`},
+  {k:'guided', min:15, title:'Prática guiada', note:`Pause depois de cada áudio e pergunte: "qual estrutura apareceu?" antes de checar a resposta.`,
+   items:[
+    {t:'mcq', a:[['W',`Did you see the fireworks last night?`],['M',`If only I had known about them!`],['N',`What does the man mean?`]], o:[`He saw the fireworks.`,`He did not know about the fireworks.`,`He told the woman about them.`,`He doesn't like fireworks.`], k:1},
+    {t:'mcq', a:[['M',`Oh, so you've already finished the whole book?`],['W',`I couldn't put it down.`],['N',`What had the man assumed?`]], o:[`The woman had not finished the book.`,`The woman did not like the book.`,`The book was short.`,`The woman had lost the book.`], k:0},
+    {t:'mcq', a:[['W',`Do you think it will be hard to get tickets?`],['M',`It's not impossible, but you'd better hurry.`],['N',`What does the man mean?`]], o:[`Tickets are sold out.`,`Getting tickets is possible but may be difficult.`,`The woman doesn't need tickets.`,`Tickets are very cheap.`], k:1},
+    {t:'mcq', a:[['M',`The new dean's speech was excellent.`],['W',`I couldn't agree more.`],['N',`What does the woman mean?`]], o:[`She disagrees with the man.`,`She completely agrees.`,`She missed the speech.`,`She can't decide.`], k:1},
+    {t:'mcq', a:[['W',`Are you going to the conference in Chicago?`],['M',`I would if the department paid for it.`],['N',`What does the man imply?`]], o:[`He is going to Chicago.`,`The department will not pay for the trip.`,`He paid for the conference.`,`The conference was cancelled.`], k:1},
+    {t:'mcq', a:[['M',`I'm thinking of taking five courses this semester.`],['W',`Are you sure you can handle that much work?`],['N',`What does the woman imply?`]], o:[`Five courses may be too many.`,`She wants to take the same courses.`,`The man is a good student.`,`She will help the man.`], k:0}
+   ]},
+  {k:'pair', min:10, title:'Crie sua questão de Part A', note:`Cada dupla escreve um diálogo de duas falas com uma das estruturas da aula e 4 alternativas (uma com palavra repetida como armadilha). As duplas trocam e resolvem.`,
+   html:`<p>Com um colega, escreva:</p><ol><li>Uma fala A (pergunta ou comentário).</li><li>Uma fala B com uma das estruturas da aula.</li><li>A pergunta do narrador e <b>4 alternativas</b>: uma certa e uma que repete palavras do áudio.</li></ol><p>Troque com outra dupla e resolva a questão dela.</p>`},
+  {k:'exam', min:10, title:'Condições de prova', note:`Áudio uma vez e 12 segundos por questão.`,
+   items:[
+    {t:'mcq', a:[['W',`You look exhausted.`],['M',`I wish I hadn't stayed up so late studying.`],['N',`What does the man mean?`]], o:[`He didn't study.`,`He regrets going to bed late.`,`He will study tonight.`,`He slept well.`], k:1},
+    {t:'mcq', a:[['M',`Did the bus leave already?`],['W',`It just pulled out. If you'd been a minute earlier, you'd have caught it.`],['N',`What does the woman mean?`]], o:[`The man caught the bus.`,`The man missed the bus.`,`The bus will leave in a minute.`,`The bus is late.`], k:1},
+    {t:'mcq', a:[['W',`Is the cafeteria open on Sundays?`],['M',`Not that I know of.`],['N',`What does the man mean?`]], o:[`The cafeteria is open on Sundays.`,`He doesn't think it opens on Sundays.`,`He works at the cafeteria.`,`He knows the schedule well.`], k:1},
+    {t:'mcq', a:[['M',`So the lab report isn't due today after all?`],['W',`No, the professor postponed it.`],['N',`What had the man assumed?`]], o:[`The report was due today.`,`The report was postponed.`,`The professor was absent.`,`There was no lab report.`], k:0}
+   ]},
+  {k:'review', min:5, title:'Fechamento', html:`<p>Regra de ouro: <b>condicional irreal e "wish" sempre indicam o contrário da realidade.</b> "Oh, so…?" revela o que a pessoa <b>esperava</b>.</p>`}
+ ],
+ hw:`<ul><li>Escreva 5 frases sobre a sua vida com "I wish…" e "If I had…, I would have…".</li><li>Assista a um episódio de série com legenda em inglês e anote 3 expressões de concordância ou discordância.</li></ul>`},
+
+{id:'aula-4', sec:'Section 1 · Listening', title:'Parts B e C: conversas longas e palestras', sub:'Como guardar informações sem anotar e seguir a ordem das perguntas.',
+ goals:['Prever o tema pelas alternativas','Identificar ideia principal e detalhes em áudios de 1–2 min','Lidar com a regra de não poder anotar'],
+ stages:[
+  {k:'warm', min:5, title:'Jogo da memória', note:`Leia em voz alta um parágrafo curto (por exemplo, a transcrição do exemplo desta aula) sem que os alunos anotem. Depois faça 3 perguntas orais de detalhe. Discuta: o que ajudou a lembrar?`,
+   html:`<p>Ouça o professor sem anotar nada. Depois responda às perguntas oralmente. <b>O que ajudou você a lembrar?</b></p>`},
+  {k:'teach', min:10, step:'listening-bc', parts:['fmt','intro','how','traps']},
+  {k:'model', min:8, step:'listening-bc', parts:['ex'], note:`Antes de tocar, peça que leiam as alternativas das 3 perguntas por 30 segundos e digam qual é o tema provável.`},
+  {k:'guided', min:12, step:'listening-bc', parts:['practice'], note:`Depois da Part B, pare e pergunte: "qual frase da conversa deu a resposta da questão 2?". Mostre a transcrição.`},
+  {k:'exam', min:12, title:'Condições de prova: Part C', note:`Dê 30 segundos para lerem as alternativas. O áudio toca uma vez.`,
+   items:[
+    {t:'mcq', title:'Part C', a:[['M',`Good afternoon. In today's geology lecture, we'll look at geysers — hot springs that periodically shoot water into the air. Geysers need three conditions: a supply of water, an intense heat source underground, and a plumbing system of narrow cracks in the rock. Water seeps down, is heated by magma, and becomes trapped. When the pressure becomes too great, the water erupts. Interestingly, more than half of the world's geysers are found in a single place: Yellowstone National Park in the United States. Old Faithful, its most famous geyser, erupts roughly every ninety minutes.`]],
+     qs:[{q:`What is the lecture mainly about?`, o:[`The history of Yellowstone`,`How geysers form and erupt`,`Different types of rocks`,`Volcanoes in the United States`], k:1},
+         {q:`Which is NOT one of the conditions mentioned for geysers?`, o:[`A water supply`,`A heat source`,`Cold temperatures on the surface`,`Narrow cracks in the rock`], k:2},
+         {q:`What does the speaker say about Yellowstone?`, o:[`It has more than half of the world's geysers.`,`It has the tallest geyser in the world.`,`Its geysers erupt every hour.`,`It was the first national park.`], k:0},
+         {q:`How often does Old Faithful erupt?`, o:[`Every 19 minutes`,`About every 90 minutes`,`Once a day`,`Every nine hours`], k:1}]}
+   ]},
+  {k:'review', min:5, title:'Fechamento', html:`<p>Ordem típica das perguntas: <b>tema → detalhe → detalhe → inferência</b>. As primeiras frases dão o tema e as palavras de ênfase indicam os detalhes que serão perguntados.</p>`}
+ ],
+ hw:`<ul><li>Assista a uma palestra curta (TED-Ed, 4–5 min) sem pausar e depois escreva em 3 linhas: tema, 2 detalhes e a conclusão.</li></ul>`},
+
+{id:'aula-5', sec:'Section 2 · Structure & Written Expression', title:'Structure I: o esqueleto da frase', sub:'Sujeito, verbo e conectivos: a base de metade das questões.',
+ goals:['Encontrar sujeito e verbo principal rapidamente','Aplicar a regra "orações = conectivos + 1"','Resolver questões em cerca de 30 segundos'],
+ stages:[
+  {k:'warm', min:5, title:'Onde está o verbo?', note:`Escreva no quadro: "The museum, which was built in 1890 and renovated in 2005, attracts thousands of visitors." Peça que sublinhem o sujeito e o verbo principal (museum / attracts).`,
+   html:`<p>Sublinhe o <b>sujeito</b> e o <b>verbo principal</b>:</p><p class="passage">The museum, which was built in 1890 and renovated in 2005, attracts thousands of visitors every year.</p>`},
+  {k:'teach', min:12, step:'structure', parts:['fmt','intro','how','traps']},
+  {k:'model', min:5, step:'structure', parts:['ex']},
+  {k:'guided', min:12, title:'Falta sujeito, verbo ou conectivo?', note:`Antes de escolher, o aluno diz em voz alta o que está faltando na frase.`,
+   items:[{t:'mcq', qs:[
+    {q:`_______ is the largest organ of the human body.`, o:[`Skin`,`The skin that`,`It is the skin`,`Being skin`], k:0, x:`Falta o sujeito.`},
+    {q:`The Rocky Mountains _______ from Canada to New Mexico.`, o:[`stretching`,`stretch`,`which stretch`,`to stretch`], k:1, x:`Falta o verbo principal.`},
+    {q:`Bats are able to fly in the dark _______ they use echolocation.`, o:[`because`,`because of`,`due to`,`since of`], k:0, x:`Duas orações pedem um conectivo; "because of" é seguido de substantivo.`},
+    {q:`The town _______ grew rapidly after gold was discovered nearby.`, o:[`it`,`which`,`, where it`,`of San Francisco`], k:3, x:`Qualquer outra opção cria sujeito duplo ou oração solta.`},
+    {q:`_______ water freezes, it expands.`, o:[`When`,`During`,`It is`,`That`], k:0},
+    {q:`One of the most important inventions of the 19th century _______ the telephone.`, o:[`it was`,`was`,`being`,`were`], k:1, x:`Sujeito singular "One… was".`}]}]},
+  {k:'exam', min:12, step:'structure', parts:['practice'], note:`Cronometre 2 minutos e meio para as 5 questões (30 s cada).`},
+  {k:'review', min:5, title:'Fechamento', html:`<p><b>Checklist em 3 segundos:</b> tem sujeito? tem verbo? quantos verbos e quantos conectivos?</p>`}
+ ],
+ hw:`<ul><li>Copie 5 frases longas de um artigo em inglês e marque sujeito, verbo principal e conectivos.</li></ul>`},
+
+{id:'aula-6', sec:'Section 2 · Structure & Written Expression', title:'Structure II: inversão, reduzidas e paralelismo', sub:'As estruturas avançadas que diferenciam notas acima de 550.',
+ goals:['Usar inversão depois de expressões negativas','Reconhecer orações reduzidas (particípios)','Aplicar paralelismo e comparativos'],
+ stages:[
+  {k:'warm', min:5, title:'Soa estranho, mas está certo', note:`Mostre as 3 frases e pergunte quais estão corretas. Todas estão: é a inversão formal.`,
+   html:`<ul><li><i>Never have I seen such a storm.</i></li><li><i>Only after the war did the economy recover.</i></li><li><i>Had I known, I would have called.</i></li></ul><p>Estão corretas? Por quê?</p>`},
+  {k:'teach', min:12, title:'Quatro estruturas avançadas', note:`Para cada estrutura, mostre um exemplo no quadro e peça que os alunos transformem uma frase simples.`,
+   html:`<table><tr><th>Estrutura</th><th>Regra</th><th>Exemplo</th></tr><tr><td>Inversão</td><td>Never / Rarely / Seldom / Not until / Only + auxiliar + sujeito</td><td><i>Seldom <b>do bears</b> attack humans.</i></td></tr><tr><td>Oração reduzida</td><td>-ing (ativa) ou particípio (passiva), sem sujeito</td><td><i><b>Written</b> in 1851, Moby-Dick…</i> / <i><b>Living</b> in caves, bats…</i></td></tr><tr><td>Paralelismo</td><td>Itens de uma lista na mesma forma</td><td><i>reading, writing, and <b>speaking</b></i></td></tr><tr><td>Comparativos</td><td>-er than / more … than / the … -est / the more…, the more…</td><td><i>The higher you climb, the colder it gets.</i></td></tr></table>`},
+  {k:'guided', min:15, title:'Prática guiada', items:[{t:'mcq', qs:[
+    {q:`Seldom _______ in the wild for more than 20 years.`, o:[`wolves live`,`do wolves live`,`wolves living`,`living wolves`], k:1},
+    {q:`_______ by the Romans, the city of London was originally called Londinium.`, o:[`Establishing`,`Established`,`It was established`,`To establish`], k:1, x:`Sentido passivo: a cidade foi fundada.`},
+    {q:`The course teaches students to analyze data, write reports, and _______ results.`, o:[`presenting`,`the presentation of`,`present`,`presented`], k:2},
+    {q:`The farther a planet is from the Sun, _______ its orbit.`, o:[`longer`,`the longer`,`it is longer`,`the longest`], k:1},
+    {q:`Only when the experiment was repeated _______ the error.`, o:[`the scientists noticed`,`did the scientists notice`,`noticed the scientists`,`the scientists did notice`], k:1},
+    {q:`_______ more than 100 species, the oak tree is found throughout the Northern Hemisphere.`, o:[`Including`,`Includes`,`It includes`,`Included`], k:0},
+    {q:`Gold is not only rare but also _______.`, o:[`it is beautiful`,`beauty`,`beautiful`,`beautifully`], k:2},
+    {q:`Venus is _______ planet in our solar system.`, o:[`hotter`,`the hottest`,`hottest`,`more hot`], k:1}]}]},
+  {k:'pair', min:8, title:'Transforme a frase', note:`Em dupla, os alunos reescrevem frases simples usando inversão e oração reduzida. Corrija no quadro.`,
+   html:`<p>Reescreva usando a estrutura indicada:</p><ol><li><i>I have never read such a good book.</i> → <b>Never…</b></li><li><i>The bridge was built in 1937. It connects two cities.</i> → <b>Built…</b></li><li><i>The weather improved only after noon.</i> → <b>Only after noon…</b></li></ol><p class="tnote">Respostas: 1) Never have I read such a good book. 2) Built in 1937, the bridge connects two cities. 3) Only after noon did the weather improve.</p>`},
+  {k:'exam', min:10, title:'Condições de prova', items:[{t:'mcq', qs:[
+    {q:`Not until the 1800s _______ widely used in factories.`, o:[`steam engines were`,`were steam engines`,`steam engines being`,`that steam engines were`], k:1},
+    {q:`_______ near the equator, Ecuador has little seasonal variation in temperature.`, o:[`Located`,`It is located`,`Locating`,`Location`], k:0},
+    {q:`The more carefully you read the question, _______ you are to make mistakes.`, o:[`less likely`,`the less likely`,`the least likely`,`less likelier`], k:1},
+    {q:`Bees collect pollen, produce honey, and _______ crops.`, o:[`pollinating`,`pollinate`,`pollination of`,`they pollinate`], k:1},
+    {q:`Hardly _______ the stage when the audience began to applaud.`, o:[`the actor had reached`,`had the actor reached`,`the actor reaching`,`reached the actor`], k:1}]}]},
+  {k:'review', min:5, title:'Fechamento', html:`<p>Expressão negativa no início da frase = <b>inversão</b>. Vírgula no início + falta de sujeito = <b>oração reduzida</b>. Lista = <b>mesma forma</b>.</p>`}
+ ],
+ hw:`<ul><li>Escreva 6 frases sobre sua cidade: 2 com inversão, 2 com orações reduzidas e 2 com "the more…, the more…".</li></ul>`},
+
+{id:'aula-7', sec:'Section 2 · Structure & Written Expression', title:'Written Expression: caçando erros', sub:'Checklist de 5 erros que respondem a maioria das 25 questões.',
+ goals:['Aplicar o checklist de erros: concordância, classe de palavra, paralelismo, pronome e preposição','Responder em cerca de 35 segundos por questão'],
+ stages:[
+  {k:'warm', min:5, title:'Corrija o professor', note:`Escreva 3 frases com erro no quadro, por exemplo "She don't like coffee", "He is more taller than me" e "The informations are wrong". Os alunos corrigem.`,
+   html:`<p>Corrija as frases do quadro. Que tipo de erro é cada um?</p>`},
+  {k:'teach', min:10, step:'written', parts:['fmt','intro','how','traps']},
+  {k:'model', min:5, step:'written', parts:['ex']},
+  {k:'guided', min:12, title:'Identifique o tipo de erro', note:`Para cada questão, peça a categoria do erro (concordância, classe de palavra, paralelismo, pronome ou preposição) antes da letra.`,
+   items:[{t:'mcq', qs:[
+    {q:`The number of <u>international</u> (A) students <u>have</u> (B) <u>increased</u> (C) <u>steadily</u> (D).`, o:['international','have','increased','steadily'], k:1, x:`"The number of" é singular: has.`},
+    {q:`Elephants are <u>known</u> (A) for <u>them</u> (B) <u>excellent</u> (C) <u>memory</u> (D).`, o:['known','them','excellent','memory'], k:1, x:`Pronome possessivo: their.`},
+    {q:`The <u>professor</u> (A) asked us <u>to read</u> (B) the article and <u>writing</u> (C) a <u>summary</u> (D).`, o:['professor','to read','writing','summary'], k:2, x:`Paralelismo: to read… and (to) write.`},
+    {q:`Many people are <u>interested</u> (A) <u>on</u> (B) <u>learning</u> (C) <u>foreign</u> (D) languages.`, o:['interested','on','learning','foreign'], k:1, x:`interested in.`},
+    {q:`The <u>new</u> (A) bridge is <u>significant</u> (B) <u>longer</u> (C) than the <u>old</u> (D) one.`, o:['new','significant','longer','old'], k:1, x:`Advérbio: significantly.`},
+    {q:`<u>Most</u> (A) of the <u>equipments</u> (B) in the lab <u>is</u> (C) <u>new</u> (D).`, o:['Most','equipments','is','new'], k:1, x:`"Equipment" é incontável.`}]}]},
+  {k:'exam', min:15, title:'Condições de prova', note:`10 questões em 6 minutos. Depois corrija e discuta só as mais erradas.`,
+   step:'written', parts:['practice'],
+   items:[{t:'mcq', qs:[
+    {q:`<u>Although</u> (A) it is <u>small</u> (B), the hummingbird <u>can flies</u> (C) <u>backwards</u> (D).`, o:['Although','small','can flies','backwards'], k:2},
+    {q:`The <u>oldest</u> (A) known <u>map</u> (B) <u>were</u> (C) found <u>in</u> (D) Iraq.`, o:['oldest','map','were','in'], k:2},
+    {q:`Volcanoes <u>can</u> (A) be <u>both</u> (B) destructive <u>or</u> (C) <u>beneficial</u> (D).`, o:['can','both','or','beneficial'], k:2, x:`both… and.`},
+    {q:`The <u>economy</u> (A) of the region <u>depends</u> (B) <u>heavy</u> (C) <u>on</u> (D) tourism.`, o:['economy','depends','heavy','on'], k:2},
+    {q:`<u>Each</u> (A) of the <u>planets</u> (B) has <u>their</u> (C) own <u>orbit</u> (D).`, o:['Each','planets','their','orbit'], k:2, x:`"Each" pede its.`}]}]},
+  {k:'review', min:5, title:'Fechamento', html:`<p><b>Checklist de 5 itens:</b> 1) concordância sujeito-verbo · 2) classe da palavra · 3) paralelismo · 4) pronome · 5) preposição.</p>`}
+ ],
+ hw:`<ul><li>Revise um texto seu em inglês (ou um e-mail) usando o checklist de 5 itens e anote os erros que encontrar.</li></ul>`},
+
+{id:'aula-8', sec:'Section 3 · Reading', title:'Reading I: ideia principal, detalhe e vocabulário', sub:'Skimming, scanning e vocabulário em contexto.',
+ goals:['Fazer o skimming de um texto em 1 minuto','Localizar detalhes com scanning','Resolver vocabulário em contexto por substituição'],
+ stages:[
+  {k:'warm', min:5, title:'Título em 30 segundos', note:`Mostre o primeiro parágrafo do exemplo por 30 segundos e esconda. Pergunte: qual seria um bom título?`,
+   html:`<p>Você terá 30 segundos para ler. Depois proponha um título para o texto.</p>`},
+  {k:'teach', min:12, step:'reading', parts:['fmt','intro','how','traps']},
+  {k:'model', min:8, step:'reading', parts:['ex']},
+  {k:'guided', min:15, step:'reading', parts:['practice'], note:`Peça que os alunos sublinhem no texto o trecho que justifica cada resposta.`},
+  {k:'exam', min:10, title:'Vocabulário em contexto', note:`Exercício rápido: 6 questões em 4 minutos.`,
+   items:[{t:'mcq', p:`<p>The discovery of penicillin in 1928 was largely accidental. Alexander Fleming noticed that a mold had contaminated one of his bacterial cultures and that the bacteria around it had been destroyed. Although Fleming published his findings, the substance proved difficult to isolate, and its potential remained largely unexploited for over a decade. It was only during the Second World War, when the need for effective treatments became acute, that researchers developed methods to mass-produce the drug. The impact was profound: infections that had once been fatal could now be readily cured.</p>`,
+     qs:[{q:`The word "contaminated" is closest in meaning to`, o:[`cleaned`,`polluted`,`created`,`studied`], k:1},
+         {q:`The word "isolate" is closest in meaning to`, o:[`separate`,`destroy`,`sell`,`describe`], k:0},
+         {q:`The word "unexploited" is closest in meaning to`, o:[`unknown`,`dangerous`,`unused`,`expensive`], k:2},
+         {q:`The word "acute" is closest in meaning to`, o:[`sharp in shape`,`urgent`,`small`,`intelligent`], k:1},
+         {q:`The word "profound" is closest in meaning to`, o:[`deep`,`minor`,`confusing`,`quick`], k:0},
+         {q:`The word "readily" is closest in meaning to`, o:[`slowly`,`easily`,`rarely`,`carefully`], k:1}]}]},
+  {k:'review', min:5, title:'Fechamento', html:`<p>Vocabulário: <b>releia a frase inteira e teste a substituição</b>. Ideia principal: precisa cobrir o texto todo, e não um parágrafo só.</p>`}
+ ],
+ hw:`<ul><li>Leia um artigo de divulgação científica (por exemplo, no Smithsonian Magazine ou na BBC Future) e escreva a ideia principal em 1 frase e 5 palavras novas com sinônimos.</li></ul>`},
+
+{id:'aula-9', sec:'Section 3 · Reading', title:'Reading II: inferência, referência e controle do tempo', sub:'As perguntas mais difíceis e o ritmo de 11 minutos por texto.',
+ goals:['Resolver perguntas de inferência sem extrapolar','Achar o referente de pronomes','Ler um texto completo em 11 minutos'],
+ stages:[
+  {k:'warm', min:5, title:'O que podemos concluir?', note:`Leia: "Maria grabbed her umbrella and her coat before leaving." Pergunte o que se pode inferir (provavelmente chove ou está frio) e o que NÃO se pode (que ela vai trabalhar).`,
+   html:`<p class="passage">Maria grabbed her umbrella and her coat before leaving.</p><p>O que podemos <b>inferir</b>? O que seria exagero?</p>`},
+  {k:'teach', min:10, title:'Inferência, referência e NOT/EXCEPT', note:`Desenhe uma "escada de certeza": dito no texto (detalhe) → logicamente garantido (inferência) → possível (errado) → inventado (errado).`,
+   html:`<table><tr><th>Tipo</th><th>Como aparece</th><th>Estratégia</th></tr><tr><td>Inferência</td><td><i>It can be inferred that… / The author implies…</i></td><td>Escolha o que é <b>garantido</b> pelo texto, e não só possível.</td></tr><tr><td>Referência</td><td><i>The word "they" in line 5 refers to…</i></td><td>Volte 1–2 frases e teste cada opção no lugar do pronome.</td></tr><tr><td>NOT / EXCEPT</td><td><i>All of the following are mentioned EXCEPT…</i></td><td>Ache 3 no texto e marque a que sobra.</td></tr><tr><td>Organização</td><td><i>How is the passage organized?</i></td><td>Olhe a primeira frase de cada parágrafo.</td></tr></table>`},
+  {k:'guided', min:15, title:'Prática guiada', items:[{t:'mcq', p:`<p>Monarch butterflies are famous for their annual migration of up to 4,000 kilometers between Canada and Mexico. What makes the journey remarkable is that no individual butterfly completes the round trip. The butterflies that fly south in autumn live for up to eight months, while those born during the spring and summer live only a few weeks. It therefore takes three to four generations to complete the cycle.</p><p>Scientists have long wondered how butterflies that have never made the trip find their way. Research suggests that they use the position of the sun, combined with an internal clock located in their antennae. When researchers covered the antennae of test butterflies, the insects flew in random directions. Monarchs may also be sensitive to the Earth's magnetic field, which would help them navigate on cloudy days.</p>`,
+    qs:[{q:`It can be inferred from paragraph 1 that the butterflies that fly south`, o:[`are larger than other monarchs`,`live longer than summer generations`,`return to Canada the next spring`,`travel alone`], k:1},
+        {q:`The word "they" in paragraph 2 refers to`, o:[`scientists`,`butterflies`,`antennae`,`generations`], k:1},
+        {q:`Why does the author mention the experiment with covered antennae?`, o:[`To show that butterflies cannot see`,`To support the idea of an internal clock in the antennae`,`To explain why butterflies migrate`,`To criticize earlier research`], k:1},
+        {q:`All of the following are mentioned as ways monarchs might navigate EXCEPT`, o:[`the position of the sun`,`an internal clock`,`the Earth's magnetic field`,`the smell of flowers`], k:3},
+        {q:`The word "random" is closest in meaning to`, o:[`unplanned`,`correct`,`opposite`,`safe`], k:0},
+        {q:`How is the passage organized?`, o:[`A problem is described and then solved by a single experiment.`,`A phenomenon is described, then possible explanations are given.`,`Two theories are compared and both are rejected.`,`Events are listed in chronological order.`], k:1}]}]},
+  {k:'exam', min:15, title:'Condições de prova: um texto em 11 minutos', note:`Cronometre 11 minutos. Ao final, pergunte quem terminou no tempo e qual estratégia usou.`,
+   items:[{t:'mcq', p:`<p>In the early nineteenth century, most Americans lived on farms, and the majority of goods were produced at home or in small workshops. This began to change in the 1820s, when textile mills appeared in New England. The mills at Lowell, Massachusetts, became especially famous because of their workforce: young, unmarried women from rural families, known as "mill girls."</p><p>The mill owners offered these women wages, housing in supervised boarding houses, and access to lectures and libraries. For many, the work represented their first opportunity to earn their own money. However, the days were long — often twelve to fourteen hours — and conditions in the noisy, crowded mills were difficult. When the owners cut wages in 1834 and again in 1836, the workers organized strikes, among the first by women in American history.</p><p>Although the strikes did not immediately succeed, they marked the beginning of organized labor in the region. By the 1850s, many mill girls had been replaced by immigrant workers, who were willing to accept lower wages, and the boarding house system gradually disappeared.</p>`,
+    qs:[{q:`What does the passage mainly discuss?`, o:[`The invention of the textile mill`,`The experience of women workers in early textile mills`,`Immigration to the United States`,`Farming in New England`], k:1},
+        {q:`According to the passage, what did mill owners offer workers?`, o:[`Land for farming`,`Wages, housing, and educational opportunities`,`Shorter working hours`,`Free transportation`], k:1},
+        {q:`The word "supervised" is closest in meaning to`, o:[`expensive`,`watched over`,`large`,`modern`], k:1},
+        {q:`It can be inferred that before working in the mills, many of the women`, o:[`had never earned their own income`,`had lived in large cities`,`had worked in other factories`,`had organized strikes`], k:0},
+        {q:`Why did the workers go on strike?`, o:[`Their housing was closed.`,`Their pay was reduced.`,`They wanted to study.`,`Immigrants took their jobs.`], k:1},
+        {q:`The word "they" in paragraph 3 refers to`, o:[`owners`,`strikes`,`wages`,`mills`], k:1},
+        {q:`What happened by the 1850s?`, o:[`The strikes succeeded.`,`Mill girls were largely replaced by immigrants.`,`Wages increased significantly.`,`Boarding houses became more popular.`], k:1},
+        {q:`Which of the following is NOT mentioned as a difficulty of mill work?`, o:[`Long hours`,`Noise`,`Crowded conditions`,`Dangerous chemicals`], k:3}]}]},
+  {k:'review', min:5, title:'Fechamento', html:`<p>Inferência = <b>garantido</b>, e não "possível". Controle o tempo: <b>11 minutos por texto</b>. Questão travada vira chute.</p>`}
+ ],
+ hw:`<ul><li>Leia um texto acadêmico de ~350 palavras com cronômetro de 11 minutos e escreva 3 perguntas no estilo TOEFL sobre ele: uma de inferência, uma de referência e uma de vocabulário.</li></ul>`},
+
+{id:'aula-10', sec:'Reta final', title:'Simulado final e plano de estudos', sub:'Um minissimulado com as três seções, análise de erros e plano até a prova.',
+ goals:['Aplicar todas as estratégias em condições de prova','Comparar o resultado com o diagnóstico da aula 1','Montar o plano de estudos até a data da prova'],
+ stages:[
+  {k:'warm', min:5, title:'Revisão-relâmpago', note:`Peça que a turma liste no quadro, de memória, uma estratégia para cada parte da prova.`,
+   html:`<p>Qual é a principal estratégia para: Part A? Parts B/C? Structure? Written Expression? Reading?</p>`},
+  {k:'mock', min:35, title:'Minissimulado', note:`Aplique sem pausas: Listening (áudio 1x) → Structure/WE (cronômetro de 7 min) → Reading (cronômetro de 11 min).`,
+   items:[
+    {t:'mcq', title:'Listening Part A', a:[['M',`I can't find my keys anywhere.`],['W',`Have you checked the pocket of the coat you wore yesterday?`],['N',`What does the woman suggest?`]], o:[`Buying new keys`,`Looking in his coat`,`Asking a friend`,`Calling a locksmith`], k:1},
+    {t:'mcq', title:'Listening Part A', a:[['W',`The museum is free on Tuesdays, isn't it?`],['M',`It used to be.`],['N',`What does the man mean?`]], o:[`The museum is still free on Tuesdays.`,`The museum is no longer free on Tuesdays.`,`The museum is closed on Tuesdays.`,`He has never visited the museum.`], k:1},
+    {t:'mcq', title:'Listening Part A', a:[['M',`Did you enjoy the concert?`],['W',`I'd have enjoyed it more if the seats had been better.`],['N',`What does the woman imply?`]], o:[`She didn't go to the concert.`,`Her seats were not good.`,`She bought the best seats.`,`The concert was cancelled.`], k:1},
+    {t:'mcq', title:'Listening Part C', a:[['W',`Today we'll discuss the Great Wall of China. Contrary to popular belief, it is not a single continuous wall, but a series of walls built by different dynasties over roughly two thousand years. Most of what tourists see today was built during the Ming Dynasty, between the fourteenth and seventeenth centuries. And another common myth: the wall is not visible to the naked eye from space.`]],
+     qs:[{q:`What is the main purpose of the talk?`, o:[`To correct some misconceptions about the Great Wall`,`To describe the Ming Dynasty`,`To explain how to visit China`,`To compare walls around the world`], k:0},
+         {q:`According to the speaker, most of the wall visible today was built`, o:[`2,000 years ago`,`during the Ming Dynasty`,`in the twentieth century`,`by a single emperor`], k:1}]},
+    {t:'mcq', title:'Structure & Written Expression', qs:[
+     {q:`_______ the first woman to win a Nobel Prize, Marie Curie won it twice.`, o:[`She was`,`Being`,`Who was`,`That she was`], k:1},
+     {q:`Never before _______ so many people moved to cities.`, o:[`have`,`they have`,`having`,`has been`], k:0},
+     {q:`The Pacific Ocean is _______ of all the oceans.`, o:[`the deeper`,`deepest`,`the deepest`,`more deep`], k:2},
+     {q:`Tomatoes, _______ originated in South America, were brought to Europe in the 16th century.`, o:[`they`,`which`,`what`,`that they`], k:1},
+     {q:`The <u>results</u> (A) of the survey <u>was</u> (B) <u>published</u> (C) <u>last</u> (D) week.`, o:['results','was','published','last'], k:1},
+     {q:`She <u>speaks</u> (A) English <u>fluent</u> (B) <u>and</u> (C) French <u>well</u> (D).`, o:['speaks','fluent','and','well'], k:1},
+     {q:`Owls hunt <u>mainly</u> (A) at <u>night</u> (B) and <u>sleeping</u> (C) during <u>the</u> (D) day.`, o:['mainly','night','sleeping','the'], k:2},
+     {q:`The <u>amount</u> (A) of <u>students</u> (B) in the class <u>has</u> (C) <u>doubled</u> (D).`, o:['amount','students','has','doubled'], k:0, x:`Contáveis pedem "number".`}]},
+    {t:'mcq', title:'Reading', p:`<p>Lightning is one of nature's most powerful phenomena. A single bolt can heat the surrounding air to about 30,000 degrees Celsius — five times hotter than the surface of the Sun. This sudden heating causes the air to expand explosively, producing the sound we know as thunder. Because light travels much faster than sound, we see lightning before we hear thunder. Counting the seconds between the two and dividing by three gives a rough estimate of the distance to the storm in kilometers.</p><p>Despite common belief, lightning can strike the same place more than once. Tall structures are especially vulnerable: the Empire State Building in New York is struck around twenty times a year.</p>`,
+     qs:[{q:`What is the passage mainly about?`, o:[`The temperature of the Sun`,`Facts about lightning and thunder`,`The history of the Empire State Building`,`How to stay safe in storms`], k:1},
+         {q:`According to the passage, what causes thunder?`, o:[`Clouds colliding`,`The rapid expansion of heated air`,`Rain hitting the ground`,`Electricity in buildings`], k:1},
+         {q:`If thunder is heard 9 seconds after lightning, the storm is about`, o:[`3 km away`,`9 km away`,`27 km away`,`1 km away`], k:0},
+         {q:`The word "vulnerable" is closest in meaning to`, o:[`exposed to harm`,`very tall`,`well protected`,`famous`], k:0},
+         {q:`The author mentions the Empire State Building to`, o:[`describe New York's architecture`,`give an example of repeated lightning strikes`,`show that lightning is rare`,`explain how buildings are designed`], k:1}]}
+   ]},
+  {k:'review', min:10, title:'Análise de erros', note:`Compare com o diagnóstico da aula 1. Peça que cada aluno classifique os erros em: vocabulário, gramática, tempo ou atenção.`,
+   html:`<table><tr><th>Tipo de erro</th><th>Quantos?</th><th>O que fazer</th></tr><tr><td>Vocabulário</td><td></td><td>Flashcards diários de palavras acadêmicas</td></tr><tr><td>Gramática</td><td></td><td>Refazer as aulas 5–7</td></tr><tr><td>Tempo</td><td></td><td>Treinos cronometrados</td></tr><tr><td>Atenção / armadilha</td><td></td><td>Revisar as listas de armadilhas</td></tr></table>`},
+  {k:'teach', min:5, title:'Plano de estudos e dia da prova', step:'plano', parts:['page'], note:`Ajuste o plano à data de prova de cada aluno.`}
+ ],
+ hw:`<ul><li>Faça um simulado oficial completo (material da ETS) com tempo, antes da prova.</li><li>Revise suas fichas de expressões e as listas de armadilhas na véspera.</li></ul>`}
+];
 
 (function(){
 /* "Complete the Words": write the missing part in brackets, e.g. "cli[mate]" */
@@ -631,6 +925,177 @@ steps:[
 });
 })();
 
+(function(){
+function cw(text){ var g = []; var t = text.replace(/([A-Za-z]+)\[([a-z]+)\]/g, function(_, pre, rest){ g.push({k:[rest, pre+rest], sm:true}); return pre + '{' + g.length + '}'; }); return {t:'cloze', nonum:true, text:t, g:g}; }
+var R = `<ul><li>Quais palavras desta aula você quer usar na sua fala ou escrita?</li><li>Qual armadilha te pegou hoje?</li></ul>`;
+EXAMS.filter(function(e){ return e.id === 'toefl-ibt'; })[0].lessons = [
+{id:'aula-1', sec:'Introdução + Reading', title:'O novo TOEFL iBT e Complete the Words', sub:'Visão geral da prova adaptativa e a primeira tarefa de Reading.',
+ goals:['Conhecer as 4 seções, o formato adaptativo e a escala de 1 a 6','Dominar a estratégia de Complete the Words','Usar gramática e contexto para reconstruir palavras'],
+ stages:[
+  {k:'warm', min:5, title:'Para que você precisa do TOEFL?', note:`Levante a universidade-alvo e a nota exigida de cada aluno. Muitas ainda pedem nota na escala de 0 a 120: explique que o relatório mostra as duas escalas até 2028.`,
+   html:`<ul><li>Qual universidade ou programa? Qual nota mínima?</li><li>Qual habilidade preocupa mais você?</li></ul>`},
+  {k:'teach', min:10, title:'A prova em 10 minutos', note:`Explique o formato adaptativo: o desempenho na 1ª parte de Reading e Listening define se a 2ª parte será mais fácil ou mais difícil, e só a parte mais difícil permite as notas mais altas.`,
+   html:`<div class="cols"><div class="card"><b>Reading (~30 min)</b><br>Complete the Words · Read in Daily Life · Academic Passage</div><div class="card"><b>Listening (~29 min)</b><br>Choose a Response · Conversation · Announcement · Academic Talk</div><div class="card"><b>Writing (~23 min)</b><br>Build a Sentence · Email · Academic Discussion</div><div class="card"><b>Speaking (~8 min)</b><br>Listen and Repeat · Interview</div></div><p><b>Nota:</b> 1–6 por seção (4 ≈ B2, 5 ≈ C1) e equivalência 0–120 durante a transição.</p>`},
+  {k:'teach', min:8, title:'Complete the Words: estratégia', step:'complete-words', parts:['fmt','intro','how','traps']},
+  {k:'model', min:5, step:'complete-words', parts:['ex']},
+  {k:'guided', min:12, step:'complete-words', parts:['practice'], note:`Faça o primeiro parágrafo junto com a turma, dizendo em voz alta a classe de cada palavra. O segundo eles fazem sozinhos.`},
+  {k:'exam', min:10, title:'Condições de prova: 3 minutos por parágrafo', note:`Cronometre 3 minutos por parágrafo.`,
+   items:[cw(`Volunteering offers benefits beyond helping others. Stud[ies] show that peo[ple] who volunteer regul[arly] report low[er] levels of stress. Th[ey] also tend to ha[ve] stronger soc[ial] networks, whi[ch] can impr[ove] overall well-being.`),
+          cw(`Glaciers are melting faster than ever before. A[s] they shr[ink], sea lev[els] rise, threat[ening] coastal cit[ies] around t[he] world. Scien[tists] warn th[at] the proc[ess] may soon be irreversible.`)]},
+  {k:'review', min:5, title:'Fechamento', html:`<p>Para cada lacuna: <b>classe da palavra → terminação (-s, -ed, -ly) → sentido no tema</b>.</p>`}
+ ],
+ hw:`<ul><li>Pegue um parágrafo de notícia em inglês, apague a segunda metade de 10 palavras e troque com um colega para reconstruir.</li></ul>`},
+
+{id:'aula-2', sec:'Reading', title:'Read in Daily Life', sub:'E-mails, avisos e mensagens: propósito, detalhe e inferência.',
+ goals:['Identificar propósito, remetente e destinatário','Achar datas, condições e exceções','Inferir o próximo passo de uma pessoa'],
+ stages:[
+  {k:'warm', min:5, title:'Que tipo de texto é este?', note:`Mostre rapidamente 3 textos (cardápio, aviso, mensagem) e pergunte qual é o propósito de cada um.`,
+   html:`<p>Em 10 segundos, diga o <b>propósito</b> de cada tipo de texto: um cardápio · um aviso de manutenção · uma mensagem de colega.</p>`},
+  {k:'teach', min:10, step:'daily-life', parts:['fmt','intro','how','traps']},
+  {k:'model', min:7, step:'daily-life', parts:['ex']},
+  {k:'guided', min:12, step:'daily-life', parts:['practice']},
+  {k:'exam', min:12, title:'Condições de prova', items:[
+   {t:'mcq', p:`<div class="doc"><b>Campus Recreation Center — Summer Hours</b><br>Mon–Fri: 7 a.m. – 9 p.m. · Sat: 9 a.m. – 5 p.m. · Sun: Closed<br><br>The pool will be closed June 10–14 for cleaning. Students need a valid ID to enter. Guests may visit up to three times per semester for a $5 fee.</div>`,
+    qs:[{q:`When can a student swim on Saturday, June 15?`, o:[`From 7 a.m. to 9 p.m.`,`From 9 a.m. to 5 p.m.`,`Not at all, because the pool is closed`,`Only with a guest`], k:1},
+        {q:`What is true about guests?`, o:[`They can visit for free.`,`They need a student ID.`,`Their number of visits is limited.`,`They can only visit on Sundays.`], k:2}]},
+   {t:'mcq', p:`<div class="doc"><b>From:</b> Prof. Nguyen<br><b>To:</b> HIST 210 students<br><br>Several of you asked about the research paper. You may choose any topic from Units 3–5, but please email me your topic by Friday so I can make sure no two students write about the same event. Papers submitted without prior approval will lose 10 points.</div>`,
+    qs:[{q:`Why is the professor writing?`, o:[`To cancel the paper`,`To explain the rules for choosing a topic`,`To announce grades`,`To change the deadline`], k:1},
+        {q:`Why must students send their topic?`, o:[`To avoid repeated topics`,`To get extra points`,`To choose a partner`,`To book the library`], k:0},
+        {q:`What will happen if a student does not send the topic?`, o:[`The paper will not be accepted.`,`The student will lose points.`,`The student must change units.`,`Nothing will happen.`], k:1}]}]},
+  {k:'review', min:5, title:'Fechamento', html:R}
+ ],
+ hw:`<ul><li>Leia 3 e-mails ou avisos reais em inglês (de sites de universidades) e escreva uma pergunta de inferência para cada um.</li></ul>`},
+
+{id:'aula-3', sec:'Reading', title:'Read an Academic Passage', sub:'Textos acadêmicos curtos: ideia principal, detalhe e propósito retórico.',
+ goals:['Resumir um texto acadêmico em uma frase','Responder perguntas de propósito retórico','Resolver vocabulário em contexto'],
+ stages:[
+  {k:'warm', min:5, title:'Por que o autor disse isso?', note:`Leia: "Coffee contains caffeine. For example, a cup of espresso has about 60 mg." Pergunte: por que o autor menciona o espresso? (para exemplificar)`, html:`<p>Por que um autor usa <i>for example</i>, <i>however</i> e <i>in contrast</i>? Que função cada um tem?</p>`},
+  {k:'teach', min:10, step:'academic-passage', parts:['fmt','intro','how','traps']},
+  {k:'model', min:7, step:'academic-passage', parts:['ex']},
+  {k:'guided', min:13, step:'academic-passage', parts:['practice']},
+  {k:'exam', min:12, title:'Condições de prova', items:[{t:'mcq', p:`<p>Psychologists have identified a phenomenon known as the "bystander effect": the more people who witness an emergency, the less likely any individual is to help. In a famous 1968 experiment, participants who believed they were the only witness to a medical emergency helped 85% of the time, compared with only 31% when they believed four others were present. Researchers explain this through "diffusion of responsibility" — each person assumes someone else will act. Interestingly, the effect weakens when bystanders know each other or when one person is directly asked for help.</p>`,
+   qs:[{q:`What is the passage mainly about?`, o:[`Medical emergencies in the 1960s`,`Why people in groups are less likely to help`,`How to train bystanders`,`Friendship and helping behavior`], k:1},
+       {q:`Why does the author mention the 1968 experiment?`, o:[`To provide evidence for the bystander effect`,`To criticize psychologists`,`To describe a medical treatment`,`To show that most people help`], k:0},
+       {q:`The word "diffusion" is closest in meaning to`, o:[`spreading`,`increase`,`refusal`,`discovery`], k:0},
+       {q:`According to the passage, the effect is weaker when`, o:[`more people are present`,`a person is asked directly`,`the emergency is serious`,`witnesses are strangers`], k:1},
+       {q:`What can be inferred about a person who is alone during an emergency?`, o:[`They are more likely to help.`,`They will call others first.`,`They usually feel no responsibility.`,`They help only if asked.`], k:0}]}]},
+  {k:'review', min:5, title:'Fechamento', html:R}
+ ],
+ hw:`<ul><li>Leia um artigo da seção "Science" de um jornal em inglês e escreva um resumo de 1 frase e duas perguntas de propósito retórico.</li></ul>`},
+
+{id:'aula-4', sec:'Listening', title:'Listen and Choose a Response', sub:'Entender a intenção de uma frase e escolher a reação natural.',
+ goals:['Identificar a função de uma fala (pedido, oferta, reclamação, convite)','Aceitar respostas indiretas','Evitar armadilhas de eco e de tempo verbal'],
+ stages:[
+  {k:'warm', min:5, title:'Como você responderia?', note:`Diga frases e peça respostas espontâneas: "Would you mind closing the window?", "I can't believe it's Monday again.", "Why don't we order pizza?"`, html:`<p>Responda naturalmente ao que o professor disser.</p>`},
+  {k:'teach', min:10, step:'choose-response', parts:['fmt','intro','how','traps']},
+  {k:'model', min:5, step:'choose-response', parts:['ex']},
+  {k:'guided', min:12, step:'choose-response', parts:['practice'], note:`Depois de cada item, pergunte qual é a <b>função</b> da frase ouvida.`},
+  {k:'exam', min:13, title:'Condições de prova', note:`Áudio uma vez. Respostas rápidas.`, items:[
+   {t:'mcq', a:`Could you help me move these chairs to the other room?`, o:[`Sure, where do you want them?`,`The other room is bigger.`,`I moved last year.`,`They're comfortable chairs.`], k:0},
+   {t:'mcq', a:`How long have you been studying Japanese?`, o:[`In Tokyo.`,`About two years now.`,`Because I like anime.`,`It's a long book.`], k:1},
+   {t:'mcq', a:`I'm afraid the professor cancelled office hours today.`, o:[`I'm not afraid of her.`,`Oh no, I'll email her instead.`,`Her office is on the second floor.`,`Yes, it's an hour.`], k:1},
+   {t:'mcq', a:`Do you want to join our study group or work on your own?`, o:[`Yes, I do.`,`I think I'd learn more with the group.`,`It's my own book.`,`The group met yesterday.`], k:1},
+   {t:'mcq', a:`Hasn't the library extended its hours for finals?`, o:[`Not this semester, apparently.`,`It's a big library.`,`My finals are hard.`,`I'll extend my stay.`], k:0},
+   {t:'mcq', a:`Let me know if you need anything else for the presentation.`, o:[`I need to present tomorrow.`,`Thanks, I think I have everything.`,`Yes, I know.`,`It was a great presentation.`], k:1}]},
+  {k:'review', min:5, title:'Fechamento', html:`<p>Pergunte-se sempre: <b>qual é a intenção</b> da fala? A melhor resposta reage à intenção, e não às palavras.</p>`}
+ ],
+ hw:`<ul><li>Anote 10 perguntas que você ouvir em séries e escreva uma resposta direta e uma indireta para cada uma.</li></ul>`},
+
+{id:'aula-5', sec:'Listening', title:'Conversations, Announcements e Academic Talks', sub:'Tomar notas de forma eficiente em áudios mais longos.',
+ goals:['Tomar notas com abreviações em duas colunas','Identificar mudanças e instruções em avisos','Seguir a estrutura de uma minipalestra'],
+ stages:[
+  {k:'warm', min:5, title:'Abreviações', note:`Mostre a lista de abreviações e peça que os alunos criem mais 3.`, html:`<p>→ causa/leva a · ↑ aumenta · ↓ diminui · b/c because · w/ with · ex example · ≠ diferente · ∴ portanto</p>`},
+  {k:'teach', min:10, step:'listening-longer', parts:['fmt','intro','how','traps']},
+  {k:'model', min:7, step:'listening-longer', parts:['ex'], note:`Peça que tomem notas durante o áudio e mostrem as notas antes de responder.`},
+  {k:'guided', min:13, step:'listening-longer', parts:['practice']},
+  {k:'exam', min:12, title:'Condições de prova: Academic Talk', items:[{t:'mcq', a:[['W',`Let's turn to an idea from economics called the "tragedy of the commons." Imagine a pasture that's shared by several farmers. Each farmer benefits from adding one more cow, because he gets all the profit from that cow. But the cost — the damage to the grass — is shared by everyone. So each farmer keeps adding cows, and eventually the pasture is destroyed, which hurts everyone. Today, economists use this idea to explain problems like overfishing and air pollution. Now, some solutions have been proposed: governments can set limits, or resources can be divided into private property. But the political scientist Elinor Ostrom showed that communities can also manage shared resources successfully through their own rules — work that earned her a Nobel Prize.`]],
+    qs:[{q:`What is the talk mainly about?`, o:[`The history of farming`,`A problem with shared resources and its solutions`,`How cows damage grass`,`The life of Elinor Ostrom`], k:1},
+        {q:`Why does each farmer add more cows?`, o:[`The government pays them.`,`They receive all the benefit but share the cost.`,`The grass grows quickly.`,`They want to destroy the pasture.`], k:1},
+        {q:`Why does the professor mention overfishing?`, o:[`To give a modern example of the concept`,`To contrast it with farming`,`To criticize fishermen`,`To introduce a new topic`], k:0},
+        {q:`What did Elinor Ostrom show?`, o:[`Only governments can protect resources.`,`Private property is the only solution.`,`Communities can manage shared resources with their own rules.`,`The concept is incorrect.`], k:2}]}]},
+  {k:'review', min:5, title:'Fechamento', html:`<p>Mostre suas notas a um colega: dá para reconstruir a palestra só com elas?</p>`}
+ ],
+ hw:`<ul><li>Ouça um episódio curto de podcast acadêmico (por exemplo, "Stuff You Should Know") tomando notas e depois resuma em 5 linhas.</li></ul>`},
+
+{id:'aula-6', sec:'Writing', title:'Build a Sentence', sub:'Ordem das palavras em perguntas, perguntas indiretas e orações.',
+ goals:['Montar perguntas diretas e indiretas corretamente','Posicionar advérbios e complementos','Resolver cada item em menos de 1 minuto'],
+ stages:[
+  {k:'warm', min:5, title:'Onde está o erro?', note:`Escreva: "Can you tell me where is the station?" e pergunte o que está errado (where the station is).`, html:`<p class="passage">Can you tell me where is the station?</p><p>O que está errado?</p>`},
+  {k:'teach', min:10, step:'build-sentence', parts:['fmt','intro','how','traps']},
+  {k:'model', min:5, step:'build-sentence', parts:['ex']},
+  {k:'guided', min:12, step:'build-sentence', parts:['practice']},
+  {k:'exam', min:13, title:'Condições de prova', items:[{t:'order', qs:[
+    {ctx:`<i>A: I need to renew my student visa.</i><br>B: ___`, w:['Do','you','know','which','documents','you','need'], post:'?', k:'Do you know which documents you need?'},
+    {ctx:`<i>A: The lab results are ready.</i><br>B: ___`, w:['That','is','faster','than','I','had','expected'], post:'.', k:'That is faster than I had expected.'},
+    {ctx:`<i>A: Where did you study last night?</i><br>B: ___`, w:['I','stayed','at','the','library','until','midnight'], post:'.', k:'I stayed at the library until midnight.'},
+    {ctx:`<i>A: The professor wants to see you.</i><br>B: ___`, w:['Did','she','say','what','she','wanted','to','discuss'], post:'?', k:'Did she say what she wanted to discuss?'},
+    {ctx:`<i>A: How was your first week?</i><br>B: ___`, w:['I','have','never','been','so','busy','in','my','life'], post:'.', k:'I have never been so busy in my life.'}]}]},
+  {k:'review', min:5, title:'Fechamento', html:`<p>Pergunta <b>indireta</b> = palavra interrogativa + <b>sujeito + verbo</b> (sem do/does/did).</p>`}
+ ],
+ hw:`<ul><li>Escreva 8 perguntas indiretas começando com "Do you know…", "Could you tell me…" e "I wonder…".</li></ul>`},
+
+{id:'aula-7', sec:'Writing', title:'Write an Email', sub:'Cumprir os três pontos com o tom certo em 7 minutos.',
+ goals:['Organizar um e-mail com os 3 pontos pedidos','Ajustar o tom (formal × informal)','Escrever 100–150 palavras em 7 minutos'],
+ stages:[
+  {k:'warm', min:5, title:'Formal ou informal?', note:`Peça que classifiquem as expressões como formais ou informais.`, html:`<p>Formal ou informal? <i>Hi Ana · Dear Dr. Lee · I'm writing to… · Just wanted to say… · I look forward to hearing from you · Cheers · Best regards · Could you please…</i></p>`},
+  {k:'teach', min:10, step:'email', parts:['fmt','intro','how','traps']},
+  {k:'model', min:8, step:'email', parts:['ex'], note:`Mostre o modelo e peça que identifiquem as frases que cumprem cada ponto.`},
+  {k:'guided', min:10, title:'Frases úteis', items:[{t:'cloze', ins:`Complete com uma palavra.`, text:`Dear Professor Smith,<br>I am writing {1} ask about the deadline for the final project. Unfortunately, I {2} been ill this week. Would it {3} possible to submit it on Monday? Thank you in advance {4} your understanding. I look forward {5} hearing from you.<br>Best regards,<br>Paulo`,
+   g:[{k:['to']},{k:['have']},{k:['be']},{k:['for']},{k:['to']}]}]},
+  {k:'exam', min:15, step:'email', parts:['practice'], note:`Cada aluno escolhe UM dos dois e-mails e escreve em 7 minutos cronometrados. Use os outros minutos para revisão.`},
+  {k:'pair', min:7, title:'Correção em dupla', note:`Os alunos trocam os textos e avaliam com o checklist. Circule e dê feedback individual.`, html:`<p>Leia o e-mail do colega e marque: ✔ 3 pontos cobertos · ✔ tom adequado · ✔ abertura e fechamento · ✔ um erro de gramática encontrado e corrigido.</p>`},
+  {k:'review', min:5, title:'Fechamento', html:`<p>Estrutura: <b>saudação → motivo → ponto 1 → ponto 2 → ponto 3 → fechamento</b>.</p>`}
+ ],
+ hw:`<ul><li>Escreva o e-mail que você não escolheu em aula, com cronômetro de 7 minutos.</li></ul>`},
+
+{id:'aula-8', sec:'Writing', title:'Write for an Academic Discussion', sub:'Posição clara, ideia nova e exemplo concreto em 10 minutos.',
+ goals:['Tomar posição em 30 segundos','Referir-se a um colega e acrescentar uma ideia nova','Escrever 120+ palavras em 10 minutos'],
+ stages:[
+  {k:'warm', min:5, title:'Opinião relâmpago', note:`Diga 3 afirmações polêmicas (ex.: "Homework should be banned"). Cada aluno tem 20 s para dar opinião + 1 motivo.`, html:`<p>Concorda ou discorda? Dê <b>um motivo</b> em 20 segundos.</p>`},
+  {k:'teach', min:10, step:'academic-discussion', parts:['fmt','intro','how','traps']},
+  {k:'model', min:8, step:'academic-discussion', parts:['ex']},
+  {k:'guided', min:7, title:'Frases para entrar na discussão', html:`<ul><li><i>I see Claire's point about…, but I would argue that…</i></li><li><i>While Daniel makes a valid point, he overlooks…</i></li><li><i>Another factor that neither of my classmates mentioned is…</i></li><li><i>A good example of this is…</i></li><li><i>For these reasons, I believe…</i></li></ul>`, note:`Peça que os alunos usem pelo menos 2 destas frases no texto.`},
+  {k:'exam', min:15, step:'academic-discussion', parts:['practice'], note:`10 minutos cronometrados de escrita + 5 minutos para comparar com o modelo.`},
+  {k:'review', min:10, title:'Leitura em voz alta e feedback', note:`Dois voluntários leem os textos. A turma identifica: posição, referência, ideia nova e exemplo.`, html:`<p>Ao ouvir o texto do colega, identifique: <b>posição · referência a um colega · ideia nova · exemplo</b>.</p>`}
+ ],
+ hw:`<ul><li>Escreva mais uma Academic Discussion: <i>"Should universities require all students to take a course in personal finance?"</i> (10 min).</li></ul>`},
+
+{id:'aula-9', sec:'Speaking', title:'Listen and Repeat + Take an Interview', sub:'Precisão na repetição e respostas de 45 segundos bem desenvolvidas.',
+ goals:['Repetir frases longas em blocos de sentido','Usar a fórmula Resposta → Explicação → Exemplo','Falar 45 segundos sem pausas longas'],
+ stages:[
+  {k:'warm', min:5, title:'Telefone sem fio', note:`Sussurre uma frase longa para o primeiro aluno e veja como ela chega ao último. Discuta: que palavras se perdem? (artigos, preposições)`, html:`<p>Quais palavras pequenas costumam "sumir" quando repetimos uma frase?</p>`},
+  {k:'teach', min:7, step:'listen-repeat', parts:['fmt','intro','how','traps']},
+  {k:'guided', min:10, step:'listen-repeat', parts:['ex','practice'], note:`Todos repetem em coro, depois individualmente. Grave e compare.`},
+  {k:'teach', min:8, title:'Take an Interview: estratégia', step:'interview', parts:['fmt','intro','how','traps']},
+  {k:'model', min:5, step:'interview', parts:['ex']},
+  {k:'pair', min:15, step:'interview', parts:['practice'], note:`Em duplas: um faz as perguntas (o professor pode tocar o áudio) e o outro responde em 45 s, depois trocam. O ouvinte usa o checklist para dar feedback.`},
+  {k:'review', min:5, title:'Fechamento', html:`<p>45 segundos = <b>1 frase de resposta + 2 de explicação + 2–3 de exemplo + 1 de conclusão</b>.</p>`}
+ ],
+ hw:`<ul><li>Grave 3 respostas de 45 s para: <i>"What is a skill you would like to learn and why?"</i>, <i>"Do you prefer studying alone or in groups?"</i>, <i>"How has the internet changed education?"</i></li></ul>`},
+
+{id:'aula-10', sec:'Reta final', title:'Simulado integrado e plano de estudos', sub:'Uma tarefa de cada seção em sequência, autoavaliação e plano.',
+ goals:['Aplicar as estratégias em sequência, como na prova','Identificar as tarefas prioritárias','Montar o plano até o dia da prova'],
+ stages:[
+  {k:'warm', min:3, title:'Checklist mental', html:`<p>Diga, de memória, uma estratégia para cada uma das 11 tarefas.</p>`},
+  {k:'mock', min:40, title:'Minissimulado', note:`Reading (8 min) → Listening (8 min) → Writing: Build a Sentence + Email (12 min) → Speaking (Interview, 2 respostas). Cronometre cada bloco.`,
+   items:[
+    cw(`Public libraries are changing. Ma[ny] now off[er] free cour[ses], access t[o] 3D printers, a[nd] spaces f[or] community meet[ings]. Th[is] shows th[at] libraries are adapting to new needs.`),
+    {t:'mcq', p:`<div class="doc"><b>Notice:</b> The shuttle bus between North Campus and the train station will not run on Monday, a public holiday. Regular service resumes Tuesday at 6 a.m. During the holiday, students may use city bus 14, which stops at the main gate.</div>`, qs:[{q:`What should a student do to reach the station on Monday?`, o:[`Take the shuttle at 6 a.m.`,`Take city bus 14`,`Wait until Tuesday`,`Walk to North Campus`], k:1}]},
+    {t:'mcq', a:`Do you happen to know when the next shuttle leaves?`, o:[`The shuttle is blue.`,`I think there's one every fifteen minutes.`,`Yes, I happened to see it.`,`I left yesterday.`], k:1},
+    {t:'mcq', a:[['M',`Before we begin, a reminder: the library's quiet floor is now on level three, not level two. Group study rooms are on level two, and they must be booked online. Also, from next week, food will no longer be allowed anywhere in the building, though covered drinks are fine.`]],
+     qs:[{q:`What is the purpose of the announcement?`, o:[`To introduce new library rules and changes`,`To advertise group rooms`,`To close the library`,`To sell food`], k:0},{q:`What will be allowed next week?`, o:[`Snacks on level two`,`Covered drinks`,`Food in group rooms`,`Talking on level three`], k:1}]},
+    {t:'order', qs:[{ctx:`<i>A: Is the exam open-book?</i><br>B: ___`, w:['I','am','not','sure','whether','we','can','use','notes'], post:'.', k:'I am not sure whether we can use notes.'}]},
+    {t:'write', q:`<p><b>Email (7 min):</b> You lost your student ID card on campus. Write an email to the campus security office. In your email: • explain what happened • describe the card and where you think you lost it • ask what you should do next.</p>`, min:100, max:150, mins:7, ck:[`3 pontos?`,`Tom formal?`], m:`<p>Dear Campus Security,</p><p>I am writing because I lost my student ID card yesterday afternoon. I realized it was missing when I tried to enter the gym at around 6 p.m.</p><p>The card has my photo and the name Julia Ramos, and it was inside a small green holder. I think I may have dropped it in the cafeteria or on the path between the Science Building and the gym.</p><p>Could you please let me know whether anyone has turned it in? If not, what is the procedure for getting a replacement?</p><p>Thank you for your help.</p><p>Kind regards,<br>Julia Ramos</p>`},
+    {t:'speak', a:`What do you think is the most important quality for a university student to have?`, resp:45, ck:[`R-E-E?`,`45 s?`], m:`I'd say the most important quality is self-discipline. At university, nobody checks whether you've done the reading or started your assignments early. When I started college, I left everything to the last minute and my grades suffered. Then I began scheduling study blocks like appointments, and it made a huge difference. Intelligence helps, of course, but without discipline it's hard to use it consistently.`}
+   ]},
+  {k:'review', min:7, title:'Autoavaliação', note:`Peça que marquem, para cada seção, se se sentem 🟢 seguros, 🟡 razoáveis ou 🔴 inseguros, e definam as 2 tarefas prioritárias.`,
+   html:`<table><tr><th>Seção</th><th>🟢 / 🟡 / 🔴</th><th>Tarefa prioritária</th></tr><tr><td>Reading</td><td></td><td></td></tr><tr><td>Listening</td><td></td><td></td></tr><tr><td>Writing</td><td></td><td></td></tr><tr><td>Speaking</td><td></td><td></td></tr></table>`},
+  {k:'teach', min:5, title:'Plano de estudos e dia da prova', step:'plano', parts:['page']}
+ ],
+ hw:`<ul><li>Faça o teste gratuito oficial da ETS (TOEFL Practice) em condições reais.</li><li>Grave uma entrevista completa (4 perguntas) e compare com a gravação da aula 9.</li></ul>`}
+];
+})();
+
 EXAMS.push({
 id:'ielts', short:'IELTS', name:'IELTS Academic', color:'#B4362F', tag:'Reino Unido · Austrália · Canadá',
 desc:`Avalia as quatro habilidades com Listening, Reading e Writing no mesmo dia e Speaking cara a cara com um examinador. A nota vai de 0 a 9.`,
@@ -861,6 +1326,160 @@ steps:[
  <ul><li>Leve o mesmo documento usado na inscrição (geralmente o passaporte).</li><li>Listening em papel: você tem 10 minutos no final para transferir as respostas. No computador, só 2 minutos de revisão: digite durante o áudio.</li><li>Reading: 20 minutos por texto. O último costuma ser o mais difícil.</li><li>Writing: comece pela Task 2, que vale o dobro, se isso te deixar mais seguro.</li><li>Speaking: sorria, fale com o examinador como em uma conversa, e pode pedir para ele repetir a pergunta na Part 1 e na Part 3.</li></ul>`}
 ]
 });
+
+EXAMS.filter(function(e){ return e.id === 'ielts'; })[0].lessons = [
+{id:'aula-1', sec:'Introdução + Listening', title:'O IELTS e o Listening Parts 1–2', sub:'Formato da prova e completar formulários sem perder pontos de ortografia.',
+ goals:['Conhecer as 4 seções e a escala de bands','Prever o tipo de resposta antes do áudio','Escrever números, nomes soletrados e datas sem erro'],
+ stages:[
+  {k:'warm', min:5, title:'Soletrando', note:`Soletre rapidamente 5 sobrenomes e números de telefone (ex.: "Thompson, T-H-O-M-P-S-O-N"). Os alunos escrevem. Destaque as letras que confundem: A/E/I, G/J, double letters.`, html:`<p>Escreva o que o professor soletrar. Quais letras confundem mais?</p>`},
+  {k:'teach', min:8, title:'A prova em 8 minutos', note:`Projete a visão geral. Destaque: ortografia conta, limite de palavras é rígido, e no computador não há 10 minutos para transferir respostas.`, html:`<div class="cols"><div class="card"><b>Listening</b> · 30 min · 40 questões · 4 partes</div><div class="card"><b>Reading</b> · 60 min · 40 questões · 3 textos</div><div class="card"><b>Writing</b> · 60 min · Task 1 (150+) e Task 2 (250+)</div><div class="card"><b>Speaking</b> · 11–14 min · entrevista ao vivo</div></div><p>Band 0–9. 30/40 no Listening ≈ band 7.</p>`},
+  {k:'teach', min:8, step:'listening-12', parts:['fmt','intro','how','traps']},
+  {k:'model', min:6, step:'listening-12', parts:['ex']},
+  {k:'guided', min:10, step:'listening-12', parts:['practice'], note:`Antes do áudio, os alunos escrevem a previsão (número? lugar? dia?) ao lado de cada lacuna.`},
+  {k:'exam', min:13, title:'Condições de prova: Part 1', items:[{t:'cloze', ins:`Escreva <b>ONE WORD AND/OR A NUMBER</b>.`, a:[['M',`Good afternoon, City Bike Rentals.`],['W',`Hi, I'd like to rent two bikes for Saturday.`],['M',`Certainly. Can I take your name?`],['W',`Yes, it's Megan Fairley. That's F-A-I-R-L-E-Y.`],['M',`Thanks. And a contact number?`],['W',`It's 07 9 3 4, 5 5 2, 6 1 8.`],['M',`Would you like the standard bikes or the electric ones? The electric ones are twenty-five pounds per day.`],['W',`Standard, please. How much are those?`],['M',`They're eighteen pounds each for the day, and that includes a helmet. You'll also need to leave a deposit, which you can pay by card.`],['W',`Great. Where do we pick them up?`],['M',`At our shop on Harbour Street, next to the ferry terminal.`]],
+    text:`Name: Megan {1}<br>Phone: {2}<br>Type of bike: {3}<br>Price per bike: £{4}<br>Included: a {5}<br>Pick-up: shop on {6} Street`,
+    g:[{k:['Fairley']},{k:['07934552618','07934 552618','07934 552 618']},{k:['standard']},{k:['18','eighteen']},{k:['helmet']},{k:['Harbour','Harbor']}]}]},
+  {k:'review', min:5, title:'Fechamento', html:`<p>Antes do áudio: <b>preveja</b>. Durante: cuidado com <b>correções</b> do falante. Depois: <b>ortografia e plural</b>.</p>`}
+ ],
+ hw:`<ul><li>Pratique o alfabeto e os números: peça para alguém ditar 10 nomes e telefones, ou use um ditado online.</li></ul>`},
+
+{id:'aula-2', sec:'Listening', title:'Listening Parts 3–4: contexto acadêmico', sub:'Opiniões de estudantes e anotações de uma palestra.',
+ goals:['Identificar quem diz o quê e o que foi decidido','Seguir uma palestra sem pausa usando as notas como guia','Reconhecer sinais de concordância e discordância'],
+ stages:[
+  {k:'warm', min:5, title:'Concordar ou discordar?', note:`Leia frases e os alunos dizem se é concordância ou discordância: "I'm not so sure", "Fair enough", "That's exactly what I was thinking", "I take your point, but…"`, html:`<p>Concordância ou discordância? <i>I'm not so sure · Fair enough · That's exactly what I was thinking · I take your point, but…</i></p>`},
+  {k:'teach', min:10, step:'listening-34', parts:['fmt','intro','how','traps']},
+  {k:'model', min:7, step:'listening-34', parts:['ex']},
+  {k:'guided', min:12, step:'listening-34', parts:['practice'], note:`Antes do áudio, peça que sublinhem nas notas as palavras que funcionam como "placas" (títulos, datas, nomes).`},
+  {k:'exam', min:13, title:'Condições de prova: Part 3', items:[{t:'mcq', a:[['M',`So, have you decided how we're going to collect data for the survey on student sleep habits?`],['W',`I was thinking an online questionnaire. It's quick and we'd get lots of responses.`],['M',`True, but people often don't answer honestly about sleep online. What about interviews?`],['W',`They'd take ages, though. We've only got three weeks.`],['M',`Hmm. What if we did a short questionnaire and then interviewed just ten students in more depth?`],['W',`That's a good compromise. And Dr. Lewis said she wanted some qualitative data anyway.`],['M',`Right. I'll draft the questions tonight, and you can contact the volunteers.`]],
+    qs:[{q:`What is the man's concern about online questionnaires?`, o:[`They are expensive.`,`Students may not answer truthfully.`,`They take too long.`,`Dr. Lewis doesn't like them.`], k:1},
+        {q:`Why does the woman reject interviews at first?`, o:[`They are too time-consuming.`,`Students won't volunteer.`,`They give too little data.`,`She is shy.`], k:0},
+        {q:`What do the students decide to do?`, o:[`Use only an online survey`,`Interview all students`,`Combine a questionnaire with a few interviews`,`Ask Dr. Lewis to choose`], k:2},
+        {q:`What will the woman do next?`, o:[`Write the questions`,`Contact volunteers`,`Meet Dr. Lewis`,`Analyse the data`], k:1}]}]},
+  {k:'review', min:5, title:'Fechamento', html:`<p>Na Part 3, a resposta raramente é a primeira opinião. Espere <b>a decisão final</b>.</p>`}
+ ],
+ hw:`<ul><li>Assista a uma aula aberta de universidade (YouTube: "Open University" ou "Yale Courses") por 5 minutos e complete notas com títulos que você mesmo criar.</li></ul>`},
+
+{id:'aula-3', sec:'Reading', title:'True / False / Not Given e Yes / No / Not Given', sub:'A diferença decisiva entre FALSE e NOT GIVEN.',
+ goals:['Distinguir FALSE de NOT GIVEN com segurança','Identificar qualificadores (all/some, always/often)','Aplicar a versão Yes/No/Not Given para opiniões'],
+ stages:[
+  {k:'warm', min:5, title:'Verdadeiro, falso ou não dito?', note:`Diga: "I have two brothers." Depois teste: "I have siblings" (T), "I'm an only child" (F), "My brothers are older" (NG).`, html:`<p class="passage">"I have two brothers."</p><p>T, F ou NG? (1) I have siblings. (2) I'm an only child. (3) My brothers are older than me.</p>`},
+  {k:'teach', min:10, step:'reading-tfng', parts:['fmt','intro','how','traps']},
+  {k:'model', min:7, step:'reading-tfng', parts:['ex']},
+  {k:'guided', min:12, step:'reading-tfng', parts:['practice'], note:`Para cada resposta, o aluno lê em voz alta a frase do texto que justifica. Se não houver frase, é NOT GIVEN.`},
+  {k:'exam', min:13, title:'Condições de prova: Yes / No / Not Given', items:[{t:'mcq', ins:`Do the statements agree with the <b>views of the writer</b>?`, p:`<p>It is often claimed that social media has made young people lonelier. The evidence, in my view, is far more mixed than such headlines suggest. Several large studies have found only a very small link between screen time and well-being — smaller, in one case, than the link between well-being and eating potatoes. That is not to say social media is harmless: for teenagers who are already vulnerable, constant comparison with others can be genuinely damaging. But policies that simply ban phones from schools may be addressing the wrong problem. What young people need most, I would argue, is guidance on how to use these platforms, not prohibition.</p>`,
+    qs:[{q:`The link between social media and loneliness has been exaggerated.`, o:['YES','NO','NOT GIVEN'], k:0},
+        {q:`Social media has no negative effects on teenagers.`, o:['YES','NO','NOT GIVEN'], k:1},
+        {q:`Eating potatoes improves well-being more than reducing screen time.`, o:['YES','NO','NOT GIVEN'], k:2, x:`O autor compara a força das <i>correlações</i>; não diz que batata melhora o bem-estar.`},
+        {q:`Banning phones in schools is the best solution.`, o:['YES','NO','NOT GIVEN'], k:1},
+        {q:`Most teachers support teaching students about social media.`, o:['YES','NO','NOT GIVEN'], k:2}]}]},
+  {k:'review', min:5, title:'Fechamento', html:`<p><b>FALSE</b> = o texto diz o oposto. <b>NOT GIVEN</b> = o texto não diz o suficiente. Não use conhecimento próprio.</p>`}
+ ],
+ hw:`<ul><li>Escolha um artigo de opinião em inglês e escreva 5 afirmações Y/N/NG sobre ele para trocar com um colega.</li></ul>`},
+
+{id:'aula-4', sec:'Reading', title:'Matching Headings e Matching Information', sub:'Ideia principal de parágrafos e localização de detalhes.',
+ goals:['Resumir um parágrafo em 3–5 palavras','Evitar títulos que só repetem palavras','Localizar tipos de informação (exemplo, número, comparação)'],
+ stages:[
+  {k:'warm', min:5, title:'Dê um título', note:`Leia um parágrafo curto em voz alta (por exemplo, o parágrafo A do exemplo) e peça títulos de até 5 palavras. Compare as propostas.`, html:`<p>Ouça o parágrafo e proponha um título de até 5 palavras.</p>`},
+  {k:'teach', min:10, step:'reading-headings', parts:['fmt','intro','how','traps']},
+  {k:'model', min:7, step:'reading-headings', parts:['ex']},
+  {k:'guided', min:13, step:'reading-headings', parts:['practice']},
+  {k:'exam', min:12, title:'Condições de prova', items:[{t:'match', short:true, p:`<p><b>A</b> &nbsp;The first vending machines appeared surprisingly early. In the first century AD, the engineer Hero of Alexandria designed a device that dispensed holy water when a coin was inserted.</p><p><b>B</b> &nbsp;Modern vending machines spread in the late nineteenth century, first selling postcards in London and chewing gum on New York train platforms. By the 1950s, they offered everything from cigarettes to hot meals.</p><p><b>C</b> &nbsp;Japan now has the highest density of vending machines in the world — roughly one for every 30 people. Analysts point to low crime rates, high labour costs and limited space for shops as explanations.</p><p><b>D</b> &nbsp;Today's machines are increasingly "smart": they accept mobile payments, track stock automatically and even recommend drinks based on the weather.</p>`,
+   o:[`Technology transforms an old idea`,`An ancient invention`,`The decline of vending machines`,`Reasons behind one country's popularity`,`Expansion of products sold`,`Health concerns about vending food`],
+   qs:[{q:'Paragraph A', k:1},{q:'Paragraph B', k:4},{q:'Paragraph C', k:3},{q:'Paragraph D', k:0}]}]},
+  {k:'review', min:5, title:'Fechamento', html:`<p>O título certo resume o <b>parágrafo inteiro</b>. Palavra repetida é alerta de armadilha.</p>`}
+ ],
+ hw:`<ul><li>Pegue um artigo de 5 parágrafos e escreva um título para cada um. Depois crie 2 títulos falsos e troque com um colega.</li></ul>`},
+
+{id:'aula-5', sec:'Reading', title:'Sentence e Summary Completion + gestão do tempo', sub:'Copiar a palavra certa e terminar os 3 textos em 60 minutos.',
+ goals:['Localizar paráfrases para completar resumos','Respeitar o limite de palavras e a forma exata','Distribuir o tempo: 17, 20 e 23 minutos'],
+ stages:[
+  {k:'warm', min:5, title:'Paráfrase', note:`Mostre pares de frases e peça que digam se têm o mesmo sentido: "costs rose sharply" / "prices increased dramatically".`, html:`<p>Mesmo sentido? <i>costs rose sharply / prices increased dramatically · a minority of / most of · prior to / after</i></p>`},
+  {k:'teach', min:10, step:'reading-completion', parts:['fmt','intro','how','traps']},
+  {k:'model', min:6, step:'reading-completion', parts:['ex']},
+  {k:'guided', min:10, step:'reading-completion', parts:['practice']},
+  {k:'exam', min:14, title:'Condições de prova', items:[{t:'cloze', ins:`Complete com <b>NO MORE THAN TWO WORDS</b> do texto.`, p:`<p>The Dutch city of Utrecht is home to what is claimed to be the world's largest bicycle parking garage, with space for 12,500 bikes. Opened in 2019 beneath the central railway station, the facility is free for the first 24 hours, encouraging commuters to combine cycling with train travel. Digital signs indicate the number of available spaces on each level, saving cyclists time. The project forms part of a wider policy: since the 1970s, Dutch cities have invested heavily in separate cycle lanes, partly in response to rising numbers of traffic accidents involving children.</p>`,
+   text:`The Utrecht garage, located under the {1}, can hold 12,500 bikes. Parking is free for the first {2}, which encourages people to combine cycling with {3}. {4} show how many spaces are free. Dutch investment in cycle lanes began in the {5}, partly because of accidents involving {6}.`,
+   g:[{k:['railway station','central railway station','station']},{k:['24 hours','twenty-four hours']},{k:['train travel']},{k:['digital signs']},{k:['1970s']},{k:['children']}]}]},
+  {k:'review', min:5, title:'Gestão do tempo no Reading', html:`<p>Texto 1: <b>17 min</b> · Texto 2: <b>20 min</b> · Texto 3: <b>23 min</b>. Não há tempo extra para transferir no papel: escreva direto na folha de respostas.</p>`}
+ ],
+ hw:`<ul><li>Faça um Reading completo (3 textos) com cronômetro de 60 minutos e registre quanto tempo gastou em cada texto.</li></ul>`},
+
+{id:'aula-6', sec:'Writing', title:'Writing Task 1: descrever dados', sub:'Overview, agrupamento e linguagem de tendência.',
+ goals:['Escrever um overview com as 2 tendências principais','Agrupar dados em vez de listar','Usar vocabulário de tendência e comparação com precisão'],
+ stages:[
+  {k:'warm', min:5, title:'Descreva com gestos', note:`Desenhe linhas no quadro (subida forte, queda leve, estabilidade, pico) e peça o verbo e o advérbio adequados.`, html:`<p>Que verbo + advérbio descreve cada linha do quadro? <i>rose sharply · fell slightly · remained stable · peaked at · fluctuated</i></p>`},
+  {k:'teach', min:10, step:'writing-1', parts:['fmt','intro','how','traps']},
+  {k:'guided', min:10, title:'Linguagem de tendência', items:[{t:'cloze', ins:`Complete com uma palavra.`, text:`Overall, the number of tourists increased {1} the period. In 2010, visitors stood {2} 2 million. This figure rose {3} 3.5 million in 2015, an increase {4} 75%. After {5}, numbers remained stable, {6} a slight fall in 2020. Spending, {7} contrast, doubled.`,
+   g:[{k:['over','during','throughout']},{k:['at']},{k:['to']},{k:['of']},{k:['that','this']},{k:['apart','except','with']},{k:['by','in']}], x:`Item 6: "apart from" / "except for" / "with" são aceitos (o texto pede só a primeira palavra).`}]},
+  {k:'model', min:8, step:'writing-1', parts:['ex']},
+  {k:'exam', min:22, step:'writing-1', parts:['practice'], note:`20 minutos cronometrados + 2 minutos para checar o checklist.`},
+  {k:'review', min:5, title:'Fechamento', html:`<p>Sem overview, Task Achievement fica limitado a <b>5</b>. Overview = <b>2 frases, sem números</b>.</p>`}
+ ],
+ hw:`<ul><li>Escreva uma Task 1 sobre o gráfico: <i>"The percentage of people using smartphones in Brazil, 2012–2024"</i> (crie dados plausíveis) em 20 minutos.</li></ul>`},
+
+{id:'aula-7', sec:'Writing', title:'Writing Task 2: redação argumentativa', sub:'Responder exatamente à pergunta com parágrafos bem construídos.',
+ goals:['Identificar o tipo de pergunta e todas as partes','Planejar em 5 minutos','Construir parágrafos com tópico, explicação e exemplo'],
+ stages:[
+  {k:'warm', min:5, title:'Que tipo de pergunta?', note:`Mostre 4 enunciados e peça que classifiquem: opinião, discussão, problema/solução ou vantagens/desvantagens.`, html:`<ol><li><i>To what extent do you agree or disagree?</i></li><li><i>Discuss both views and give your opinion.</i></li><li><i>What are the causes of this problem and what solutions can you suggest?</i></li><li><i>Do the advantages outweigh the disadvantages?</i></li></ol>`},
+  {k:'teach', min:10, step:'writing-2', parts:['fmt','intro','how','traps']},
+  {k:'model', min:8, step:'writing-2', parts:['ex']},
+  {k:'guided', min:10, title:'Conectivos e coesão', items:[{t:'cloze', ins:`Escolha o conectivo adequado.`, text:`Many people believe that tourism benefits local communities. {1}, it creates jobs and supports small businesses. {2}, mass tourism can damage the environment. {3} some cities have introduced tourist taxes, these have not always reduced visitor numbers. {4}, governments need a broader strategy.`,
+   g:[{o:['For instance','However','Therefore','Although'],k:0},{o:['Moreover','On the other hand','As a result','For example'],k:1},{o:['Because','Despite','Although','However'],k:2},{o:['Consequently','In contrast','For instance','Meanwhile'],k:0}]}]},
+  {k:'exam', min:22, title:'Planejar e escrever', step:'writing-2', parts:['practice'], note:`5 min de planejamento (no papel) + 17 min de escrita em aula. O aluno termina em casa e revisa. Recolha o plano para dar feedback.`},
+  {k:'review', min:5, title:'Fechamento', html:`<p>Parágrafo = <b>frase-tópico → explicação → exemplo → ligação com a tese</b>.</p>`}
+ ],
+ hw:`<ul><li>Termine a redação da aula e revise artigos e plurais.</li><li>Escreva mais um Task 2: <i>"Some people think that children should start school at a very early age. Others think they should start later. Discuss both views and give your opinion."</i></li></ul>`},
+
+{id:'aula-8', sec:'Speaking', title:'Speaking Parts 1 e 2', sub:'Respostas naturais na entrevista e 2 minutos de fala contínua.',
+ goals:['Responder + estender na Part 1','Anotar palavras-chave em 1 minuto','Falar por 2 minutos seguindo o cartão'],
+ stages:[
+  {k:'warm', min:5, title:'Uma palavra, uma frase, um parágrafo', note:`Pergunte "Do you like music?" e mostre três respostas: "Yes." / "Yes, I do." / a resposta estendida. Peça que a turma reproduza o terceiro nível.`, html:`<p>Compare: <i>"Yes."</i> · <i>"Yes, I do."</i> · <i>"Yes, I'm really into jazz, actually — my dad used to play it at home…"</i></p>`},
+  {k:'teach', min:6, step:'speaking-1', parts:['fmt','intro','how','traps']},
+  {k:'pair', min:10, step:'speaking-1', parts:['ex','practice'], note:`Em duplas: um faz o examinador (toca o áudio ou lê a pergunta), o outro responde. Trocam a cada pergunta.`},
+  {k:'teach', min:7, step:'speaking-2', parts:['fmt','intro','how','traps']},
+  {k:'model', min:7, step:'speaking-2', parts:['ex'], note:`Mostre as anotações de 1 minuto no quadro (só palavras-chave) antes de ler o modelo.`},
+  {k:'exam', min:15, step:'speaking-2', parts:['practice'], note:`Cada aluno faz um cartão completo (1 min de preparação + 2 min de fala) e o colega cronometra e marca o checklist.`},
+  {k:'review', min:5, title:'Fechamento', html:`<p>Part 1: <b>resposta + detalhe</b>. Part 2: <b>siga os tópicos do cartão</b> e use o "why" para se estender.</p>`}
+ ],
+ hw:`<ul><li>Grave 3 cue cards: <i>a book you enjoyed · a time you helped someone · a piece of technology you use every day</i>.</li></ul>`},
+
+{id:'aula-9', sec:'Speaking', title:'Speaking Part 3: discussão abstrata', sub:'Generalizar, comparar, especular e mostrar os dois lados.',
+ goals:['Generalizar além da experiência pessoal','Usar linguagem de especulação e concessão','Desenvolver respostas de 30–45 s'],
+ stages:[
+  {k:'warm', min:5, title:'Do pessoal ao geral', note:`Transforme frases pessoais em gerais: "I use my phone a lot" → "Young people nowadays tend to…"`, html:`<p>Transforme em generalização: <i>I use my phone a lot · My grandparents don't use the internet · I prefer working from home</i></p>`},
+  {k:'teach', min:10, step:'speaking-3', parts:['fmt','intro','how','traps']},
+  {k:'model', min:7, step:'speaking-3', parts:['ex']},
+  {k:'guided', min:8, title:'Linguagem útil', html:`<div class="cols"><div class="card"><b>Generalizar</b><br>Generally speaking… · By and large… · In my country, most people…</div><div class="card"><b>Especular</b><br>I'd imagine that… · It's likely that… · In the long run…</div><div class="card"><b>Conceder</b><br>Having said that… · That said… · On the other hand…</div><div class="card"><b>Comparar</b><br>Compared to… · Whereas in the past… · Nowadays, by contrast…</div></div>`},
+  {k:'pair', min:15, step:'speaking-3', parts:['practice'], note:`Em trios: examinador, candidato e observador (que anota as expressões usadas). Gire os papéis.`},
+  {k:'exam', min:10, title:'Mais perguntas de Part 3', items:[
+   {t:'speak', a:[['W',`Do you think governments should spend more money on public transport or on roads?`]], resp:45, ck:[`Posição + justificativa?`,`Dois lados?`], m:`Personally, I think public transport should be the priority, at least in large cities. Building more roads tends to attract more cars, so congestion returns within a few years. Good metro and bus systems, on the other hand, move far more people using less space. That said, in rural areas roads are still essential, because public transport is rarely viable when population density is low. So I'd say it depends on the context, but in cities, investment in transport makes more sense.`},
+   {t:'speak', a:[['W',`How might the way people work change over the next twenty years?`]], resp:45, ck:[`Especulação (will probably, I'd imagine)?`,`Exemplos?`], m:`I'd imagine that automation will change many jobs rather than eliminate them completely. Routine tasks, like data entry, will probably be done by AI, so workers will need to focus on creativity and problem-solving. It's also likely that remote and flexible work will become even more common. On the other hand, there's a risk that inequality grows, because not everyone will have access to the training needed. So governments will have a big role in retraining people.`}]},
+  {k:'review', min:5, title:'Fechamento', html:`<p>Part 3 decide o 7+: <b>opinião → razão → exemplo → outro lado → conclusão</b>.</p>`}
+ ],
+ hw:`<ul><li>Grave respostas de 45 s para: <i>"Is it better to live in a city or in the countryside?"</i> e <i>"Should university education be free?"</i></li></ul>`},
+
+{id:'aula-10', sec:'Reta final', title:'Simulado integrado e plano de estudos', sub:'Uma amostra de cada seção em condições reais e plano até a prova.',
+ goals:['Aplicar as estratégias em sequência','Estimar a band atual de cada habilidade','Planejar as semanas até a prova'],
+ stages:[
+  {k:'warm', min:3, title:'Revisão rápida', html:`<p>Diga uma estratégia para: Listening Part 1 · T/F/NG · Headings · Task 1 · Task 2 · Speaking Part 2.</p>`},
+  {k:'mock', min:42, title:'Minissimulado', note:`Listening (áudio 1x, 6 min) → Reading (14 min) → Writing Task 1 só overview + 1 parágrafo (12 min) → Speaking Part 2 (4 min, em duplas).`,
+   items:[
+    {t:'cloze', ins:`Listening Part 2. Escreva <b>NO MORE THAN TWO WORDS AND/OR A NUMBER</b>.`, a:[['W',`Welcome to the Riverside Art Festival. This year, the main exhibition is in the old fire station rather than the town hall, which is being renovated. Workshops for children run every morning from ten until twelve, and they're free, but places must be booked at the information tent. The highlight of the week is the outdoor film screening on Friday evening — please bring your own chairs or blankets. And finally, all profits from the festival café will go to the local hospital.`]],
+     text:`Main exhibition location: the old {1}<br>Children's workshops: every morning, 10–{2}<br>Book places at the {3}<br>Friday: outdoor {4}<br>Café profits go to the local {5}`,
+     g:[{k:['fire station']},{k:['12','twelve','12.00','12:00']},{k:['information tent']},{k:['film screening','film']},{k:['hospital']}]},
+    {t:'mcq', title:'Reading', p:`<p>Honeybees perform a vital role in agriculture, pollinating crops worth billions of dollars every year. Since 2006, however, beekeepers in North America and Europe have reported unusually high losses of colonies, a phenomenon sometimes called "colony collapse disorder". Scientists now believe there is no single cause. Pesticides, parasites such as the varroa mite, poor nutrition and stress from transporting hives over long distances all appear to play a part. Some farmers have responded by planting wildflower strips beside their fields, which provide bees with a more varied diet.</p>`,
+     qs:[{q:`Colony losses were first reported in Asia.`, o:['TRUE','FALSE','NOT GIVEN'], k:2},
+         {q:`Scientists agree on one main cause of colony collapse.`, o:['TRUE','FALSE','NOT GIVEN'], k:1},
+         {q:`Moving hives long distances may harm bees.`, o:['TRUE','FALSE','NOT GIVEN'], k:0},
+         {q:`Wildflower strips have completely solved the problem.`, o:['TRUE','FALSE','NOT GIVEN'], k:2}]},
+    {t:'write', q:`<p><b>Task 1 (parcial):</b> The table shows the average number of hours per week spent on different activities by university students in 2015 and 2025.</p><table><tr><th>Activity</th><th>2015</th><th>2025</th></tr><tr><td>Studying</td><td>20</td><td>17</td></tr><tr><td>Paid work</td><td>8</td><td>14</td></tr><tr><td>Social media</td><td>6</td><td>15</td></tr><tr><td>Sport</td><td>5</td><td>3</td></tr></table><p>Escreva a introdução, o overview e um parágrafo de detalhes.</p>`, min:100, mins:12, ck:[`Overview com 2 tendências?`,`Comparações com números?`], m:`<p>The table compares how many hours per week university students devoted to four activities in 2015 and 2025.</p><p>Overall, students spent considerably more time on paid work and social media in 2025, while time spent studying and doing sport declined.</p><p>The most striking change was in social media use, which rose from 6 to 15 hours a week, more than doubling. Paid work also increased substantially, from 8 to 14 hours. As a result, by 2025 students were spending almost as much time on social media as on their studies, which fell from 20 to 17 hours.</p>`},
+    {t:'speak', q:`<p><b>Part 2:</b> Describe a goal you hope to achieve in the next five years. You should say: what the goal is · why it is important to you · what you are doing to achieve it · and explain how you will feel when you achieve it.</p>`, prep:60, resp:120, ck:[`4 tópicos?`,`1min30+?`], m:`(Roteiro) Meta: fazer mestrado no exterior → por quê: área de pesquisa e carreira → o que estou fazendo: IELTS, economizando, contato com professores → como vou me sentir: orgulho, especialmente porque serei o primeiro da família.`, mt:'Roteiro modelo'}
+   ]},
+  {k:'review', min:10, title:'Band estimada e plano', note:`Ajude cada aluno a estimar a band por habilidade (Listening e Reading pelos acertos; Writing e Speaking pelo checklist) e definir prioridades.`, html:`<table><tr><th>Habilidade</th><th>Band estimada</th><th>Meta</th><th>Prioridade (1–4)</th></tr><tr><td>Listening</td><td></td><td></td><td></td></tr><tr><td>Reading</td><td></td><td></td><td></td></tr><tr><td>Writing</td><td></td><td></td><td></td></tr><tr><td>Speaking</td><td></td><td></td><td></td></tr></table>`},
+  {k:'teach', min:5, title:'Plano de estudos e dia da prova', step:'plano', parts:['page']}
+ ],
+ hw:`<ul><li>Faça um simulado oficial completo (Cambridge IELTS books ou o material gratuito do British Council/IDP) com tempo real.</li></ul>`}
+];
 
 EXAMS.push({
 id:'cpe', short:'C2 Proficiency', name:'Cambridge C2 Proficiency (CPE)', color:'#5B3A8E', tag:'Nível C2 · validade permanente',
@@ -1168,6 +1787,184 @@ steps:[
 ]
 });
 
+EXAMS.filter(function(e){ return e.id === 'cpe'; })[0].lessons = [
+{id:'aula-1', sec:'Introdução + Use of English', title:'O C2 Proficiency e a Part 1 (multiple-choice cloze)', sub:'Visão geral do exame e o mundo das colocações.',
+ goals:['Conhecer as 4 provas, as 16 partes e a escala 180–230','Entender por que colocações decidem a Part 1','Montar um caderno de colocações'],
+ stages:[
+  {k:'warm', min:5, title:'Qual palavra "anda junto"?', note:`Pergunte: "make or do?" para: a mistake, research, a decision, harm, an effort, business. Discuta por que o português não ajuda.`, html:`<p><b>make</b> ou <b>do</b>? a mistake · research · a decision · harm · an effort · business · a fortune · damage</p>`},
+  {k:'teach', min:10, title:'O exame em 10 minutos', note:`Projete a visão geral. Explique que o C2 exige reconhecer o vocabulário em blocos e que Reading e Use of English dividem os mesmos 90 minutos.`, html:`<div class="cols"><div class="card"><b>Reading &amp; Use of English</b><br>1h30 · 7 partes · 53 questões</div><div class="card"><b>Writing</b><br>1h30 · essay obrigatório + 1 tarefa à escolha</div><div class="card"><b>Listening</b><br>~40 min · 4 partes · áudio 2x</div><div class="card"><b>Speaking</b><br>16 min · em dupla</div></div><p>200–230 = C2 (A: 220+, B: 213–219, C: 200–212) · 180–199 = certificado C1.</p>`},
+  {k:'teach', min:8, step:'uoe-1', parts:['fmt','intro','how','traps']},
+  {k:'model', min:5, step:'uoe-1', parts:['ex']},
+  {k:'guided', min:10, step:'uoe-1', parts:['practice'], note:`Para cada lacuna, peça que digam a palavra que vem depois e por que ela elimina opções.`},
+  {k:'exam', min:12, title:'Condições de prova', items:[{t:'cloze', text:`The architect's latest project has {1} considerable controversy. Critics argue that it {2} little resemblance to the historic buildings around it, while supporters point {3} that cities must be allowed to evolve. Whatever one's view, the building has certainly {4} people talking, and the debate shows no {5} of dying down.`,
+   g:[{o:['sparked','made','put','done'],k:0,x:`"spark controversy" (= provocar polêmica).`},{o:['bears','holds','carries','shows'],k:0,x:`"bear (little) resemblance to".`},{o:['out','up','over','off'],k:0,x:`phrasal verb "point out that".`},{o:['got','made','set','kept'],k:0,x:`"get people talking".`},{o:['sign','signal','mark','trace'],k:0,x:`"show no sign of".`}]}]},
+  {k:'review', min:5, title:'Fechamento', html:`<p>Abra seu <b>caderno de colocações</b>: verbo + substantivo, adjetivo + substantivo e expressões fixas. Anote 10 da aula de hoje.</p>`}
+ ],
+ hw:`<ul><li>Leia um artigo do The Guardian ou do The Economist e anote 15 colocações em blocos (ex.: "pose a threat", "a sharp decline").</li></ul>`},
+
+{id:'aula-2', sec:'Reading & Use of English', title:'Part 2: Open cloze', sub:'Palavras gramaticais, inversões e expressões fixas.',
+ goals:['Identificar a função gramatical que falta','Dominar inversões e conectivos formais','Evitar erros de ortografia e de "duas palavras"'],
+ stages:[
+  {k:'warm', min:5, title:'Uma palavra só', note:`Escreva no quadro "___ though it rained, we went out" e pergunte por que "Even" é a resposta e "Although" não serve.`, html:`<p class="passage">___ though it rained, we went out.</p><p>Que palavra completa? Por que não "Although"?</p>`},
+  {k:'teach', min:10, step:'uoe-2', parts:['fmt','intro','how','traps']},
+  {k:'model', min:5, step:'uoe-2', parts:['ex']},
+  {k:'guided', min:12, step:'uoe-2', parts:['practice'], note:`Antes de cada resposta, a turma diz a função: auxiliar, relativo, preposição etc.`},
+  {k:'exam', min:13, title:'Condições de prova', items:[{t:'cloze', text:`Much {1} we might like to believe otherwise, few of us are as rational as we think. Our decisions are shaped {2} a host of biases, {3} of which we are rarely aware. Only {4} we recognise these tendencies can we hope to counter them. Even {5}, awareness alone is seldom enough; what is needed is a system {6} which our choices are regularly checked against evidence.`,
+   g:[{k:['as']},{k:['by']},{k:['most','many','some','all']},{k:['when','if','once']},{k:['then','so']},{k:['by','in','through','under']}]}]},
+  {k:'review', min:5, title:'Fechamento', html:`<p>Lista de estruturas para revisar: <b>Much as · Only when/if · Not until · Hardly/No sooner · whereby · let alone · as it turned out · all the more</b>.</p>`}
+ ],
+ hw:`<ul><li>Escreva 10 frases usando as estruturas do fechamento.</li></ul>`},
+
+{id:'aula-3', sec:'Reading & Use of English', title:'Part 3: Word formation', sub:'Prefixos, sufixos e mudanças internas.',
+ goals:['Decidir a classe gramatical pela posição','Aplicar prefixos negativos pelo contexto','Dominar mudanças internas e ortografia'],
+ stages:[
+  {k:'warm', min:5, title:'Família de palavras', note:`Peça que a turma construa no quadro a família de "decide": decision, decisive, indecisive, decisively, indecision, undecided.`, html:`<p>Quantas palavras você forma a partir de <b>DECIDE</b>? E de <b>RELY</b>?</p>`},
+  {k:'teach', min:10, step:'uoe-3', parts:['fmt','intro','how','traps']},
+  {k:'model', min:5, step:'uoe-3', parts:['ex']},
+  {k:'guided', min:10, step:'uoe-3', parts:['practice']},
+  {k:'guided', min:10, title:'Prefixos negativos e sufixos', items:[{t:'cloze', text:`The results were {1} with earlier studies. Her {2} to compromise made negotiations impossible. The witness's account proved {3}. Despite his {4}, he was promoted. The new rules are widely seen as {5}.`,
+   g:[{k:['inconsistent'],h:'CONSIST'},{k:['unwillingness'],h:'WILLING'},{k:['unreliable'],h:'RELY'},{k:['inexperience'],h:'EXPERIENCE'},{k:['unenforceable'],h:'FORCE'}]}]},
+  {k:'exam', min:10, title:'Condições de prova', items:[{t:'cloze', text:`The museum's new director faces the {1} task of restoring public trust. Previous managers had made a number of {2} decisions, and visitor numbers fell to a {3} low. She has promised greater {4} in how funds are spent.`,
+   g:[{k:['daunting'],h:'DAUNT'},{k:['questionable'],h:'QUESTION'},{k:['record'],h:'RECORD'},{k:['transparency'],h:'TRANSPARENT'}]}]},
+  {k:'review', min:5, title:'Fechamento', html:`<p>Ordem: <b>classe → positivo/negativo → plural → ortografia</b>.</p>`}
+ ],
+ hw:`<ul><li>Monte famílias de palavras para: ACCEPT, COMPARE, OBSERVE, PERSUADE, SIGNIFY (no mínimo 4 formas cada).</li></ul>`},
+
+{id:'aula-4', sec:'Reading & Use of English', title:'Part 4: Key word transformation', sub:'Mesmo sentido, nova estrutura, 3 a 8 palavras.',
+ goals:['Reconhecer o que a palavra-chave "puxa"','Preservar todos os detalhes do sentido','Garantir pontos parciais'],
+ stages:[
+  {k:'warm', min:5, title:'Diga de outro jeito', note:`Diga frases e a turma reformula oralmente: "It's possible she forgot" → "She may have forgotten"; "I regret not studying" → "I wish I had studied".`, html:`<p>Reformule oralmente: <i>It's possible she forgot · I regret not studying · People say he is rich</i></p>`},
+  {k:'teach', min:10, step:'uoe-4', parts:['fmt','intro','how','traps']},
+  {k:'model', min:5, step:'uoe-4', parts:['ex']},
+  {k:'guided', min:12, step:'uoe-4', parts:['practice'], note:`Mostre como cada resposta se divide em duas metades de 1 ponto cada.`},
+  {k:'exam', min:13, title:'Condições de prova', items:[{t:'kwt', qs:[
+   {s1:`People believe that the painting was stolen in 1990.`, kw:'BELIEVED', pre:'The painting', post:'in 1990.', k:['is believed to have been stolen']},
+   {s1:`I would prefer you not to mention this to anyone.`, kw:'RATHER', pre:"I'd", post:'this to anyone.', k:["rather you didn't mention","rather you did not mention"]},
+   {s1:`The film was so popular that extra screenings were arranged.`, kw:'SUCH', pre:'The film', post:'that extra screenings were arranged.', k:['was such a success','was of such popularity','enjoyed such popularity','was such a hit']},
+   {s1:`She didn't realise how serious the situation was until later.`, kw:'DAWNED', pre:'It', post:'how serious the situation was.', k:['only later dawned on her','later dawned on her','dawned on her only later']}]}]},
+  {k:'review', min:5, title:'Fechamento', html:`<p>Expressões que caem: <b>be said/believed to have · would rather · it dawned on · take for granted · come as no surprise · there's no point in</b>.</p>`}
+ ],
+ hw:`<ul><li>Escreva 8 transformações próprias com: SAID, POINT, SURPRISE, GRANTED, LIKELIHOOD, REGARDLESS, SOONER, WISH.</li></ul>`},
+
+{id:'aula-5', sec:'Reading & Use of English', title:'Part 5: Multiple choice', sub:'Tom, atitude e ironia em textos literários e jornalísticos.',
+ goals:['Responder antes de olhar as alternativas','Reconhecer ironia e atitude do autor','Eliminar alternativas verdadeiras mas irrelevantes'],
+ stages:[
+  {k:'warm', min:5, title:'O tom da frase', note:`Leia: "Oh, wonderful, another meeting." Pergunte: qual é a atitude? Como você sabe?`, html:`<p>Qual é a atitude? <i>"Oh, wonderful, another meeting."</i> · <i>"The hotel was, shall we say, rustic."</i></p>`},
+  {k:'teach', min:10, step:'reading-5', parts:['fmt','intro','how','traps']},
+  {k:'model', min:7, step:'reading-5', parts:['ex']},
+  {k:'guided', min:12, step:'reading-5', parts:['practice']},
+  {k:'exam', min:12, title:'Condições de prova', items:[{t:'mcq', p:`<p>My grandfather kept a diary for sixty-three years, and in all that time, as far as I can tell, nothing happened to him. Entries record the weather with forensic precision, the price of tomatoes, the departure of a neighbour's cat. Wars came and went without comment. When I inherited the notebooks, I confess my first reaction was disappointment; I had hoped for revelations. It was only on a second reading that I understood what I was holding. This was not the record of a man to whom nothing happened, but of a man who had decided that the small things were the point.</p>`,
+   qs:[{q:`The phrase "with forensic precision" suggests the grandfather's entries were`, o:[`scientific in purpose`,`extremely detailed`,`often inaccurate`,`connected with crime`], k:1},
+       {q:`What does the writer imply about the absence of comments on wars?`, o:[`The grandfather was unaware of them.`,`It seemed strange at first.`,`The diaries were censored.`,`It proves the diaries were fake.`], k:1},
+       {q:`How did the writer's view of the diaries change?`, o:[`From admiration to boredom`,`From disappointment to appreciation`,`From curiosity to anger`,`It did not change.`], k:1}]}]},
+  {k:'review', min:5, title:'Fechamento', html:`<p>Formule sua resposta <b>antes</b> de ler as alternativas. Ironia: o sentido real é o <b>oposto</b> do literal.</p>`}
+ ],
+ hw:`<ul><li>Leia uma coluna de humor ou de opinião (ex.: The Guardian Opinion) e descreva em 3 frases a atitude do autor, com citações.</li></ul>`},
+
+{id:'aula-6', sec:'Reading & Use of English', title:'Parts 6 e 7: Gapped text e Multiple matching', sub:'Coesão entre parágrafos e leitura seletiva rápida.',
+ goals:['Usar pistas de coesão (pronomes, conectivos, repetições)','Detectar o parágrafo extra','Localizar paráfrases em várias seções'],
+ stages:[
+  {k:'warm', min:5, title:'Quebra-cabeça', note:`Entregue (ou projete) 4 frases de uma história fora de ordem. A turma reordena e diz quais palavras ajudaram.`, html:`<p>Reordene: (a) <i>This decision would change her life.</i> (b) <i>In 1995, Ana moved to Lisbon.</i> (c) <i>There, she found a job at a small publisher.</i> (d) <i>Within ten years, she owned the company.</i></p><p class="tnote">Ordem: b – c – a – d (ou b – a – c – d). Discuta as pistas "There" e "This decision".</p>`},
+  {k:'teach', min:8, step:'reading-6', parts:['fmt','intro','how','traps']},
+  {k:'model', min:5, step:'reading-6', parts:['ex']},
+  {k:'guided', min:10, step:'reading-6', parts:['practice']},
+  {k:'teach', min:7, step:'reading-7', parts:['fmt','intro','how','traps']},
+  {k:'model', min:5, step:'reading-7', parts:['ex']},
+  {k:'exam', min:10, step:'reading-7', parts:['practice'], note:`Cronometre 8 minutos.`},
+  {k:'review', min:5, title:'Fechamento', html:`<p>Part 6: <b>olhe os dois lados</b> da lacuna. Part 7: <b>leia as afirmações primeiro</b>, depois uma seção por vez.</p>`}
+ ],
+ hw:`<ul><li>Recorte um artigo de 6 parágrafos, retire 2 e peça a alguém para recolocar. Anote as pistas de coesão.</li></ul>`},
+
+{id:'aula-7', sec:'Writing', title:'Writing Part 1: Essay (resumo + avaliação)', sub:'Quatro pontos, paráfrase e avaliação crítica.',
+ goals:['Identificar os 2 pontos principais de cada texto','Parafrasear sem copiar','Avaliar cada ponto e integrar a própria opinião'],
+ stages:[
+  {k:'warm', min:5, title:'Paráfrase em C2', note:`Dê frases e peça paráfrases sofisticadas: "Many people think X is bad" → "X has come under considerable criticism".`, html:`<p>Parafraseie com registro C2: <i>Many people think social media is bad · The government should do more · This idea is not very convincing</i></p>`},
+  {k:'teach', min:10, step:'writing-1', parts:['fmt','intro','how','traps']},
+  {k:'model', min:10, step:'writing-1', parts:['ex'], note:`Peça que marquem no modelo com cores diferentes: resumo e avaliação.`},
+  {k:'guided', min:8, title:'Linguagem de avaliação', html:`<div class="cols"><div class="card"><b>Concordar</b><br>This argument is persuasive insofar as… · There is considerable merit in…</div><div class="card"><b>Discordar / relativizar</b><br>This seems somewhat overstated, since… · The writer arguably overlooks…</div><div class="card"><b>Contrastar textos</b><br>Whereas the first text…, the second… · This view is challenged by…</div><div class="card"><b>Opinião própria</b><br>On balance, I would contend that… · What both writers fail to consider is…</div></div>`},
+  {k:'exam', min:22, step:'writing-1', parts:['practice'], note:`Planejamento (5 min) + escrita (17 min). O aluno termina em casa.`},
+  {k:'review', min:5, title:'Fechamento', html:`<p>Checklist: <b>4 pontos · paráfrase · avaliação · opinião · 240–280 palavras</b>.</p>`}
+ ],
+ hw:`<ul><li>Termine o essay da aula e revise usando o checklist. Traga para correção.</li></ul>`},
+
+{id:'aula-8', sec:'Writing', title:'Writing Part 2: gêneros', sub:'Artigo, carta, relatório e resenha: convenções e efeito no leitor.',
+ goals:['Distinguir as convenções de cada gênero','Adequar registro ao leitor-alvo','Usar estruturas avançadas com naturalidade'],
+ stages:[
+  {k:'warm', min:5, title:'Que gênero é este?', note:`Leia 4 aberturas e peça para identificar o gênero: "Have you ever wondered…?" (artigo), "The purpose of this report is…" (relatório), "Dear Sir or Madam" (carta), "Few films manage to…" (resenha).`, html:`<p>Identifique o gênero: <i>Have you ever wondered…? · The purpose of this report is to… · Dear Sir or Madam, · Few films manage to…</i></p>`},
+  {k:'teach', min:10, step:'writing-2', parts:['fmt','intro','how','traps']},
+  {k:'model', min:10, step:'writing-2', parts:['ex'], note:`Destaque no modelo a cleft sentence e a inversão.`},
+  {k:'guided', min:8, title:'Estruturas avançadas', items:[{t:'kwt', qs:[
+   {s1:`I was most impressed by the acting.`, kw:'WHAT', pre:'', post:'the acting.', k:['what impressed me most was','what most impressed me was']},
+   {s1:`I have rarely seen such a moving performance.`, kw:'HAVE', pre:'Rarely', post:'such a moving performance.', k:['have i seen']},
+   {s1:`The service was poor, but the food was excellent.`, kw:'DESPITE', pre:'The food was excellent', post:'service.', k:['despite the poor']}]}]},
+  {k:'exam', min:22, step:'writing-2', parts:['practice'], note:`Planejamento do relatório (5 min) + escrita (17 min). Termine em casa.`},
+  {k:'review', min:5, title:'Fechamento', html:`<p>Gênero certo + leitor certo + <b>efeito</b> no leitor: é isso que o examinador avalia.</p>`}
+ ],
+ hw:`<ul><li>Escreva um artigo (280–320 palavras): <i>"The most overrated invention of the last 50 years"</i>, para a revista de uma universidade.</li></ul>`},
+
+{id:'aula-9', sec:'Listening', title:'Listening Parts 1 e 3: atitude e opinião', sub:'Múltipla escolha sobre propósito, sentimento e concordância.',
+ goals:['Usar a 1ª audição para marcar e a 2ª para confirmar','Identificar opiniões rejeitadas pelo falante','Responder perguntas de concordância entre falantes'],
+ stages:[
+  {k:'warm', min:5, title:'O que ele realmente pensa?', note:`Diga: "I'd always thought remote work would suit me. How wrong I was." Pergunte qual é a opinião real.`, html:`<p><i>"I'd always thought remote work would suit me. How wrong I was."</i> Qual é a opinião real?</p>`},
+  {k:'teach', min:8, step:'listening-13', parts:['fmt','intro','how','traps']},
+  {k:'model', min:8, step:'listening-13', parts:['ex'], note:`Toque duas vezes, como na prova.`},
+  {k:'guided', min:12, step:'listening-13', parts:['practice']},
+  {k:'exam', min:12, title:'Condições de prova: Part 1', items:[{t:'mcq', plays:2, a:[['W',`People ask why I left a secure job in banking to restore old furniture. Honestly, it wasn't a romantic decision. I'd been made redundant, and the payout gave me a year to experiment. What I hadn't expected was how much the work would teach me about patience. You can't rush a lacquer finish. In banking, everything was urgent; here, nothing is.`],['M',`And do you miss anything about the old job?`],['W',`The colleagues, definitely. Working alone in a workshop can be terribly isolating.`]],
+   qs:[{q:`Why did the woman leave banking?`, o:[`She had always dreamed of restoring furniture.`,`She lost her job and had time to try something new.`,`She disliked her colleagues.`,`She wanted a more urgent job.`], k:1},
+       {q:`What does she find difficult about her current work?`, o:[`The lack of social contact`,`The need for speed`,`The low income`,`The technical skills required`], k:0}]}]},
+  {k:'review', min:5, title:'Fechamento', html:`<p>Cuidado com <b>"I'd always thought… / People assume…"</b>: quase sempre introduzem a ideia que o falante vai rejeitar.</p>`}
+ ],
+ hw:`<ul><li>Ouça uma entrevista do BBC Radio 4 ("Desert Island Discs" ou "The Interview") e anote 3 opiniões do entrevistado e como ele as expressa.</li></ul>`},
+
+{id:'aula-10', sec:'Listening', title:'Listening Parts 2 e 4', sub:'Completar frases com a palavra exata e associar cinco falantes.',
+ goals:['Evitar o distrator em sentence completion','Dividir as duas tarefas da Part 4 entre as audições','Ouvir ideias, e não palavras'],
+ stages:[
+  {k:'warm', min:5, title:'O distrator', note:`Diga: "Most people think the Eiffel Tower was built for tourists, but in fact it was built for the 1889 World's Fair." Pergunte: para que foi construída?`, html:`<p>Ouça e responda: para que a Torre Eiffel foi construída?</p>`},
+  {k:'teach', min:6, step:'listening-2', parts:['fmt','intro','how','traps']},
+  {k:'model', min:5, step:'listening-2', parts:['ex']},
+  {k:'guided', min:10, step:'listening-2', parts:['practice']},
+  {k:'teach', min:6, step:'listening-4', parts:['fmt','intro','how','traps']},
+  {k:'model', min:6, step:'listening-4', parts:['ex']},
+  {k:'exam', min:12, step:'listening-4', parts:['practice'], note:`1ª audição: Task 1. 2ª audição: Task 2.`},
+  {k:'review', min:5, title:'Fechamento', html:`<p>Part 2: <b>"but in fact"</b> sinaliza a resposta. Part 4: <b>uma tarefa por audição</b>.</p>`}
+ ],
+ hw:`<ul><li>Ouça 5 depoimentos curtos (ex.: vox pops no YouTube) e escreva para cada um o motivo e o sentimento expressos.</li></ul>`},
+
+{id:'aula-11', sec:'Speaking', title:'Speaking: as três partes', sub:'Interação com o colega, especulação e long turn de 2 minutos.',
+ goals:['Interagir de forma colaborativa na Part 2','Especular sobre imagens em vez de descrevê-las','Organizar 2 minutos de fala sem preparação'],
+ stages:[
+  {k:'warm', min:5, title:'Interrompendo com educação', note:`Pratique frases de interação: "Sorry to jump in, but…", "Can I just add…", "What's your take on…?"`, html:`<p>Use: <i>Sorry to jump in, but… · Building on what you said… · What's your take on…? · Shall we settle on…?</i></p>`},
+  {k:'teach', min:8, step:'speaking-12', parts:['fmt','intro','how','traps']},
+  {k:'model', min:5, step:'speaking-12', parts:['ex']},
+  {k:'pair', min:12, step:'speaking-12', parts:['practice'], note:`Em duplas, como na prova. Um observador anota as frases de interação usadas.`},
+  {k:'teach', min:7, step:'speaking-3', parts:['fmt','intro','how','traps']},
+  {k:'model', min:5, step:'speaking-3', parts:['ex']},
+  {k:'exam', min:13, step:'speaking-3', parts:['practice'], note:`Cada aluno faz um long turn de 2 min; o colega comenta por 30 s; o professor faz 1–2 perguntas de discussão.`},
+  {k:'review', min:5, title:'Fechamento', html:`<p>Critério "Interactive Communication": <b>iniciar, responder, desenvolver e negociar</b> com o colega.</p>`}
+ ],
+ hw:`<ul><li>Grave um long turn de 2 min: <i>"Is it ever right to break the law?"</i> (ideias: protest · morality · consequences).</li></ul>`},
+
+{id:'aula-12', sec:'Reta final', title:'Simulado integrado e plano de estudos', sub:'Amostra das quatro provas, análise e plano até o exame.',
+ goals:['Aplicar as estratégias sob pressão de tempo','Estimar a pontuação em cada habilidade','Planejar as semanas finais'],
+ stages:[
+  {k:'warm', min:3, title:'Revisão', html:`<p>Uma estratégia para cada parte do Reading &amp; Use of English, em 1 minuto.</p>`},
+  {k:'mock', min:45, title:'Minissimulado', note:`Use of English (15 min) → Reading (10 min) → Listening (áudio 2x, 8 min) → Writing: planejamento de um essay (12 min).`,
+   items:[
+    {t:'cloze', title:'Part 1', text:`The report {1} no punches in its criticism of the company, which it accuses of having {2} a blind eye to safety concerns for years.`, g:[{o:['pulls','throws','lands','holds'],k:0},{o:['turned','given','shown','kept'],k:0}]},
+    {t:'cloze', title:'Part 2', text:`{1} the risks involved, the expedition went ahead. Not {2} did the team reach the summit, but they also collected valuable data.`, g:[{k:['Despite','Notwithstanding']},{k:['only']}]},
+    {t:'cloze', title:'Part 3', text:`The minister's {1} remarks caused outrage. The policy has been {2} in reducing crime.`, g:[{k:['insensitive'],h:'SENSE'},{k:['ineffective','ineffectual'],h:'EFFECT'}]},
+    {t:'kwt', qs:[{s1:`It was wrong of you not to tell me.`, kw:'OUGHT', pre:'You', post:'me.', k:['ought to have told']},{s1:`There is no point in arguing with him.`, kw:'WORTH', pre:'It', post:'with him.', k:["isn't worth arguing","is not worth arguing"]}]},
+    {t:'mcq', title:'Part 5', p:`<p>There is a peculiar intimacy in reading someone else's marginalia. The secondhand copy of Middlemarch I bought last year came with the pencilled thoughts of a previous owner who, judging by the handwriting, was young and fiercely opinionated. "Rubbish!" appears beside one of Dorothea's speeches; "YES" beside another. I found myself, absurdly, arguing back. By the final chapter, I felt I knew this stranger better than some of my colleagues.</p>`, qs:[{q:`What does the writer suggest about the previous owner's comments?`, o:[`They spoiled the novel.`,`They created a kind of personal connection.`,`They were mostly accurate.`,`They were written by a professor.`], k:1},{q:`The word "absurdly" shows that the writer`, o:[`is aware that the behaviour was irrational`,`found the novel funny`,`disagreed with the author`,`was embarrassed by the handwriting`], k:0}]},
+    {t:'mcq', title:'Listening Part 3', plays:2, a:[['W',`You've written that "boredom is underrated". What do you mean?`],['M',`Simply that we've almost eliminated it. The moment we have a spare minute, we reach for our phones. But boredom is uncomfortable for a reason: it pushes us to seek something new. Many of my best ideas came when I had nothing to do. I'm not saying we should seek boredom out, exactly — just stop running from it.`]],
+     qs:[{q:`What is the man's main point?`, o:[`Phones should be banned.`,`Boredom has a useful function.`,`People should try to be bored often.`,`Ideas come only from technology.`], k:1}]},
+    {t:'write', q:`<p><b>Plano de essay (Part 1):</b> Text 1 argues that cities should ban advertising billboards because they pollute the visual environment and encourage overconsumption. Text 2 argues that billboards fund public services and can display public art. Escreva o plano: os 4 pontos, sua avaliação de cada um e sua opinião.</p>`, mins:12, ck:[`4 pontos identificados?`,`Avaliação para cada um?`,`Opinião clara?`], m:`<p>(Plano) T1a poluição visual → válido em centros históricos, mas subjetivo · T1b consumismo → difícil de provar só pelos outdoors · T2a financiam serviços → argumento concreto (ex.: bicicletas públicas pagas por publicidade) · T2b arte pública → interessante, mas raro na prática · Opinião: regulação (zonas e limites) em vez de proibição total.</p>`, mt:'Plano modelo'}
+   ]},
+  {k:'review', min:7, title:'Autoavaliação', html:`<table><tr><th>Componente (20% cada)</th><th>Situação</th><th>Ação</th></tr><tr><td>Reading</td><td></td><td></td></tr><tr><td>Use of English</td><td></td><td></td></tr><tr><td>Writing</td><td></td><td></td></tr><tr><td>Listening</td><td></td><td></td></tr><tr><td>Speaking</td><td></td><td></td></tr></table>`},
+  {k:'teach', min:5, title:'Plano de estudos e dia da prova', step:'plano', parts:['page']}
+ ],
+ hw:`<ul><li>Faça um simulado oficial completo da Cambridge (Official Practice Tests) com tempo real.</li></ul>`}
+];
+
 EXAMS.push({
 id:'toeic', short:'TOEIC', name:'TOEIC Listening & Reading', color:'#C27C0E', tag:'Mercado de trabalho',
 desc:`Mede o inglês usado no ambiente corporativo. São 200 questões de múltipla escolha em 7 partes, e a nota vai de 10 a 990.`,
@@ -1351,6 +2148,198 @@ steps:[
  <ul><li>Documento com foto original. Chegue 30 minutos antes.</li><li>Listening: use as instruções das Parts 1 e 2 (que você já conhece) para ler as perguntas das Parts 3 e 4.</li><li>Não volte ao Listening depois que ele acabar: siga direto para o Reading.</li></ul>`}
 ]
 });
+
+EXAMS.filter(function(e){ return e.id === 'toeic'; })[0].lessons = [
+{id:'aula-1', sec:'Introdução + Listening', title:'O TOEIC e a Part 1 (Photographs)', sub:'Formato da prova, ritmo de 200 questões e descrição de fotos.',
+ goals:['Conhecer as 7 partes e a pontuação de 10 a 990','Antecipar o vocabulário de uma foto','Diferenciar "is being" de "has been"'],
+ stages:[
+  {k:'warm', min:5, title:'Inglês no seu trabalho', note:`Pergunte em que situações os alunos usam ou vão usar inglês no trabalho (e-mails, reuniões, viagens). Anote no quadro: são os temas do TOEIC.`, html:`<p>Em que situações do seu trabalho você usa inglês? E-mails? Reuniões? Viagens? Planilhas?</p>`},
+  {k:'teach', min:8, title:'A prova em 8 minutos', note:`Destaque o ritmo: 200 questões em 2 horas, sem pausa. Erro não desconta.`, html:`<div class="cols"><div class="card"><b>Listening · 45 min · 100 q</b><br>Part 1 Fotos (6) · Part 2 Pergunta-resposta (25) · Part 3 Conversas (39) · Part 4 Falas (30)</div><div class="card"><b>Reading · 75 min · 100 q</b><br>Part 5 Frases (30) · Part 6 Textos (16) · Part 7 Leitura (54)</div></div><p>Pontuação: 5–495 por seção · total 10–990. Empresas costumam pedir 600–800.</p>`},
+  {k:'teach', min:8, step:'part-1', parts:['fmt','intro','how','traps']},
+  {k:'model', min:5, step:'part-1', parts:['ex']},
+  {k:'guided', min:10, title:'Vocabulário de fotos', note:`Para cada cena, a turma diz 3 frases possíveis antes de ouvir.`, items:[
+   {t:'match', short:true, ins:`Associe a frase ao sentido correto.`, o:[`Alguém está fazendo a ação agora`,`A ação já foi concluída (estado)`,`Descreve posição de objetos`],
+    qs:[{q:`The shelves are being stocked.`, k:0},{q:`The shelves have been stocked.`, k:1},{q:`Boxes are stacked against the wall.`, k:2},{q:`The road is being repaired.`, k:0},{q:`A ladder is leaning against the building.`, k:2},{q:`The tables have been set for dinner.`, k:1}]}]},
+  {k:'exam', min:14, step:'part-1', parts:['practice'], note:`Áudio 1x, 5 segundos para responder.`,
+   items:[
+    {t:'mcq', scene:['👨‍💻☕',`Um homem está sentado em frente a um notebook segurando uma xícara. Há documentos espalhados na mesa.`], a:[['N',`A. The man is typing on a keyboard. B. The man is holding a cup. C. Documents are being filed. D. The man is closing his laptop.`]], o:['A','B','C','D'], k:1},
+    {t:'mcq', scene:['🛒🧑‍🌾🍎',`Em um mercado ao ar livre, frutas estão expostas em caixas. Uma vendedora entrega uma sacola a um cliente.`], a:[['N',`A. Fruit is displayed in boxes. B. The customer is paying by card. C. The market is closed. D. Boxes are being loaded onto a truck.`]], o:['A','B','C','D'], k:0}]},
+  {k:'review', min:5, title:'Fechamento', html:`<p><b>is being + particípio</b> = alguém faz agora · <b>has been + particípio</b> = já está feito.</p>`}
+ ],
+ hw:`<ul><li>Tire 5 fotos do seu ambiente de trabalho e escreva 2 frases corretas e 2 erradas (armadilhas) para cada uma.</li></ul>`},
+
+{id:'aula-2', sec:'Listening', title:'Part 2: Question-Response', sub:'A primeira palavra decide: Who, When, Where, Why, How.',
+ goals:['Guardar a palavra interrogativa','Eliminar respostas com eco e som parecido','Aceitar respostas indiretas'],
+ stages:[
+  {k:'warm', min:5, title:'Pergunta relâmpago', note:`Faça perguntas rápidas (Who/When/Where/Why/How long) e a turma responde só o tipo de informação: pessoa, tempo, lugar, motivo, duração.`, html:`<p>Diga só o <b>tipo</b> de resposta esperado: <i>Who…? When…? Where…? Why…? How long…? How much…?</i></p>`},
+  {k:'teach', min:10, step:'part-2', parts:['fmt','intro','how','traps']},
+  {k:'model', min:5, step:'part-2', parts:['ex']},
+  {k:'guided', min:10, step:'part-2', parts:['practice'], note:`Depois de cada item, peça que expliquem por que as erradas estão erradas.`},
+  {k:'exam', min:15, title:'Condições de prova', note:`8 itens seguidos, sem pausa.`, items:[
+   {t:'mcq', a:[['W',`When does the new manager start?`],['M',`A. In the sales department. B. On the first of next month. C. She's very experienced.`]], o:['A','B','C'], k:1},
+   {t:'mcq', a:[['M',`How long will the repairs take?`],['W',`A. About three days. B. They're very long. C. The repair shop on Main Street.`]], o:['A','B','C'], k:0},
+   {t:'mcq', a:[['W',`Should we hold the meeting in person or online?`],['M',`A. Yes, we should. B. I met him in person. C. Online would be easier for the Tokyo team.`]], o:['A','B','C'], k:2},
+   {t:'mcq', a:[['M',`Who approved this budget?`],['W',`A. It was approved yesterday. B. I believe it was Ms. Garcia. C. The budget is too high.`]], o:['A','B','C'], k:1},
+   {t:'mcq', a:[['W',`Why don't you take the afternoon off?`],['M',`A. Because I was busy. B. Thanks, I might do that. C. It's off the main road.`]], o:['A','B','C'], k:1},
+   {t:'mcq', a:[['M',`Where can I find the updated price list?`],['W',`A. Prices went up last month. B. Ask Tom, he just sent it out. C. Yes, it's a long list.`]], o:['A','B','C'], k:1},
+   {t:'mcq', a:[['W',`You've already submitted the proposal, haven't you?`],['M',`A. Not yet, I'm still checking the figures. B. I proposed a new idea. C. Submit it by Friday.`]], o:['A','B','C'], k:0},
+   {t:'mcq', a:[['M',`The printer on the third floor is out of toner again.`],['W',`A. I'll order some more today. B. It's on the third floor. C. He's out of the office.`]], o:['A','B','C'], k:0}]},
+  {k:'review', min:5, title:'Fechamento', html:`<p>Resposta que <b>repete palavra</b> da pergunta? Desconfie. "Why don't you…?" é <b>sugestão</b>, e não pergunta de motivo.</p>`}
+ ],
+ hw:`<ul><li>Escreva 10 perguntas de trabalho (uma com cada palavra interrogativa) e uma resposta indireta para cada uma.</li></ul>`},
+
+{id:'aula-3', sec:'Listening', title:'Part 3: Conversations', sub:'Ler antes, responder durante e cruzar com gráficos.',
+ goals:['Ler as 3 perguntas antes de cada áudio','Responder perguntas de problema, detalhe e próximo passo','Cruzar informação do áudio com um gráfico'],
+ stages:[
+  {k:'warm', min:5, title:'O que vai acontecer?', note:`Mostre as 3 perguntas do exemplo (sem áudio) e peça que a turma preveja o assunto da conversa.`, html:`<p>Só lendo as perguntas, o que você consegue prever sobre a conversa?</p>`},
+  {k:'teach', min:10, step:'part-3', parts:['fmt','intro','how','traps']},
+  {k:'model', min:6, step:'part-3', parts:['ex']},
+  {k:'guided', min:12, step:'part-3', parts:['practice']},
+  {k:'exam', min:12, title:'Condições de prova', items:[{t:'mcq', a:[['W',`Hi Mark, did you see that the client moved the product demo to Thursday?`],['M',`Yes, and that's a problem — I'm flying to Chicago on Wednesday night.`],['W',`Could Priya do the demo instead? She helped design the software.`],['M',`Good idea. I'll ask her this afternoon and send her my presentation slides.`],['W2',`Sorry to interrupt — did I hear my name?`],['M',`Perfect timing, Priya!`]],
+   qs:[{q:`What problem does the man mention?`, o:[`The client cancelled the demo.`,`He will be traveling when the demo takes place.`,`The software is not ready.`,`His presentation was lost.`], k:1},
+       {q:`Why does the woman suggest Priya?`, o:[`She is the manager.`,`She knows the client.`,`She worked on the software.`,`She is free on Wednesday.`], k:2},
+       {q:`What does the man say he will send?`, o:[`A flight schedule`,`Presentation slides`,`A contract`,`The client's address`], k:1}]}]},
+  {k:'review', min:5, title:'Fechamento', html:`<p>Ritmo: <b>responder durante o áudio → ler as perguntas seguintes</b> enquanto o narrador lê as atuais.</p>`}
+ ],
+ hw:`<ul><li>Assista a 2 vídeos de "business English conversations" e escreva 3 perguntas (problema, detalhe, próximo passo) para cada um.</li></ul>`},
+
+{id:'aula-4', sec:'Listening', title:'Part 4: Talks', sub:'Mensagens de voz, anúncios e apresentações.',
+ goals:['Identificar quem fala, onde e por quê','Achar a instrução ou o pedido final','Distinguir o que o falante fará do que o ouvinte deve fazer'],
+ stages:[
+  {k:'warm', min:5, title:'Onde estamos?', note:`Leia frases curtas e a turma diz o lugar: "Please fasten your seatbelts", "Your call is important to us", "Today's special is…"`, html:`<p>Onde você ouviria: <i>"Please fasten your seatbelts" · "Your call is important to us" · "Today's special is…" · "Next stop: Central Station"</i>?</p>`},
+  {k:'teach', min:10, step:'part-4', parts:['fmt','intro','how','traps']},
+  {k:'model', min:6, step:'part-4', parts:['ex']},
+  {k:'guided', min:12, step:'part-4', parts:['practice']},
+  {k:'exam', min:12, title:'Condições de prova', items:[{t:'mcq', a:[['W',`Good morning, and thank you for calling Westfield Dental Clinic. Please note that starting May 1st, our clinic will open at 7:30 a.m. on weekdays to better serve patients who work. Our Saturday hours remain unchanged. If you are calling to reschedule an appointment, press 2. For billing questions, please call back between 1 and 4 p.m., when our billing staff is available. To hear this message again, press 9.`]],
+   qs:[{q:`What type of business recorded the message?`, o:[`A bank`,`A dental clinic`,`A gym`,`A pharmacy`], k:1},
+       {q:`What change is announced?`, o:[`Earlier weekday opening`,`New Saturday hours`,`A new billing system`,`A new location`], k:0},
+       {q:`What should callers with billing questions do?`, o:[`Press 2`,`Press 9`,`Call back in the afternoon`,`Visit the clinic`], k:2}]}]},
+  {k:'review', min:5, title:'Fechamento', html:`<p>Início = <b>quem/onde/por quê</b>. Fim = <b>o que o ouvinte deve fazer</b>.</p>`}
+ ],
+ hw:`<ul><li>Grave uma mensagem de voz profissional de 30 s (remarcando uma reunião) e escreva 3 perguntas no estilo TOEIC sobre ela.</li></ul>`},
+
+{id:'aula-5', sec:'Reading', title:'Part 5 I: classes de palavras e tempos verbais', sub:'Resolver questões gramaticais em 20 segundos.',
+ goals:['Reconhecer a questão gramatical pelas opções','Decidir substantivo, adjetivo, advérbio ou verbo pela posição','Escolher tempos verbais por marcadores de tempo'],
+ stages:[
+  {k:'warm', min:5, title:'Família de palavras', note:`Peça a família de "produce": product, production, productive, productively, producer.`, html:`<p>Forme a família de <b>PRODUCE</b> e de <b>SUCCEED</b>.</p>`},
+  {k:'teach', min:10, step:'part-5', parts:['fmt','intro','how','traps']},
+  {k:'model', min:4, step:'part-5', parts:['ex']},
+  {k:'guided', min:10, step:'part-5', parts:['practice']},
+  {k:'exam', min:15, title:'Condições de prova: 10 questões em 4 minutos', items:[{t:'mcq', qs:[
+   {q:`The company's _______ to customer service has earned it many awards.`, o:['commit','commitment','committed','committing'], k:1},
+   {q:`Please read the instructions _______ before installing the software.`, o:['careful','care','carefully','careless'], k:2},
+   {q:`By the time the CEO arrived, the meeting _______.`, o:['already starts','has already started','had already started','will already start'], k:2},
+   {q:`The new office is _______ larger than the old one.`, o:['consider','considerable','considerably','consideration'], k:2},
+   {q:`All employees are required _______ the safety training.`, o:['complete','to complete','completing','completed'], k:1},
+   {q:`Next week, Mr. Lopez _______ the team in Singapore.`, o:['visits','will be visiting','visited','has visited'], k:1},
+   {q:`The proposal was rejected because it was not _______ enough.`, o:['detail','details','detailing','detailed'], k:3},
+   {q:`Ms. Park has worked here _______ fifteen years.`, o:['since','for','during','ago'], k:1},
+   {q:`Applicants should submit _______ résumés by email.`, o:['they','them','their','theirs'], k:2},
+   {q:`If sales continue to grow, we _______ more staff.`, o:['hire','will hire','would hire','hired'], k:1}]}]},
+  {k:'review', min:5, title:'Fechamento', html:`<p>Opções da mesma raiz = <b>olhe só as palavras ao redor</b>. Marcadores: <i>since/for → present perfect · by the time + passado → past perfect</i>.</p>`}
+ ],
+ hw:`<ul><li>Faça 30 questões de Part 5 com cronômetro de 10 minutos e classifique cada erro.</li></ul>`},
+
+{id:'aula-6', sec:'Reading', title:'Part 5 II: vocabulário, preposições e conectivos', sub:'Colocações de negócios e palavras que ligam ideias.',
+ goals:['Reconhecer colocações de negócios','Escolher preposições de tempo e lugar corretas','Diferenciar conectivos: although/despite/however/because of'],
+ stages:[
+  {k:'warm', min:5, title:'Verbo + substantivo', note:`Peça o verbo certo para: ___ a deadline (meet), ___ an order (place), ___ a complaint (file/make), ___ a meeting (hold), ___ an agreement (reach).`, html:`<p>Complete: ___ a deadline · ___ an order · ___ a complaint · ___ a meeting · ___ an agreement</p>`},
+  {k:'teach', min:10, title:'Conectivos e preposições', note:`Mostre a tabela e dê um exemplo de frase para cada linha.`, html:`<table><tr><th>Função</th><th>+ oração (sujeito + verbo)</th><th>+ substantivo / -ing</th><th>Entre frases</th></tr><tr><td>Contraste</td><td>although, even though</td><td>despite, in spite of</td><td>however, nevertheless</td></tr><tr><td>Causa</td><td>because, since</td><td>because of, due to</td><td>therefore, as a result</td></tr><tr><td>Condição</td><td>if, unless, provided that</td><td>in case of</td><td>otherwise</td></tr></table><p><b>Preposições de prazo:</b> by (até, limite) · until (durante todo o período) · within (dentro de) · prior to (antes de).</p>`},
+  {k:'guided', min:15, title:'Prática guiada', items:[{t:'mcq', qs:[
+   {q:`The project was completed on time _______ several staff shortages.`, o:['although','despite','because','however'], k:1},
+   {q:`We need to _______ the deadline, or we will lose the contract.`, o:['make','meet','do','reach'], k:1},
+   {q:`Refunds will be issued _______ ten business days.`, o:['within','until','since','among'], k:0},
+   {q:`The flight was delayed _______ bad weather.`, o:['because','due to','although','since'], k:1},
+   {q:`Sales fell in the first quarter. _______, profits increased.`, o:['However','Although','Despite','Because'], k:0},
+   {q:`Customers can _______ an order online 24 hours a day.`, o:['put','place','do','make up'], k:1},
+   {q:`The store will remain open _______ 9 p.m. during the holidays.`, o:['by','until','within','since'], k:1},
+   {q:`_______ you have any questions, please contact our help desk.`, o:['Should','Would','Had','Unless'], k:0, x:`"Should you have…" = "If you have…" (inversão formal).`}]}]},
+  {k:'exam', min:12, title:'Condições de prova', items:[{t:'mcq', qs:[
+   {q:`All visitors must sign in at reception _______ entering the building.`, o:['prior to','because of','in spite of','due to'], k:0},
+   {q:`The manager decided to _______ the meeting until next week.`, o:['postpone','cancel off','delay to','put'], k:0},
+   {q:`_______ the budget is approved, we cannot hire new staff.`, o:['Unless','Despite','Because of','However'], k:0},
+   {q:`The conference attracted participants from _______ 40 countries.`, o:['more','over','above of','much'], k:1},
+   {q:`Ms. Ito is responsible _______ training new employees.`, o:['of','to','for','with'], k:2},
+   {q:`The report was _______ informative that it was shared with all departments.`, o:['such','so','very','too'], k:1}]}]},
+  {k:'review', min:5, title:'Fechamento', html:`<p>Antes de escolher o conectivo, veja o que vem depois: <b>oração</b> ou <b>substantivo</b>?</p>`}
+ ],
+ hw:`<ul><li>Monte uma lista de 20 colocações de negócios com exemplo (ex.: <i>place an order, meet a deadline, launch a product</i>).</li></ul>`},
+
+{id:'aula-7', sec:'Reading', title:'Part 6: Text Completion', sub:'Contexto, tempo verbal e a lacuna de frase inteira.',
+ goals:['Usar o contexto do texto para o tempo verbal','Escolher a frase que conecta o texto','Fazer 4 textos em 8 minutos'],
+ stages:[
+  {k:'warm', min:5, title:'Qual frase falta?', note:`Projete um e-mail curto com uma frase faltando e duas opções. Discuta como a frase seguinte ajuda.`, html:`<p class="passage">Thank you for your order. ______ It will arrive within 3–5 business days.</p><p>(a) <i>Your package was shipped this morning.</i> (b) <i>We have many products.</i> Qual opção? Por quê?</p>`},
+  {k:'teach', min:10, step:'part-6', parts:['fmt','intro','how','traps']},
+  {k:'model', min:6, step:'part-6', parts:['ex']},
+  {k:'guided', min:12, step:'part-6', parts:['practice']},
+  {k:'exam', min:12, title:'Condições de prova', items:[{t:'cloze', text:`<b>Memo</b><br>To: All employees · From: Facilities<br><br>Beginning next Monday, the company cafeteria {1} a new menu with more healthy options. This change is a response to the employee survey {2} last spring. {3} Employees who have dietary restrictions are encouraged to contact the cafeteria manager directly. We hope everyone {4} the new selection.`,
+   g:[{o:['offered','will offer','has offered','was offering'],k:1},{o:['conduct','conducting','conducted','conducts'],k:2},{o:['Many respondents asked for lighter meals and vegetarian dishes.','The cafeteria is located on the ground floor.','The survey was sent by email.','Our company was founded in 1985.'],k:0},{o:['enjoy','enjoys','enjoying','to enjoy'],k:1}]}]},
+  {k:'review', min:5, title:'Fechamento', html:`<p>Lacuna de frase: a certa <b>conecta a anterior e a seguinte</b>. Tempo verbal: veja datas e palavras como <i>next, last, since</i>.</p>`}
+ ],
+ hw:`<ul><li>Escreva um memorando de 80 palavras para sua equipe e transforme-o em uma questão de Part 6 com 4 lacunas.</li></ul>`},
+
+{id:'aula-8', sec:'Reading', title:'Part 7 I: textos únicos', sub:'Scanning, perguntas NOT e chats com horários.',
+ goals:['Ler a pergunta antes do texto','Resolver perguntas NOT true / NOT mentioned','Interpretar mensagens de chat no contexto'],
+ stages:[
+  {k:'warm', min:5, title:'Caça à informação', note:`Projete um anúncio e dê 30 segundos para achar: preço, data e telefone. Mostre que não é preciso ler tudo.`, html:`<p>Em 30 segundos, encontre no texto do professor: o <b>preço</b>, a <b>data</b> e o <b>telefone</b>.</p>`},
+  {k:'teach', min:10, step:'part-7', parts:['fmt','intro','how','traps']},
+  {k:'guided', min:15, step:'part-7', parts:['practice']},
+  {k:'exam', min:15, title:'Condições de prova: 1 minuto por questão', items:[{t:'mcq', p:`<div class="doc"><b>JOB OPENING — Customer Support Specialist</b><br>Brightline Software is seeking a full-time Customer Support Specialist for our São Paulo office. Responsibilities include answering client inquiries by phone and email, troubleshooting basic technical problems, and preparing weekly reports. Candidates must be fluent in Portuguese and English; Spanish is a plus. At least two years of experience in a customer-facing role is required. We offer a hybrid schedule (three days in the office), health insurance, and a yearly training budget. To apply, send your CV and a cover letter to jobs@brightline.example by June 30.</div>`,
+   qs:[{q:`What is NOT a responsibility of the position?`, o:[`Answering emails`,`Solving simple technical problems`,`Writing weekly reports`,`Training new employees`], k:3},
+       {q:`What is required of applicants?`, o:[`Fluency in Spanish`,`Two years of relevant experience`,`A degree in computer science`,`Living near the office`], k:1},
+       {q:`What benefit is mentioned?`, o:[`A company car`,`Fully remote work`,`Money for professional training`,`A signing bonus`], k:2},
+       {q:`The word "plus" is closest in meaning to`, o:[`requirement`,`advantage`,`addition sign`,`problem`], k:1}]}]},
+  {k:'review', min:5, title:'Fechamento', html:`<p>NOT: ache <b>três</b> no texto e marque a que sobra. Vocabulário: pense no sentido <b>no contexto</b>.</p>`}
+ ],
+ hw:`<ul><li>Leia 3 anúncios de emprego reais em inglês (LinkedIn) e escreva 2 perguntas NOT para cada um.</li></ul>`},
+
+{id:'aula-9', sec:'Reading', title:'Part 7 II: textos duplos e triplos', sub:'Cruzar informações entre e-mails, formulários e anúncios.',
+ goals:['Mapear rapidamente cada texto de um conjunto','Responder perguntas que exigem 2 textos','Manter o ritmo de 1 minuto por questão'],
+ stages:[
+  {k:'warm', min:5, title:'Duas fontes, uma resposta', note:`Pergunte: "A reunião é às 10h na sala do segundo andar. O segundo andar está em reforma até sexta. A reunião é na quinta." O que está errado? (é preciso cruzar as informações)`, html:`<p>Cruze as três informações do professor: o que não faz sentido?</p>`},
+  {k:'teach', min:8, title:'Estratégia para múltiplos textos', note:`Desenhe no quadro um "mapa" de 3 caixas com o tipo de cada texto, quem escreve e a data.`, html:`<ol class="steps"><li><b>Mapeie em 30 s:</b> tipo de cada texto, quem escreve para quem, datas.</li><li><b>Leia a pergunta e veja se cita algo de um texto e pede algo de outro</b>: é pergunta de cruzamento.</li><li><b>Nas 5 perguntas de cada conjunto, normalmente 1–2 exigem cruzar.</b></li></ol>`},
+  {k:'model', min:7, step:'part-7', parts:['ex']},
+  {k:'guided', min:15, title:'Prática guiada: texto triplo', items:[{t:'mcq', p:`<h5>Text 1 — Web page</h5><div class="doc"><b>Greenleaf Office Furniture — Delivery Options</b><br>Standard (5–7 days): free on orders over $500 · Express (2 days): $60 · Assembly service: $25 per item</div><h5>Text 2 — Order confirmation</h5><div class="doc">Order #4471 · Customer: Lima &amp; Partners · Date: March 3<br>3 office desks ($240 each) · Delivery: Express · Assembly: yes (3 items)</div><h5>Text 3 — Email</h5><div class="doc"><b>From:</b> Rafael Lima · <b>To:</b> Greenleaf · <b>Date:</b> March 6<br>Our desks arrived today, but one of them has a scratch on the surface. The assembly team was very professional. Could you arrange a replacement for the damaged desk? We are not in a hurry, so standard delivery is fine.</div>`,
+   qs:[{q:`How much did Lima & Partners pay for assembly?`, o:[`$25`,`$60`,`$75`,`$240`], k:2, x:`$25 × 3 itens (texto 1 + texto 2).`},
+       {q:`Why did Mr. Lima write the email?`, o:[`To cancel the order`,`To request a replacement item`,`To complain about the assembly team`,`To ask about prices`], k:1},
+       {q:`What is suggested about the delivery of the order?`, o:[`It arrived later than the express time frame.`,`It arrived on the same day it was ordered.`,`It was free.`,`It was standard delivery.`], k:0, x:`Cruzamento: pedido em 3 de março com entrega express (2 dias) → previsto para 5/3. O e-mail de 6/3 diz "arrived today", ou seja, chegou com atraso.`},
+       {q:`Which delivery option does Mr. Lima request for the replacement desk?`, o:[`Standard`,`Express`,`Same-day`,`Store pickup`], k:0, x:`"We are not in a hurry, so standard delivery is fine."`}]}]},
+  {k:'exam', min:15, title:'Condições de prova', items:[{t:'mcq', p:`<h5>Text 1 — Announcement</h5><div class="doc"><b>Annual Marketing Summit — Lisbon, October 14–15</b><br>Early registration (until August 31): €350 · Regular: €450 · Group of 5+: 20% off the regular price<br>Workshop A (Oct 14, 2 p.m.): Social Media Strategy · Workshop B (Oct 15, 10 a.m.): Data-Driven Campaigns</div><h5>Text 2 — Email</h5><div class="doc"><b>From:</b> Carla Nunes · <b>To:</b> Summit Registration · <b>Date:</b> September 10<br>I would like to register six members of my team. Unfortunately, our flight lands in Lisbon at noon on October 15, so we will miss the first day. Could you confirm whether we can still attend the data workshop?</div>`,
+   qs:[{q:`How much will each of Ms. Nunes's team members probably pay?`, o:[`€350`,`€360`,`€450`,`€280`], k:1, x:`Inscrição em setembro = preço regular (€450), grupo de 6 = 20% de desconto → €360.`},
+       {q:`Which workshop will the team be unable to attend?`, o:[`Workshop A only`,`Workshop B only`,`Both workshops`,`Neither workshop`], k:2, x:`Chegam ao meio-dia do dia 15: perdem o A (dia 14) e também o B (dia 15, às 10h).`},
+       {q:`What does Ms. Nunes ask about?`, o:[`Hotel options`,`Attendance at a specific workshop`,`A refund`,`Changing the date of the summit`], k:1}]}]},
+  {k:'review', min:5, title:'Fechamento', html:`<p>Pergunta cita um detalhe de um texto e pede um de outro? <b>Cruze.</b> Faça as contas no papel.</p>`}
+ ],
+ hw:`<ul><li>Faça 2 conjuntos de textos triplos de um livro oficial (ETS) com cronômetro de 5 minutos cada.</li></ul>`},
+
+{id:'aula-10', sec:'Reta final', title:'Simulado integrado e plano de estudos', sub:'Amostra das 7 partes, estimativa de pontuação e plano.',
+ goals:['Aplicar as estratégias das 7 partes em sequência','Estimar a pontuação de Listening e Reading','Planejar as semanas finais'],
+ stages:[
+  {k:'warm', min:3, title:'Revisão', html:`<p>Uma estratégia para cada parte, em 1 minuto.</p>`},
+  {k:'mock', min:42, title:'Minissimulado', note:`Listening (áudio 1x, ~10 min) → Reading (cronômetro de 25 min). Sem pausas, como na prova.`,
+   items:[
+    {t:'mcq', title:'Part 1', scene:['🧑‍🔧🚗',`Um mecânico está debruçado sobre o motor aberto de um carro em uma oficina.`], a:[['N',`A. The car is being washed. B. A mechanic is working on an engine. C. The garage door is closed. D. Tools are being sold.`]], o:['A','B','C','D'], k:1},
+    {t:'mcq', title:'Part 2', a:[['W',`Which hotel did you book for the conference?`],['M',`A. The one closest to the venue. B. Yes, I booked it. C. Next Tuesday.`]], o:['A','B','C'], k:0},
+    {t:'mcq', title:'Part 2', a:[['M',`Isn't the training session mandatory?`],['W',`A. It's in Room 5. B. Only for new employees. C. I trained yesterday.`]], o:['A','B','C'], k:1},
+    {t:'mcq', title:'Part 3', a:[['M',`Excuse me, I ordered a laptop stand online, but I received the wrong color.`],['W',`I'm sorry about that. Do you have your receipt?`],['M',`Yes, here it is. I wanted the black one.`],['W',`We have black in stock. I'll exchange it now, and here's a ten percent discount coupon for your next purchase.`]],
+     qs:[{q:`What is the problem?`, o:[`The item arrived damaged.`,`The wrong color was delivered.`,`The receipt was lost.`,`The store is out of stock.`], k:1},{q:`What does the woman give the man?`, o:[`A refund`,`A discount coupon`,`A new receipt`,`A free laptop`], k:1}]},
+    {t:'mcq', title:'Part 4', a:[['W',`Hello, this is Diane from Accounting. I'm calling about the expense report you submitted last week. The total looks fine, but two of the taxi receipts are missing. Could you scan them and email them to me by Thursday? Otherwise, the reimbursement will be delayed until next month.`]],
+     qs:[{q:`Why is the speaker calling?`, o:[`To approve a report`,`To request missing receipts`,`To book a taxi`,`To change a deadline`], k:1},{q:`What will happen if the listener does not respond by Thursday?`, o:[`The report will be rejected.`,`The payment will be delayed.`,`The listener must call Diane.`,`The taxi company will be contacted.`], k:1}]},
+    {t:'mcq', title:'Part 5', qs:[
+     {q:`The marketing team worked _______ to launch the campaign on time.`, o:['efficient','efficiency','efficiently','more efficient'], k:2},
+     {q:`Please return the signed contract _______ Friday.`, o:['until','by','since','at'], k:1},
+     {q:`_______ the high cost, the company decided to upgrade its servers.`, o:['Although','Despite','Because','Unless'], k:1},
+     {q:`Mr. Sato _______ as regional director since 2020.`, o:['serves','served','has served','is serving'], k:2}]},
+    {t:'cloze', title:'Part 6', text:`Dear Valued Customer,<br>We are pleased to announce that our online store has been {1}. {2} You can now track your orders in real time and save your payment details securely. To celebrate, we are offering free shipping on all orders placed {3} the end of the month.`,
+     g:[{o:['redesign','redesigned','redesigning','redesigns'],k:1},{o:['The new site is faster and easier to use.','Our store opened in 2010.','Please call us for directions.','Shipping costs have increased.'],k:0},{o:['until','before','since','during'],k:1}]},
+    {t:'mcq', title:'Part 7', p:`<div class="doc"><b>Kim Lee [2:05]</b> The supplier just called. The packaging materials won't arrive until Monday.<br><b>Omar Haddad [2:07]</b> That's a problem. We promised the client delivery on Tuesday.<br><b>Kim Lee [2:08]</b> We could use the plain boxes we have in storage.<br><b>Omar Haddad [2:10]</b> That works. I'll let the client know their logo won't be on the boxes this time.</div>`,
+     qs:[{q:`At 2:07, what does Mr. Haddad mean when he writes, "That's a problem"?`, o:[`The supplier is unreliable.`,`The delay could affect a delivery commitment.`,`The client cancelled the order.`,`The boxes are too expensive.`], k:1},{q:`What will Mr. Haddad do next?`, o:[`Call the supplier`,`Order new boxes`,`Inform the client about the packaging`,`Change the delivery date`], k:2}]}
+   ]},
+  {k:'review', min:7, title:'Estimativa e prioridades', note:`Ajude a turma a calcular o percentual de acerto de Listening e de Reading. Explique que a conversão oficial varia de prova para prova e que o percentual serve só como referência.`, html:`<table><tr><th>Seção</th><th>Acertos</th><th>%</th><th>Parte prioritária</th></tr><tr><td>Listening</td><td>__ / 8</td><td></td><td></td></tr><tr><td>Reading</td><td>__ / 9</td><td></td><td></td></tr></table>`},
+  {k:'teach', min:5, title:'Plano de estudos e dia da prova', step:'plano', parts:['page']}
+ ],
+ hw:`<ul><li>Faça um simulado oficial completo de 2 horas (livros oficiais da ETS) e compare com os resultados desta aula.</li></ul>`}
+];
 
 </script>
 <script>
@@ -1689,12 +2678,47 @@ function itemCard(it, label, onScore){
 var main = $('#main'), nav = $('#topnav');
 function setAccent(c){ document.documentElement.style.setProperty('--c', c || '#2F5DA8'); }
 function findExam(id){ for (var i = 0; i < EXAMS.length; i++) if (EXAMS[i].id === id) return EXAMS[i]; return null; }
+function findStep(ex, id){ for (var i = 0; i < ex.steps.length; i++) if (ex.steps[i].id === id) return ex.steps[i]; return null; }
+function units(ex){ return ex.lessons && ex.lessons.length ? ex.lessons : ex.steps; }
+function lessonMin(ls){ return ls.stages.reduce(function(a, s){ return a + (s.min || 0); }, 0); }
+function unitPct(ex){ var list = units(ex), d = 0; list.forEach(function(u){ var p = prog(ex.id, u.id); if (p && p.done) d++; }); return {d:d, n:list.length, pct: list.length ? Math.round(100*d/list.length) : 0}; }
+
+/* teacher mode */
+var TKEY = 'upfront_prof_teacher', teacher = false;
+try { teacher = localStorage.getItem(TKEY) === '1'; } catch(e){}
+try { var pr = new URLSearchParams(location.search).get('portal_role'); if (pr === 'teacher') teacher = true; if (pr === 'student') teacher = false; } catch(e){}
+var tBtn = $('#teacherBtn');
+function applyTeacher(){ document.body.classList.toggle('teacher', teacher); tBtn.textContent = teacher ? 'Modo professor: ligado' : 'Modo professor'; tBtn.setAttribute('aria-pressed', teacher ? 'true' : 'false'); }
+tBtn.onclick = function(){ teacher = !teacher; try { localStorage.setItem(TKEY, teacher ? '1' : '0'); } catch(e){} applyTeacher(); };
+applyTeacher();
+
+/* reusable blocks from a step: intro, how, traps, ex, practice */
+function stepBlocks(s, parts, onScore, counter){
+  var out = [];
+  parts.forEach(function(part){
+    if (part === 'fmt' && s.fmt) out.push(h('div', {class:'chips', style:{'margin-top':'0'}}, s.fmt.map(function(f){ return h('div', {class:'chip', html:'<b>' + f[0] + '</b>' + f[1]}); })));
+    if (part === 'intro' && s.intro) out.push(h('div', {class:'sub-block'}, [h('h3', {text:'O que é esta parte'}), h('div', {class:'lead', html: s.intro})]));
+    if (part === 'how' && s.how) out.push(h('div', {class:'sub-block'}, [h('h3', {text:'Passo a passo'}), h('ol', {class:'steps'}, s.how.map(function(x){ return h('li', {html:x}); }))]));
+    if (part === 'traps' && s.traps) out.push(h('div', {class:'sub-block'}, [h('h3', {text:'Armadilhas comuns'}), h('ul', {class:'traps'}, s.traps.map(function(x){ return h('li', {html:x}); }))]));
+    if (part === 'ex' && s.ex){
+      var exCard = itemCard(s.ex.item, 'Exemplo resolvido');
+      var walk = h('div', {class:'walk hidden', html: s.ex.walk});
+      var wb = h('button', {class:'btn ghost', type:'button', text:'Ver resolução passo a passo'});
+      wb.onclick = function(){ walk.classList.toggle('hidden'); };
+      exCard.el.appendChild(h('div', {class:'actions'}, [wb])); exCard.el.appendChild(walk);
+      out.push(exCard.el);
+    }
+    if (part === 'practice' && s.practice) s.practice.forEach(function(it, i){ out.push(itemCard(it, 'Exercício ' + (++counter.n), onScore(i)).el); });
+    if (part === 'page' && s.html) out.push(h('div', {class:'rich', html: s.html}));
+  });
+  return out;
+}
 
 function viewHome(){
   setAccent('#2F5DA8');
   var hero = h('section', {class:'hero'}, [h('div', {class:'wrap'}, [
     h('h1', {text:'Prepare-se para a prova de proficiência seguindo os passos da própria prova.'}),
-    h('p', {text:'Escolha a prova e siga a trilha na mesma ordem das seções do exame real. Cada etapa ensina o formato, a estratégia e as armadilhas, e termina com prática corrigida na hora.'}),
+    h('p', {text:'Cada curso é dividido em aulas de 45 a 60 minutos, na mesma ordem das seções do exame real. Em cada aula: formato, estratégia, exemplo resolvido, prática guiada e prática em condições de prova, com correção na hora.'}),
     h('div', {class:'method'}, [
       h('div', null, [h('b',{text:'1 · Formato'}), h('span',{text:'Quantas questões, quanto tempo e o que é avaliado'})]),
       h('div', null, [h('b',{text:'2 · Passo a passo'}), h('span',{text:'A estratégia para resolver cada parte'})]),
@@ -1703,12 +2727,12 @@ function viewHome(){
     ])
   ])]);
   var cards = h('div', {class:'grid'}, EXAMS.map(function(ex){
-    var pr = examPct(ex);
+    var pr = unitPct(ex), n = units(ex).length;
     return h('a', {class:'exam-card', href:'#/' + ex.id, style:{'--c': ex.color}}, [
       h('span', {class:'tag', text: ex.tag}), h('h3', {text: ex.name}), h('p', {text: ex.desc}),
-      h('div', {class:'facts'}, ex.facts.map(function(f){ return h('span', {class:'fact', text:f}); })),
+      h('div', {class:'facts'}, ex.facts.concat(ex.lessons ? [n + ' aulas'] : []).map(function(f){ return h('span', {class:'fact', text:f}); })),
       h('div', {class:'bar'}, [h('i', {style:{width: pr.pct + '%'}})]),
-      h('span', {class:'bar-label', text: pr.d + ' de ' + pr.n + ' etapas concluídas'})
+      h('span', {class:'bar-label', text: pr.d + ' de ' + pr.n + (ex.lessons ? ' aulas concluídas' : ' etapas concluídas')})
     ]);
   }));
   var which = h('div', {class:'box', style:{'margin-top':'24px'}, html:
@@ -1719,19 +2743,20 @@ function viewHome(){
     '<li><b>Cambridge C2 Proficiency:</b> certificado sem validade que comprova domínio próximo ao de um falante nativo (C2). Útil para professores, tradutores e o mercado europeu.</li>' +
     '<li><b>TOEIC Listening &amp; Reading:</b> inglês no ambiente de trabalho. Muito pedido em processos seletivos de empresas.</li>' +
     '</ul><p>Antes de se inscrever, confirme sempre com a instituição qual prova e qual nota mínima ela aceita.</p>'});
+  var tbox = h('div', {class:'box', style:{'margin-top':'16px'}, html:'<h4>Para professores</h4><p>Ligue o <b>Modo professor</b> no topo da página para ver, em cada aula, o plano com tempos, as orientações de condução, os cronômetros de cada etapa e as respostas das atividades orais. Projete a tela na sala ou compartilhe na aula online. Os alunos podem refazer os exercícios em casa no modo aluno.</p>'});
   main.innerHTML = '';
   main.appendChild(hero);
-  main.appendChild(h('div', {class:'wrap'}, [h('h2', {class:'section-title', text:'Escolha sua prova'}), h('p', {class:'section-sub', text:'O progresso fica salvo neste navegador.'}), cards, which]));
+  main.appendChild(h('div', {class:'wrap'}, [h('h2', {class:'section-title', text:'Escolha sua prova'}), h('p', {class:'section-sub', text:'O progresso fica salvo neste navegador.'}), cards, which, tbox, h('div', {style:{height:'40px'}})]));
 }
 
 function viewExam(ex){
   setAccent(ex.color);
-  var pr = examPct(ex);
+  var pr = unitPct(ex);
   var head = h('section', {class:'exam-head'}, [h('div', {class:'wrap'}, [
     h('div', {class:'crumb', html:'<a href="#/">Provas</a> / ' + esc(ex.name)}),
     h('h1', {text: ex.name}), h('p', {html: ex.intro}),
     h('div', {class:'bar', style:{'max-width':'360px','margin-top':'14px'}}, [h('i', {style:{width: pr.pct + '%'}})]),
-    h('span', {class:'bar-label', text: pr.d + ' de ' + pr.n + ' etapas concluídas'})
+    h('span', {class:'bar-label', text: pr.d + ' de ' + pr.n + (ex.lessons ? ' aulas concluídas' : ' etapas concluídas')})
   ])]);
   var table = h('div', {class:'table-wrap'}, [h('table', null, [
     h('thead', null, [h('tr', null, ['Seção','Tempo','Questões','O que cai'].map(function(t){ return h('th',{text:t}); }))]),
@@ -1739,92 +2764,133 @@ function viewExam(ex){
   ])]);
   var info = h('div', {class:'info-grid'}, [h('div', {class:'box', html:'<h4>Pontuação</h4>' + ex.scoring}), h('div', {class:'box', html:'<h4>Antes de começar</h4>' + ex.tips})]);
   var track = h('ol', {class:'track'}), lastSec = null;
-  ex.steps.forEach(function(s, i){
-    if (s.sec !== lastSec){ track.appendChild(h('li', {class:'track-group', text: s.sec})); lastSec = s.sec; }
-    var p = prog(ex.id, s.id);
-    track.appendChild(h('li', {class:'track-item' + (p && p.done ? ' done' : '')}, [h('a', {href:'#/' + ex.id + '/' + s.id}, [
-      h('span', {class:'num', text: p && p.done ? '✓' : String(i+1)}),
-      h('span', null, [h('div', {class:'t', text: s.title}), h('div', {class:'s', text: s.sub})]),
-      h('span', {class:'score', text: p && p.t ? p.c + '/' + p.t + ' acertos' : ''})
-    ])]));
-  });
+  if (ex.lessons){
+    var totalMin = 0;
+    ex.lessons.forEach(function(ls, i){
+      if (ls.sec !== lastSec){ track.appendChild(h('li', {class:'track-group', text: ls.sec})); lastSec = ls.sec; }
+      var p = prog(ex.id, ls.id), m = lessonMin(ls); totalMin += m;
+      track.appendChild(h('li', {class:'track-item' + (p && p.done ? ' done' : '')}, [h('a', {href:'#/' + ex.id + '/' + ls.id}, [
+        h('span', {class:'num', text: p && p.done ? '✓' : String(i+1)}),
+        h('span', null, [h('div', {class:'t', text: 'Aula ' + (i+1) + ' · ' + ls.title}), h('div', {class:'s', text: ls.sub})]),
+        h('span', {class:'score', html: m + ' min' + (p && p.t ? '<br>' + p.c + '/' + p.t + ' acertos' : '')})
+      ])]));
+    });
+    var syll = h('div', {class:'box', style:{'margin-bottom':'8px'}, html:'<h4>Programa do curso</h4><p><b>' + ex.lessons.length + ' aulas</b> de 45 a 60 minutos (carga total ≈ ' + Math.round(totalMin/60*10)/10 + ' h). Cada aula segue a sequência: aquecimento → explicação da parte da prova → exemplo resolvido → prática guiada → prática em condições de prova → fechamento e tarefa de casa.</p><p class="tonly">Sugestão de ritmo: 1 a 2 aulas por semana. A última aula é um simulado: aplique-a com cronômetro e sem consulta.</p>'});
+  } else {
+    ex.steps.forEach(function(s, i){
+      if (s.sec !== lastSec){ track.appendChild(h('li', {class:'track-group', text: s.sec})); lastSec = s.sec; }
+      var p = prog(ex.id, s.id);
+      track.appendChild(h('li', {class:'track-item' + (p && p.done ? ' done' : '')}, [h('a', {href:'#/' + ex.id + '/' + s.id}, [
+        h('span', {class:'num', text: p && p.done ? '✓' : String(i+1)}),
+        h('span', null, [h('div', {class:'t', text: s.title}), h('div', {class:'s', text: s.sub})]),
+        h('span', {class:'score', text: p && p.t ? p.c + '/' + p.t + ' acertos' : ''})
+      ])]));
+    });
+  }
   main.innerHTML = '';
   main.appendChild(head);
   main.appendChild(h('div', {class:'wrap'}, [
-    h('h2', {class:'section-title', text:'Como é a prova'}), h('p', {class:'section-sub', text:'Formato oficial resumido. A trilha abaixo segue esta ordem.'}),
+    h('h2', {class:'section-title', text:'Como é a prova'}), h('p', {class:'section-sub', text:'Formato oficial resumido. As aulas seguem esta ordem.'}),
     table, info,
-    h('h2', {class:'section-title', text:'Trilha de preparação'}), h('p', {class:'section-sub', text:'Siga as etapas em ordem: elas acompanham a sequência da prova real.'}),
-    track, h('div', {style:{height:'60px'}})
+    h('h2', {class:'section-title', text: ex.lessons ? 'Aulas do curso' : 'Trilha de preparação'}),
+    h('p', {class:'section-sub', text: ex.lessons ? 'Siga as aulas em ordem: elas acompanham a sequência da prova real.' : 'Siga as etapas em ordem: elas acompanham a sequência da prova real.'}),
+    ex.lessons ? syll : null, track, h('div', {style:{height:'60px'}})
   ]));
+}
+
+var STAGE = {warm:'Aquecimento', teach:'Explicação', model:'Exemplo resolvido', guided:'Prática guiada', pair:'Atividade em dupla', exam:'Condições de prova', mock:'Simulado', review:'Fechamento'};
+var stageTimer = null;
+function viewLesson(ex, idx){
+  setAccent(ex.color);
+  var ls = ex.lessons[idx], total = lessonMin(ls);
+  var counter = {n:0}, got = {}, objective = 0;
+  var sum = h('div', {class:'summary hidden'});
+  function onScore(key){ return function(r){
+    got[key] = r; var c = 0, t = 0, n = 0; for (var k in got){ c += got[k].c; t += got[k].t; n++; }
+    setProg(ex.id, ls.id, {c:c, t:t});
+    sum.classList.remove('hidden');
+    sum.innerHTML = '<span class="big">' + c + '/' + t + '</span><span>' + n + ' de ' + objective + ' exercícios corrigidos. ' + (t && c/t >= .8 ? 'Excelente resultado.' : t && c/t >= .6 ? 'Bom resultado. Revise as explicações dos erros.' : 'Revise as explicações e refaça os exercícios em casa.') + '</span>';
+  }; }
+  var head = h('section', {class:'exam-head'}, [h('div', {class:'wrap'}, [
+    h('div', {class:'crumb', html:'<a href="#/">Provas</a> / <a href="#/' + ex.id + '">' + esc(ex.name) + '</a> / Aula ' + (idx+1) + ' de ' + ex.lessons.length}),
+    h('div', {class:'step-head'}, [h('span', {class:'pill', text: ls.sec}), h('span', {class:'pill', text: total + ' minutos'})]),
+    h('h1', {text: 'Aula ' + (idx+1) + ': ' + ls.title}), h('p', {text: ls.sub}),
+    h('div', {class:'info-grid'}, [
+      h('div', {class:'box', html:'<h4>Objetivos da aula</h4><ul>' + ls.goals.map(function(g){ return '<li>' + g + '</li>'; }).join('') + '</ul>'}),
+      h('div', {class:'box'}, [h('h4', {text:'Roteiro'}), h('ol', {class:'agenda'}, ls.stages.map(function(st, i){
+        return h('li', null, [h('a', {href:'javascript:void 0', onclick:function(){ var el = document.getElementById('st' + i); if (el) el.scrollIntoView({behavior:'smooth'}); }}, [h('span', {text: st.title || STAGE[st.k]}), h('b', {text: st.min + ' min'})])]);
+      }))])
+    ])
+  ])]);
+  var body = h('div', {class:'wrap'});
+  ls.stages.forEach(function(st, si){
+    var card = h('section', {class:'lstage', id:'st' + si});
+    var tm = timerEl(st.min * 60, '');
+    var tb = h('button', {class:'btn ghost sm tonly', type:'button', text:'▶ Cronometrar ' + st.min + ' min'});
+    tb.onclick = function(){ if (stageTimer && stageTimer !== tm) stageTimer.stop(); stageTimer = tm; tm.reset(); tm.start(); };
+    card.appendChild(h('div', {class:'stage-head'}, [
+      h('span', {class:'stage-n', text: String(si+1)}),
+      h('div', null, [h('div', {class:'stage-k', text: STAGE[st.k] || st.k}), h('h2', {text: st.title || STAGE[st.k]})]),
+      h('div', {class:'stage-time'}, [h('span', {class:'chip-min', text: st.min + ' min'}), tb, h('span', {class:'tonly'}, [tm.el])])
+    ]));
+    if (st.note) card.appendChild(h('div', {class:'tnote', html:'<b>Para o professor:</b> ' + st.note}));
+    if (st.html) card.appendChild(h('div', {class:'rich', html: st.html}));
+    if (st.step){
+      var s = findStep(ex, st.step);
+      if (s){
+        var parts = st.parts || ['intro','how','traps'];
+        parts.forEach(function(p){ if (p === 'practice' && s.practice) s.practice.forEach(function(it){ if (it.t !== 'write' && it.t !== 'speak') objective++; }); });
+        stepBlocks(s, parts, function(i){ return onScore(si + 's' + i); }, counter).forEach(function(el){ card.appendChild(el); });
+      }
+    }
+    (st.items || []).forEach(function(it, ii){
+      if (it.t !== 'write' && it.t !== 'speak') objective++;
+      card.appendChild(itemCard(it, 'Exercício ' + (++counter.n), onScore(si + '_' + ii)).el);
+    });
+    body.appendChild(card);
+  });
+  body.appendChild(sum);
+  if (ls.hw) body.appendChild(h('section', {class:'lstage hw'}, [h('div', {class:'stage-head'}, [h('span', {class:'stage-n', text:'🏠'}), h('div', null, [h('div', {class:'stage-k', text:'Depois da aula'}), h('h2', {text:'Tarefa de casa'})])]), h('div', {class:'rich', html: ls.hw})]));
+  var p0 = prog(ex.id, ls.id);
+  var done = h('button', {class:'btn c', type:'button', text: p0 && p0.done ? '✓ Aula concluída' : 'Marcar aula como concluída'});
+  done.onclick = function(){ setProg(ex.id, ls.id, {done:true}); done.textContent = '✓ Aula concluída'; };
+  body.appendChild(h('div', {class:'actions'}, [done]));
+  var prev = ex.lessons[idx-1], next = ex.lessons[idx+1];
+  body.appendChild(h('div', {class:'pager'}, [
+    prev ? h('a', {href:'#/' + ex.id + '/' + prev.id}, [h('small', {text:'← Aula ' + idx}), prev.title]) : h('a', {href:'#/' + ex.id}, [h('small', {text:'←'}), 'Visão geral do curso']),
+    next ? h('a', {class:'nx', href:'#/' + ex.id + '/' + next.id}, [h('small', {text:'Aula ' + (idx+2) + ' →'}), next.title]) : h('a', {class:'nx', href:'#/' + ex.id}, [h('small', {text:'Fim do curso →'}), 'Voltar à visão geral'])
+  ]));
+  main.innerHTML = ''; main.appendChild(head); main.appendChild(body);
 }
 
 function viewStep(ex, idx){
   setAccent(ex.color);
-  var s = ex.steps[idx];
-  var wrapEl = h('div', {class:'wrap'});
+  var s = ex.steps[idx], counter = {n:0}, got = {}, sum = h('div', {class:'summary hidden'});
   var head = h('section', {class:'exam-head'}, [h('div', {class:'wrap'}, [
-    h('div', {class:'crumb', html:'<a href="#/">Provas</a> / <a href="#/' + ex.id + '">' + esc(ex.name) + '</a> / Etapa ' + (idx+1) + ' de ' + ex.steps.length}),
+    h('div', {class:'crumb', html:'<a href="#/">Provas</a> / <a href="#/' + ex.id + '">' + esc(ex.name) + '</a> / ' + esc(s.title)}),
     h('div', {class:'step-head'}, [h('span', {class:'pill', text: s.sec})]),
     h('h1', {text: s.title}), h('p', {text: s.sub}),
     s.fmt ? h('div', {class:'chips'}, s.fmt.map(function(f){ return h('div', {class:'chip', html:'<b>' + f[0] + '</b>' + f[1]}); })) : null
   ])]);
-
-  if (s.kind === 'page'){
-    wrapEl.appendChild(h('div', {class:'block rich', html: s.html}));
-  } else {
-    if (s.intro) wrapEl.appendChild(h('div', {class:'block'}, [h('h2', {text:'O que é esta parte'}), h('div', {class:'lead', html: s.intro})]));
-    if (s.how) wrapEl.appendChild(h('div', {class:'block'}, [h('h2', {text:'Passo a passo'}), h('ol', {class:'steps'}, s.how.map(function(x){ return h('li', {html:x}); }))]));
-    if (s.traps) wrapEl.appendChild(h('div', {class:'block'}, [h('h2', {text:'Armadilhas comuns'}), h('ul', {class:'traps'}, s.traps.map(function(x){ return h('li', {html:x}); }))]));
-    if (s.ex){
-      var exCard = itemCard(s.ex.item, 'Exemplo resolvido');
-      var walk = h('div', {class:'walk hidden', html: s.ex.walk});
-      var wb = h('button', {class:'btn ghost', type:'button', text:'Ver resolução passo a passo'});
-      wb.onclick = function(){ walk.classList.toggle('hidden'); };
-      exCard.el.appendChild(h('div', {class:'actions'}, [wb])); exCard.el.appendChild(walk);
-      wrapEl.appendChild(h('div', {class:'block'}, [h('h2', {text:'Exemplo resolvido'}), h('p', {class:'section-sub', text:'Tente resolver primeiro e depois abra a resolução comentada.'}), exCard.el]));
-    }
-    if (s.practice && s.practice.length){
-      var total = 0, got = {}, sum = h('div', {class:'summary hidden'});
-      var pb = h('div', {class:'block'}, [h('h2', {text:'Prática no modelo da prova'})]);
-      s.practice.forEach(function(it, i){
-        var card = itemCard(it, 'Prática ' + (i+1), function(r){
-          got[i] = r; var c = 0, t = 0, n = 0; for (var k in got){ c += got[k].c; t += got[k].t; n++; }
-          var objective = s.practice.filter(function(p){ return BUILD[p.t] && ['write','speak'].indexOf(p.t) === -1; }).length;
-          if (n >= objective){ setProg(ex.id, s.id, {done:true, c:c, t:t}); }
-          sum.classList.remove('hidden'); sum.innerHTML = '<span class="big">' + c + '/' + t + '</span><span>' + (n >= objective ? 'Etapa concluída. ' : 'Continue: ainda há exercícios sem correção. ') + (t && c/t >= .8 ? 'Excelente: você está pronto para a próxima etapa.' : t && c/t >= .6 ? 'Bom resultado. Releia o passo a passo e as armadilhas antes de seguir.' : 'Reveja as explicações dos erros e refaça a etapa amanhã.') + '</span>';
-        });
-        total += card.total; pb.appendChild(card.el);
-      });
-      pb.appendChild(sum);
-      if (!total){
-        var done = h('button', {class:'btn c', type:'button', text: prog(ex.id, s.id) && prog(ex.id, s.id).done ? '✓ Etapa concluída' : 'Marcar etapa como concluída'});
-        done.onclick = function(){ setProg(ex.id, s.id, {done:true}); done.textContent = '✓ Etapa concluída'; };
-        pb.appendChild(h('div', {class:'actions'}, [done]));
-      }
-      wrapEl.appendChild(pb);
-    }
-  }
-  if (s.kind === 'page'){
-    var d2 = h('button', {class:'btn c', type:'button', text: prog(ex.id, s.id) && prog(ex.id, s.id).done ? '✓ Etapa concluída' : 'Marcar etapa como concluída'});
-    d2.onclick = function(){ setProg(ex.id, s.id, {done:true}); d2.textContent = '✓ Etapa concluída'; };
-    wrapEl.appendChild(h('div', {class:'actions'}, [d2]));
-  }
-  var prev = ex.steps[idx-1], next = ex.steps[idx+1];
-  wrapEl.appendChild(h('div', {class:'pager'}, [
-    prev ? h('a', {href:'#/' + ex.id + '/' + prev.id}, [h('small', {text:'← Etapa anterior'}), prev.title]) : h('a', {href:'#/' + ex.id}, [h('small', {text:'←'}), 'Visão geral da prova']),
-    next ? h('a', {class:'nx', href:'#/' + ex.id + '/' + next.id}, [h('small', {text:'Próxima etapa →'}), next.title]) : h('a', {class:'nx', href:'#/' + ex.id}, [h('small', {text:'Fim da trilha →'}), 'Voltar à visão geral'])
-  ]));
-  main.innerHTML = ''; main.appendChild(head); main.appendChild(wrapEl);
+  var body = h('div', {class:'wrap'}, [h('div', {class:'block'})]);
+  stepBlocks(s, s.kind === 'page' ? ['page'] : ['intro','how','traps','ex','practice'], function(i){ return function(r){ got[i] = r; var c = 0, t = 0; for (var k in got){ c += got[k].c; t += got[k].t; } sum.classList.remove('hidden'); sum.innerHTML = '<span class="big">' + c + '/' + t + '</span>'; }; }, counter).forEach(function(el){ body.appendChild(el); });
+  body.appendChild(sum);
+  body.appendChild(h('div', {class:'pager'}, [h('a', {href:'#/' + ex.id}, [h('small', {text:'←'}), 'Voltar ao curso'])]));
+  main.innerHTML = ''; main.appendChild(head); main.appendChild(body);
 }
 
 function route(){
-  stopAudio();
+  stopAudio(); if (stageTimer){ stageTimer.stop(); stageTimer = null; }
   var parts = location.hash.replace(/^#\/?/, '').split('/').filter(Boolean);
   var ex = parts[0] ? findExam(parts[0]) : null;
-  Array.prototype.forEach.call(nav.querySelectorAll('a'), function(a){ a.classList.toggle('on', ex && a.getAttribute('href') === '#/' + ex.id); });
+  Array.prototype.forEach.call(nav.querySelectorAll('a'), function(a){ a.classList.toggle('on', !!ex && a.getAttribute('href') === '#/' + ex.id); });
   if (!ex) viewHome();
   else if (!parts[1]) viewExam(ex);
-  else { var i = -1; ex.steps.forEach(function(s, j){ if (s.id === parts[1]) i = j; }); if (i < 0) viewExam(ex); else viewStep(ex, i); }
+  else {
+    var li = -1; (ex.lessons || []).forEach(function(l, j){ if (l.id === parts[1]) li = j; });
+    if (li >= 0) viewLesson(ex, li);
+    else { var i = -1; ex.steps.forEach(function(s, j){ if (s.id === parts[1]) i = j; }); if (i < 0) viewExam(ex); else viewStep(ex, i); }
+  }
   window.scrollTo(0, 0);
 }
 EXAMS.forEach(function(ex){ nav.appendChild(h('a', {href:'#/' + ex.id, text: ex.short})); });

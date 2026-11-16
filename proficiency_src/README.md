@@ -9,5 +9,7 @@ O arquivo publicado é `../proficiency.html`: um único HTML que funciona offlin
 
 Depois de editar qualquer arquivo, rode `./build.sh` para gerar o `proficiency.html` de novo.
 
+Aulas: `data/<prova>_lessons.js` (plano de cada aula com etapas cronometradas, notas do professor, exercícios e tarefa de casa).
+
 Tipos de exercício (`t`): `mcq`, `cloze`, `kwt`, `match`, `order`, `write`, `speak`.
 Áudio: `a: [['W','texto'],['M','texto']]` (W = mulher, M = homem, N = narrador); `plays` = quantas vezes toca na prova.
