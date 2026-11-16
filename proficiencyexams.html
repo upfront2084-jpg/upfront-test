@@ -2528,7 +2528,8 @@ function renderMockSpeakingSection(exam, section){
     </div>
     <div class="mock-task-card">
       <p style="font-size:14px;line-height:1.6;">${esc(task.prompt)}</p>
-      ${task.readingPassage?`<div class="mock-passage" style="margin-top:12px;">${esc(task.readingPassage)}</div>`:''}
+      ${task.readingPassage?`<div class="mock-passage" style="margin-top:12px;"><b>📖 Texto:</b><br><br>${esc(task.readingPassage)}</div>`:''}
+      ${task.listeningScript?`<div class="mock-passage" style="margin-top:12px;"><b>🎧 Roteiro de áudio:</b><br><br>${esc(task.listeningScript)}</div>`:''}
     </div>
   `;
   document.getElementById('content').innerHTML = html;
